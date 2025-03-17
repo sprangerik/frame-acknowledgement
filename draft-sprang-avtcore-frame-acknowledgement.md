@@ -23,7 +23,7 @@ title: "RTCP Feedback Message and Request Mechanism for Frame-level Acknowledgem
 abbrev: "Video Frame Acknowledgement"
 category: info
 
-docname: draft-sprang-avtcore-frame-acknowledgement-latest
+docname: draft-sprang-avtcore-frame-acknowledgement-00
 submissiontype: IETF
 number:
 date:
