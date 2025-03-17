@@ -83,7 +83,6 @@ informative:
   LNTF:
     target: https://www.ietf.org/archive/id/draft-majali-avtcore-lntf-feedback-message-00.html
     title: RTCP feedback Message for Loss Notification
-    author: Shridhar Majali
 
 
 --- abstract
