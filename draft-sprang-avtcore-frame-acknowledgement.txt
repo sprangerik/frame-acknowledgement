@@ -10,7 +10,7 @@ Expires: 18 September 2025
 
       RTCP Feedback Message and Request Mechanism for Frame-level
                             Acknowledgement
-           draft-sprang-avtcore-frame-acknowledgement-latest
+             draft-sprang-avtcore-frame-acknowledgement-00
 
 Abstract
 
