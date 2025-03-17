@@ -4,16 +4,19 @@
 <meta charset="utf-8">
 <meta content="Common,Latin" name="scripts">
 <meta content="initial-scale=1.0" name="viewport">
-<title>TODO - Your title</title>
-<meta content="Your Name Here" name="author">
+<title>RTCP Feedback Message and Request Mechanism for Frame-level Acknowledgement</title>
+<meta content="Erik Språng" name="author">
 <meta content="
-       TODO Abstract 
+       This document describes a mechanism for signaling which video frames have been received and decoded by a remote peer. It comprises an RTCP feedback message and an RTP header extension used to request said feedback. 
+       One of the main use cases for this data is to implement various forms of Long Term Reference (LTR) reference structures. 
     " name="description">
 <meta content="xml2rfc 3.28.0" name="generator">
-<meta content="next generation" name="keyword">
-<meta content="unicorn" name="keyword">
-<meta content="sparkling distributed ledger" name="keyword">
-<meta content="draft-todo-yourname-protocol-latest" name="ietf.draft">
+<meta content="RTP" name="keyword">
+<meta content="RTCP" name="keyword">
+<meta content="Header Extension" name="keyword">
+<meta content="Video" name="keyword">
+<meta content="LTR" name="keyword">
+<meta content="draft-sprang-avtcore-frame-acknowledgement-latest" name="ietf.draft">
 <!-- Generator version information:
   xml2rfc 3.28.0
     Python 3.12.9
@@ -29,7 +32,7 @@
     setuptools 70.3.0
     wcwidth 0.2.13
 -->
-<link href="draft-todo-yourname-protocol.xml" rel="alternate" type="application/rfc+xml">
+<link href="draft-sprang-avtcore-frame-acknowledgement.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
 <style type="text/css">@font-face {
   font-family: 'Lora';
@@ -1045,12 +1048,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <table class="ears">
 <thead><tr>
 <td class="left">Internet-Draft</td>
-<td class="center">TODO - Abbreviation</td>
+<td class="center">Video Frame Acknowledgement</td>
 <td class="right">March 2025</td>
 </tr></thead>
 <tfoot><tr>
-<td class="left">Here</td>
-<td class="center">Expires 14 September 2025</td>
+<td class="left">Språng</td>
+<td class="center">Expires 18 September 2025</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1058,30 +1061,31 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <div id="internal-metadata" class="document-information">
 <dl id="identifiers">
 <dt class="label-workgroup">Workgroup:</dt>
-<dd class="workgroup">WG Working Group</dd>
+<dd class="workgroup">avtcore WG</dd>
 <dt class="label-internet-draft">Internet-Draft:</dt>
-<dd class="internet-draft">draft-todo-yourname-protocol-latest</dd>
+<dd class="internet-draft">draft-sprang-avtcore-frame-acknowledgement-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-03-13" class="published">13 March 2025</time>
+<time datetime="2025-03-17" class="published">17 March 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2025-09-14">14 September 2025</time></dd>
+<dd class="expires"><time datetime="2025-09-18">18 September 2025</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
-      <div class="author-name">Y. N. Here</div>
-<div class="org">Your Organization Here</div>
+      <div class="author-name">E. Språng</div>
+<div class="org">Google</div>
 </div>
 </dd>
 </dl>
 </div>
-<h1 id="title">TODO - Your title</h1>
+<h1 id="title">RTCP Feedback Message and Request Mechanism for Frame-level Acknowledgement</h1>
 <section id="section-abstract">
       <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
-<p id="section-abstract-1">TODO Abstract<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-1">This document describes a mechanism for signaling which video frames have been received and decoded by a remote peer. It comprises an RTCP feedback message and an RTP header extension used to request said feedback.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+<p id="section-abstract-2">One of the main use cases for this data is to implement various forms of Long Term Reference (LTR) reference structures.<a href="#section-abstract-2" class="pilcrow">¶</a></p>
 </section>
 <section class="note rfcEditorRemove" id="section-note.1">
       <h2 id="name-about-this-document">
@@ -1089,14 +1093,15 @@ svg :is([fill="white"], [fill^="#fff"]) {
       </h2>
 <p id="section-note.1-1">This note is to be removed before publishing as an RFC.<a href="#section-note.1-1" class="pilcrow">¶</a></p>
 <p id="section-note.1-2">
-        The latest revision of this draft can be found at <span><a href="https://example.com/LATEST">https://example.com/LATEST</a></span>.
-        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-todo-yourname-protocol/">https://datatracker.ietf.org/doc/draft-todo-yourname-protocol/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
+        The latest revision of this draft can be found at <span><a href="https://github.com/sprangerik/frame-acknowledgement/blob/main/draft-ietf-avtcore-frame-acknowledgement.md">https://github.com/sprangerik/frame-acknowledgement/blob/main/draft-ietf-avtcore-frame-acknowledgement.md</a></span>.
+        Status information for this document may be found at <span><a href="https://datatracker.ietf.org/doc/draft-sprang-avtcore-frame-acknowledgement/">https://datatracker.ietf.org/doc/draft-sprang-avtcore-frame-acknowledgement/</a></span>.<a href="#section-note.1-2" class="pilcrow">¶</a></p>
 <p id="section-note.1-3">
         Discussion of this document takes place on the
-        WG Working Group mailing list (<span><a href="mailto:WG@example.com">mailto:WG@example.com</a></span>),
-        which is archived at <span><a href="https://example.com/WG">https://example.com/WG</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
+        avtcore WG Working Group mailing list (<span><a href="mailto:avt@ietf.org">mailto:avt@ietf.org</a></span>),
+        which is archived at <span><a href="https://datatracker.ietf.org/wg/avtcore">https://datatracker.ietf.org/wg/avtcore</a></span>.
+        Subscribe at <span><a href="https://www.ietf.org/mailman/listinfo/avt/">https://www.ietf.org/mailman/listinfo/avt/</a></span>.<a href="#section-note.1-3" class="pilcrow">¶</a></p>
 <p id="section-note.1-4">Source for this draft and an issue tracker can be found at
-        <span><a href="https://github.com/USER/REPO">https://github.com/USER/REPO</a></span>.<a href="#section-note.1-4" class="pilcrow">¶</a></p>
+        <span><a href="https://github.com/sprangerik/frame-acknowledgement">https://github.com/sprangerik/frame-acknowledgement</a></span>.<a href="#section-note.1-4" class="pilcrow">¶</a></p>
 </section>
 <div id="status-of-memo">
 <section id="section-boilerplate.1">
@@ -1117,7 +1122,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 14 September 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 18 September 2025.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1153,19 +1158,60 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.2.1" class="keepWithNext"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-conventions-and-definitions" class="internal xref">Conventions and Definitions</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
-            <p id="section-toc.1-1.3.1" class="keepWithNext"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+            <p id="section-toc.1-1.3.1" class="keepWithNext"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-applicability" class="internal xref">Applicability</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
-            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-existing-feedback-formats" class="internal xref">Existing Feedback Formats</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
-            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-requirements" class="internal xref">Requirements</a></p>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
-            <p id="section-toc.1-1.6.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-frame-acknowledgment" class="internal xref">Frame Acknowledgment</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.1">
+                <p id="section-toc.1-1.6.2.1.1"><a href="#section-6.1" class="auto internal xref">6.1</a>.  <a href="#name-frame-identifier-selection" class="internal xref">Frame identifier selection</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2">
+                <p id="section-toc.1-1.6.2.2.1"><a href="#section-6.2" class="auto internal xref">6.2</a>.  <a href="#name-frame-acknowledgment-reques" class="internal xref">Frame Acknowledgment Request</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.2.2.1">
+                    <p id="section-toc.1-1.6.2.2.2.1.1"><a href="#section-6.2.1" class="auto internal xref">6.2.1</a>.  <a href="#name-data-layout-overview" class="internal xref">Data layout overview</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3">
+                <p id="section-toc.1-1.6.2.3.1"><a href="#section-6.3" class="auto internal xref">6.3</a>.  <a href="#name-frame-acknowledgment-2" class="internal xref">Frame Acknowledgment</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3.2.1">
+                    <p id="section-toc.1-1.6.2.3.2.1.1"><a href="#section-6.3.1" class="auto internal xref">6.3.1</a>.  <a href="#name-data-layout-overview-2" class="internal xref">Data layout overview</a></p>
+</li>
+                </ul>
+</li>
+            </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
-            <p id="section-toc.1-1.7.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#section-9" class="auto internal xref">9</a>.  <a href="#name-references" class="internal xref">References</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.1">
+                <p id="section-toc.1-1.9.2.1.1"><a href="#section-9.1" class="auto internal xref">9.1</a>.  <a href="#name-normative-references" class="internal xref">Normative References</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9.2.2">
+                <p id="section-toc.1-1.9.2.2.1"><a href="#section-9.2" class="auto internal xref">9.2</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.11">
+            <p id="section-toc.1-1.11.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
 </li>
         </ul>
 </nav>
@@ -1176,7 +1222,11 @@ svg :is([fill="white"], [fill^="#fff"]) {
       <h2 id="name-introduction">
 <a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
       </h2>
-<p id="section-1-1">TODO Introduction<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-1">The most common way for realtime video to be transmitted is to encode a pretty much fixed scalability structure, such as those in the W3C <span>[<a href="#SVC" class="cite xref">SVC</a>]</span> Scalability mode list.<a href="#section-1-1" class="pilcrow">¶</a></p>
+<p id="section-1-2">In such a scenario, the video encoder produces frames "blindly" without real knowledge of what state the remote receiver is in. Using recovery mechanisms such as retransmission, forward error correction and fast-forwarding past skippable frames the receiver is assumed to be able to decode the video. In some cases those methods may not be enough, requiring keyframe requests to be sent as a last resort.<a href="#section-1-2" class="pilcrow">¶</a></p>
+<p id="section-1-3">On the other hand, if the encoder is able to reason about which frames have been received and decoded it can be more proactive. One way is to store frames that are known to be received so that they can be later used as guaranteed good references in the case of e.g. large loss events, avoiding the need for potentially large retransmissions etc. Collectively this is often referred to as "Long Term Reference" structures or LTR for short, although the exact structure may vary.<a href="#section-1-3" class="pilcrow">¶</a></p>
+<p id="section-1-4">In order to achieve this the sender must be able to reason about the state of the receiver, necessitating the need for feedback signals. In this document a new RTCP message called "Frame Acknowledgement" is introduced as a codec agnostic feedback message for this purpose. Further, an RTP header extension is introduced that allows the sender to actively request feedback on decoding of the associated frame. This allows the sender to both request quick feedback on frames that are important for latency, and enables resilience against loss of feedback packets.<a href="#section-1-4" class="pilcrow">¶</a></p>
+<p id="section-1-5">Note that it is allowed to report a frame as decoded even if the decode process is not complete - as long as the receiver guarantees that it will attempt to decode the frame. The rationale for this is that we want to reduce the feedback delay as much as possible. Should the decoding of a frame that has been acknowledged fail, then the receiver <span class="bcp14">MUST</span> request a keyframe to recover, even if the failed decoding belongs to a droppable layer.<a href="#section-1-5" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="conventions-and-definitions">
@@ -1190,45 +1240,298 @@ described in BCP 14 <span>[<a href="#RFC2119" class="cite xref">RFC2119</a>]</s
 appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="security-considerations">
+<div id="applicability">
 <section id="section-3">
-      <h2 id="name-security-considerations">
-<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      <h2 id="name-applicability">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-applicability" class="section-name selfRef">Applicability</a>
       </h2>
-<p id="section-3-1">TODO Security<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-1">Frame Acknowledgement can be used for video streams in most topologies. It is also designed to be codec agnostic.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">In terms of <span>[<a href="#RFC7667" class="cite xref">RFC7667</a>]</span>, Point-to-Point is the most straightforward target as it is easiest to reason about a single receiver. A Media Translator or other systems that include a decoder are similarly easy - from the perspective of the sender the middle box is the receiver.<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">If a Transport Translator is used for Point-to-Multi-Point, then the middlebox must make sure to make valid translations - e.g. by acknowledging a frame only if all recipients of that stream have acknowledged said frame.<a href="#section-3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="existing-feedback-formats">
+<section id="section-4">
+      <h2 id="name-existing-feedback-formats">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-existing-feedback-formats" class="section-name selfRef">Existing Feedback Formats</a>
+      </h2>
+<p id="section-4-1">This section provides an overview, for informational purposes, of some existing feedback formats that could be seen as alternatives.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-4-2">NACK, defined in <span>[<a href="#RFC4585" class="cite xref">RFC4585</a>]</span>, provides only requests for packets the receiver is interested in having retransmitted. Absence of feedback is a poor signal for acknowledgement, especially since said feedback can be lost.<a href="#section-4-2" class="pilcrow">¶</a></p>
+<p id="section-4-3"><span>[<a href="#RFC8888" class="cite xref">RFC8888</a>]</span> and <span>[<a href="#TWCC" class="cite xref">TWCC</a>]</span> provide per-packet acknowledgement and so are more useful. A mapping from packet(s) to frame needs to happen but that is not a big problem. However, even if a frame is confirmed to be received there is no guarantee that it gets decoded.<a href="#section-4-3" class="pilcrow">¶</a></p>
+<p id="section-4-4">Reference Picture Selection Indication (RPSI) is another existing message, but it puts the logic of requesting a particular reference frame in the receiver - significantly complicating the system especially in Point-to-Multi-Point systems. It is further codec specific, and several modern codecs lack a specification - including AV1 and H.266.<a href="#section-4-4" class="pilcrow">¶</a></p>
+<p id="section-4-5">Loss Notification <span>[<a href="#LNTF" class="cite xref">LNTF</a>]</span> was a proposed RTCP message intended to solve most of these problems, but it lacks resilience against loss of feedback and also cannot handle out-of-order acknowledgements. The latter makes for instance single-SSRC simulcast structures (e.g. SxTx modes in <span>[<a href="#SVC" class="cite xref">SVC</a>]</span>) impossible.<a href="#section-4-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="requirements">
+<section id="section-5">
+      <h2 id="name-requirements">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-requirements" class="section-name selfRef">Requirements</a>
+      </h2>
+<p id="section-5-1">The messages in this proposal are intended to fulfill the following requirements:<a href="#section-5-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-5-2">
+<li id="section-5-2.1">
+          <p id="section-5-2.1.1">Codec agnostic
+  The protocol should be general enough to work across all current and future codecs.<a href="#section-5-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-5-2.2">
+          <p id="section-5-2.2.1">Payload Invariant
+  The protocol should not depend on data within the encoded bitstream payload. That includes codec specific frame identifiers, feedback requests and feedback messages.<a href="#section-5-2.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-5-2.3">
+          <p id="section-5-2.3.1">Uses Frame Identifiers
+  Explicit marking of frames, rather than using an indirection via packets.<a href="#section-5-2.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-5-2.4">
+          <p id="section-5-2.4.1">Order Invariant
+  The format should not make assumptions about the required decode order of frames.<a href="#section-5-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-5-2.5">
+          <p id="section-5-2.5.1">Send-side Controlled
+  The sender explicitly indicates when and for which frames feedback should be sent.<a href="#section-5-2.5.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-5-2.6">
+          <p id="section-5-2.6.1">Loss Resilient
+  The sender should be able to detect and recover from lost feedback messages.<a href="#section-5-2.6.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-5-2.7">
+          <p id="section-5-2.7.1">Low Delay
+  The latency should be small, with the sender being able to tune delay vs rate tradeoff.<a href="#section-5-2.7.1" class="pilcrow">¶</a></p>
+</li>
+        <li id="section-5-2.8">
+          <p id="section-5-2.8.1">Low Overhead
+  The network overhead in terms of both packet rate and bitrate should be minimized.<a href="#section-5-2.8.1" class="pilcrow">¶</a></p>
+</li>
+      </ol>
+</section>
+</div>
+<div id="frame-acknowledgment">
+<section id="section-6">
+      <h2 id="name-frame-acknowledgment">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-frame-acknowledgment" class="section-name selfRef">Frame Acknowledgment</a>
+      </h2>
+<div id="frame-identifier-selection">
+<section id="section-6.1">
+        <h3 id="name-frame-identifier-selection">
+<a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-frame-identifier-selection" class="section-name selfRef">Frame identifier selection</a>
+        </h3>
+<p id="section-6.1-1">In order to request and receive information about decoded frames, we must be able to identify them. Rather than adding new metadata for this purpose alone, we do that by picking the first available option from a list of available sources:<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<ol start="1" type="1" class="normal type-1" id="section-6.1-2">
+<li id="section-6.1-2.1">
+            <p id="section-6.1-2.1.1">The frame_number from a Dependency Descriptor header extension <span>[<a href="#DD" class="cite xref">DD</a>]</span><a href="#section-6.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+        </ol>
+<p id="section-6.1-3">Note: In this draft version, only a single source is allowed. Future versions may add other alternatives. Cases can be made for anything from a new dedicated identification system (similar to <span>[<a href="#VFTI" class="cite xref">VFTI</a>]</span>) to mappings from codec specific payload data.<a href="#section-6.1-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="frame-acknowledgment-request">
+<section id="section-6.2">
+        <h3 id="name-frame-acknowledgment-reques">
+<a href="#section-6.2" class="section-number selfRef">6.2. </a><a href="#name-frame-acknowledgment-reques" class="section-name selfRef">Frame Acknowledgment Request</a>
+        </h3>
+<p id="section-6.2-1">A Frame Acknowledgement Request is an RTP header extension indicating the oldest frame ID the sender is interested in receiving feedback for.
+The request <span class="bcp14">MUST</span> be done on the media SSRC of video frames in question.
+The request implies a status request for all frames starting at the given frame ID, up to and including the frame contained in the RTP packet the header extension is attached to - even if that frame is not yet complete.
+If the extension is attached to a packet not containing a video frame, the feedback should be up to and including the immediately preceding frame ID.<a href="#section-6.2-1" class="pilcrow">¶</a></p>
+<p id="section-6.2-2">Note that the Frame ID is a 16 bit counter with rollover, so e.g. a request with Frame ID = 65535 attached to a packet containing Frame ID = 1 is a request for the three frames {65535, 0, 1}.<a href="#section-6.2-2" class="pilcrow">¶</a></p>
+<p id="section-6.2-3">If a new Frame Acknowledgement Request is sent with an incremented Frame ID, all status values prior to that Frame ID are considered as acknowledged and can be culled by the receiver. A sender <span class="bcp14">MUST NOT</span> request prior to either the last acknowledged Frame ID or start of the stream.<a href="#section-6.2-3" class="pilcrow">¶</a></p>
+<div id="data-layout-overview">
+<section id="section-6.2.1">
+          <h4 id="name-data-layout-overview">
+<a href="#section-6.2.1" class="section-number selfRef">6.2.1. </a><a href="#name-data-layout-overview" class="section-name selfRef">Data layout overview</a>
+          </h4>
+<div class="alignLeft art-text artwork" id="section-6.2.1-1">
+<pre>
+ 0                   1                   2
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  ID   | len=1 |           Frame ID            |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</pre><a href="#section-6.2.1-1" class="pilcrow">¶</a>
+</div>
+<div id="frame-id-16-bits">
+<section id="section-6.2.1.1">
+            <h5 id="name-frame-id-16-bits">
+<a href="#section-6.2.1.1" class="section-number selfRef">6.2.1.1. </a><a href="#name-frame-id-16-bits" class="section-name selfRef">Frame ID (16 bits)</a>
+            </h5>
+<p id="section-6.2.1.1-1">The earliest Frame ID that feedback is requested for.<a href="#section-6.2.1.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="frame-acknowledgment-1">
+<section id="section-6.3">
+        <h3 id="name-frame-acknowledgment-2">
+<a href="#section-6.3" class="section-number selfRef">6.3. </a><a href="#name-frame-acknowledgment-2" class="section-name selfRef">Frame Acknowledgment</a>
+        </h3>
+<div id="data-layout-overview-1">
+<section id="section-6.3.1">
+          <h4 id="name-data-layout-overview-2">
+<a href="#section-6.3.1" class="section-number selfRef">6.3.1. </a><a href="#name-data-layout-overview-2" class="section-name selfRef">Data layout overview</a>
+          </h4>
+<p id="section-6.3.1-1">Short feedback message (L = 0):
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |V=2|P| FMT=12  |   PT = 205    |          length               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                 SSRC of RTCP packet sender                    |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |        Start Frame ID         |L|   length    |  status + pad |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |  ...                                                          |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+<a href="#section-6.3.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.3.1-2">Long feedback message:
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |V=2|P| FMT=12  |   PT = 205    |          length               |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                 SSRC of RTCP packet sender                    |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |        Start Frame ID         |L|          length             |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                            status + pad . . .                 |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+<a href="#section-6.3.1-2" class="pilcrow">¶</a></p>
+<div id="start-frame-id-16-bits">
+<section id="section-6.3.1.1">
+            <h5 id="name-start-frame-id-16-bits">
+<a href="#section-6.3.1.1" class="section-number selfRef">6.3.1.1. </a><a href="#name-start-frame-id-16-bits" class="section-name selfRef">Start Frame ID (16 bits)</a>
+            </h5>
+<p id="section-6.3.1.1-1">The first Frame ID in this feedback.<a href="#section-6.3.1.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="l-1-bit">
+<section id="section-6.3.1.2">
+            <h5 id="name-l-1-bit">
+<a href="#section-6.3.1.2" class="section-number selfRef">6.3.1.2. </a><a href="#name-l-1-bit" class="section-name selfRef">L (1 bit)</a>
+            </h5>
+<p id="section-6.3.1.2-1">If the number frames in the feedback vector is &lt; 128, then L = 0.
+Otherwise L = 1.<a href="#section-6.3.1.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="length-7-bits-or-15-bits">
+<section id="section-6.3.1.3">
+            <h5 id="name-length-7-bits-or-15-bits">
+<a href="#section-6.3.1.3" class="section-number selfRef">6.3.1.3. </a><a href="#name-length-7-bits-or-15-bits" class="section-name selfRef">length (7 bits or 15 bits)</a>
+            </h5>
+<p id="section-6.3.1.3-1">An unsigned integer denoting how many consecutive frames this message contains feedback for. The last Frame ID is thus Frame ID + length - 1.<a href="#section-6.3.1.3-1" class="pilcrow">¶</a></p>
+<p id="section-6.3.1.3-2">If L = 0, length is 7 bits, otherwise length is 15 bits.<a href="#section-6.3.1.3-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="status-n-bit">
+<section id="section-6.3.1.4">
+            <h5 id="name-status-n-bit">
+<a href="#section-6.3.1.4" class="section-number selfRef">6.3.1.4. </a><a href="#name-status-n-bit" class="section-name selfRef">status (N bit)</a>
+            </h5>
+<p id="section-6.3.1.4-1">A bit vector of the length specified in the length field above. For each bit position, the Frame ID is incremented by one.<a href="#section-6.3.1.4-1" class="pilcrow">¶</a></p>
+<p id="section-6.3.1.4-2">A value of 0 indicates the frame has not been received and decoded.
+A value of 1 indicates the frame has been received and decoded.<a href="#section-6.3.1.4-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-7">
+      <h2 id="name-security-considerations">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-7-1">The messages in this proposal may expose a small amount of data, namely the number of frames that have been sent, and potentially in an indirect way which frames the sender sees as important for recovery.<a href="#section-7-1" class="pilcrow">¶</a></p>
+<p id="section-7-2">This data should however not pose any significant privacy or security risks.<a href="#section-7-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="iana-considerations">
-<section id="section-4">
+<section id="section-8">
       <h2 id="name-iana-considerations">
-<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
       </h2>
-<p id="section-4-1">This document has no IANA actions.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<p id="section-8-1">The RTP header extension needs to have a URI identifier assigned by IANA. See <span>[<a href="#IANAEXT" class="cite xref">IANAEXT</a>]</span>.<a href="#section-8-1" class="pilcrow">¶</a></p>
+<p id="section-8-2">The RTCP message uses PT = 205 (RTPFB, Generic RTP Feedback). As of writing, the next available FMT value is 12. A dedicated ID needs to be assigned by IANA. See <span>[<a href="#IANARTCP" class="cite xref">IANARTCP</a>]</span>.<a href="#section-8-2" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="sec-normative-references">
-<section id="section-5">
-      <h2 id="name-normative-references">
-<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+<div id="sec-combined-references">
+<section id="section-9">
+      <h2 id="name-references">
+<a href="#section-9" class="section-number selfRef">9. </a><a href="#name-references" class="section-name selfRef">References</a>
       </h2>
+<div id="sec-normative-references">
+<section id="section-9.1">
+        <h3 id="name-normative-references">
+<a href="#section-9.1" class="section-number selfRef">9.1. </a><a href="#name-normative-references" class="section-name selfRef">Normative References</a>
+        </h3>
 <dl class="references">
+<dt id="DD">[DD]</dt>
+        <dd>
+<span class="refAuthor">AOM</span>, <span class="refTitle">"Dependency Descriptor RTP Header Extension"</span>, <span>n.d.</span>, <span>&lt;<a href="https://aomediacodec.github.io/av1-rtp-spec/#dependency-descriptor-rtp-header-extension">https://aomediacodec.github.io/av1-rtp-spec/#dependency-descriptor-rtp-header-extension</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="IANAEXT">[IANAEXT]</dt>
+        <dd>
+<span class="refAuthor">IANA</span>, <span class="refTitle">"RTP Compact Header Extensions"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.iana.org/assignments/rtp-parameters/rtp-parameters.xhtml#rtp-parameters-10">https://www.iana.org/assignments/rtp-parameters/rtp-parameters.xhtml#rtp-parameters-10</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="IANARTCP">[IANARTCP]</dt>
+        <dd>
+<span class="refAuthor">IANA</span>, <span class="refTitle">"FMT Values for RTPFB Payload Types"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.iana.org/assignments/rtp-parameters/rtp-parameters.xhtml#rtp-parameters-4">https://www.iana.org/assignments/rtp-parameters/rtp-parameters.xhtml#rtp-parameters-4</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC2119">[RFC2119]</dt>
-      <dd>
+        <dd>
 <span class="refAuthor">Bradner, S.</span>, <span class="refTitle">"Key words for use in RFCs to Indicate Requirement Levels"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 2119</span>, <span class="seriesInfo">DOI 10.17487/RFC2119</span>, <time datetime="1997-03" class="refDate">March 1997</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc2119">https://www.rfc-editor.org/rfc/rfc2119</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC8174">[RFC8174]</dt>
-    <dd>
+      <dd>
 <span class="refAuthor">Leiba, B.</span>, <span class="refTitle">"Ambiguity of Uppercase vs Lowercase in RFC 2119 Key Words"</span>, <span class="seriesInfo">BCP 14</span>, <span class="seriesInfo">RFC 8174</span>, <span class="seriesInfo">DOI 10.17487/RFC8174</span>, <time datetime="2017-05" class="refDate">May 2017</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8174">https://www.rfc-editor.org/rfc/rfc8174</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 </dl>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-9.2">
+        <h3 id="name-informative-references">
+<a href="#section-9.2" class="section-number selfRef">9.2. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+        </h3>
+<dl class="references">
+<dt id="LNTF">[LNTF]</dt>
+        <dd>
+<span class="refTitle">"RTCP feedback Message for Loss Notification"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.ietf.org/archive/id/draft-majali-avtcore-lntf-feedback-message-00.html">https://www.ietf.org/archive/id/draft-majali-avtcore-lntf-feedback-message-00.html</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4585">[RFC4585]</dt>
+        <dd>
+<span class="refAuthor">Ott, J.</span>, <span class="refAuthor">Wenger, S.</span>, <span class="refAuthor">Sato, N.</span>, <span class="refAuthor">Burmeister, C.</span>, and <span class="refAuthor">J. Rey</span>, <span class="refTitle">"Extended RTP Profile for Real-time Transport Control Protocol (RTCP)-Based Feedback (RTP/AVPF)"</span>, <span class="seriesInfo">RFC 4585</span>, <span class="seriesInfo">DOI 10.17487/RFC4585</span>, <time datetime="2006-07" class="refDate">July 2006</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4585">https://www.rfc-editor.org/rfc/rfc4585</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC7667">[RFC7667]</dt>
+        <dd>
+<span class="refAuthor">Westerlund, M.</span> and <span class="refAuthor">S. Wenger</span>, <span class="refTitle">"RTP Topologies"</span>, <span class="seriesInfo">RFC 7667</span>, <span class="seriesInfo">DOI 10.17487/RFC7667</span>, <time datetime="2015-11" class="refDate">November 2015</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc7667">https://www.rfc-editor.org/rfc/rfc7667</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC8888">[RFC8888]</dt>
+        <dd>
+<span class="refAuthor">Sarker, Z.</span>, <span class="refAuthor">Perkins, C.</span>, <span class="refAuthor">Singh, V.</span>, and <span class="refAuthor">M. Ramalho</span>, <span class="refTitle">"RTP Control Protocol (RTCP) Feedback for Congestion Control"</span>, <span class="seriesInfo">RFC 8888</span>, <span class="seriesInfo">DOI 10.17487/RFC8888</span>, <time datetime="2021-01" class="refDate">January 2021</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc8888">https://www.rfc-editor.org/rfc/rfc8888</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="SVC">[SVC]</dt>
+        <dd>
+<span class="refAuthor">W3C</span>, <span class="refTitle">"Scalable Video Coding (SVC) Extension for WebRTC"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.w3.org/TR/webrtc-svc">https://www.w3.org/TR/webrtc-svc</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="TWCC">[TWCC]</dt>
+        <dd>
+<span class="refTitle">"RTP Extensions for Transport-wide Congestion Control"</span>, <span>n.d.</span>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-holmer-rmcat-transport-wide-cc-extensions-01">https://datatracker.ietf.org/doc/html/draft-holmer-rmcat-transport-wide-cc-extensions-01</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="VFTI">[VFTI]</dt>
+      <dd>
+<span class="refTitle">"Video Frame Tracking Id"</span>, <span>n.d.</span>, <span>&lt;<a href="http://www.webrtc.org/experiments/rtp-hdrext/video-frame-tracking-id">http://www.webrtc.org/experiments/rtp-hdrext/video-frame-tracking-id</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
 </section>
 </div>
 <div id="acknowledgments">
 <section id="appendix-A">
       <h2 id="name-acknowledgments">
 <a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
-      </h2>
-<p id="appendix-A-1">TODO acknowledge.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+    </h2>
 </section>
 </div>
 <div id="authors-addresses">
@@ -1237,11 +1540,11 @@ appear in all capitals, as shown here.<a href="#section-2-1" class="pilcrow">¶<
 <a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
       </h2>
 <address class="vcard">
-        <div dir="auto" class="left"><span class="fn nameRole">Your Name Here</span></div>
-<div dir="auto" class="left"><span class="org">Your Organization Here</span></div>
+        <div dir="auto" class="left"><span class="fn nameRole">Erik Språng</span></div>
+<div dir="auto" class="left"><span class="org">Google</span></div>
 <div class="email">
 <span>Email:</span>
-<a href="mailto:your.email@example.com" class="email">your.email@example.com</a>
+<a href="mailto:sprang@google.com" class="email">sprang@google.com</a>
 </div>
 </address>
 </section>
