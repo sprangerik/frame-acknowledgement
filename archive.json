@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-03-18T01:11:15.515373+00:00",
+  "timestamp": "2025-03-20T01:10:28.376951+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -49,6 +49,23 @@
       "color": "ffffff"
     }
   ],
-  "issues": [],
+  "issues": [
+    {
+      "number": 1,
+      "id": "I_kwDOOIDm-M6uhBeo",
+      "title": "Some opens about the avtcore-frame-acknowledgement draft proposal",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/1",
+      "state": "OPEN",
+      "author": "taste1981",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Hi,\n\nI read the avtcore-frame-acknowledgement document, and I have a few questions:\n\n1.\tIf the request for a frame is sent, and receiver has already decoded corresponding frame, but subsequent decoding error happens and receiver decides to flush the decode picture buffers(DPB) before it acks the request. Should receiver still send the ACK?\n\n2.\tFor uniquely identifying a frame, should we always rely on existence of DD for this? Or we should rely on some more generic frame markers? Or this can be from application\n\n3.\tAny consideration why we do not use timestamp instead?\n\n4.\tIn the context of SFU/MCU, where you have 1 sender and multiple receivers, how would you expect those feedbacks to be routed and handled by sender?\n\nRegards\nJohnny\n",
+      "createdAt": "2025-03-18T10:04:58Z",
+      "updatedAt": "2025-03-18T10:04:58Z",
+      "closedAt": null,
+      "comments": []
+    }
+  ],
   "pulls": []
 }
