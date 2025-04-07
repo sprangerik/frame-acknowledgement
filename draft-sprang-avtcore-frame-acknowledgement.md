@@ -43,7 +43,7 @@ venue:
   mail: avt@ietf.org
   arch: https://datatracker.ietf.org/wg/avtcore
   github: sprangerik/frame-acknowledgement
-  latest: https://github.com/sprangerik/frame-acknowledgement/blob/main/draft-ietf-avtcore-frame-acknowledgement.md
+  latest: https://github.com/sprangerik/frame-acknowledgement/blob/main/draft-sprang-avtcore-frame-acknowledgement.md
 
 author:
  -
