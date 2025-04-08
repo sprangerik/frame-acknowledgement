@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-06T01:16:49.198764+00:00",
+  "timestamp": "2025-04-08T01:12:48.879312+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -62,7 +62,79 @@
       "labels": [],
       "body": "Hi,\n\nI read the avtcore-frame-acknowledgement document, and I have a few questions:\n\n1.\tIf the request for a frame is sent, and receiver has already decoded corresponding frame, but subsequent decoding error happens and receiver decides to flush the decode picture buffers(DPB) before it acks the request. Should receiver still send the ACK?\n\n2.\tFor uniquely identifying a frame, should we always rely on existence of DD for this? Or we should rely on some more generic frame markers? Or this can be from application\n\n3.\tAny consideration why we do not use timestamp instead?\n\n4.\tIn the context of SFU/MCU, where you have 1 sender and multiple receivers, how would you expect those feedbacks to be routed and handled by sender?\n\nRegards\nJohnny\n",
       "createdAt": "2025-03-18T10:04:58Z",
-      "updatedAt": "2025-03-18T10:04:58Z",
+      "updatedAt": "2025-04-07T15:04:27Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "1. I think it should respond, though in practice it won't really matter. If a receiver has a failure of that type, it will need to send a keyframe request to recover anyway.\n2.  The idea is that we have a prioritized list of identification methods, and we pick the first available one. DD is relatively straightforward so I added that as a startpoint. I'll open a separate issue on this topic, because I'm starting to doubt it's the right choice.\n3. Timestamps alone are not enough, it would need to be at least timestamp + spatial index (which might not be easily available). With the timestamp scale being 90kHz we'd also need a rather large data type to avoid potential wraparound issues.\n4. For and SFU/SFM I don't really see an option other than to ack only those frames acked by _all_ receivers for which that frame has been forwarded. For an MCU however, the uplink can be considered a separate point-to-point connection and then it's kind up to the encode/send part of the server to be designed in a way that makes sense for its application. The receivers will just blindly ack anything they decode.",
+          "createdAt": "2025-04-07T15:04:26Z",
+          "updatedAt": "2025-04-07T15:04:26Z"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "id": "I_kwDOOIDm-M6xdT2w",
+      "title": "Add a better definition of what a \"frame\" is",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/2",
+      "state": "OPEN",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The current draft says that what is being acknowledged is that \"video frames have been received and decoded\", but we should probably be more precise what we mean with a frame.\n\nFor the context of this message, what we are interested in is that the sender can reason about the codec state. A potential phrasing could be the we acknowledge:\n\n> ...any decodable unit of bitstream data that results in the update of codec state (e.g. reference buffers, entropy tables, etc) that can be used as a reference for any subsequent decodable unit of bitstream data.\n\nWhen using SVC with inter-layer dependencies (i.e. references between e.g. spatial or quality layers), then each layer would constitute a separate frame. That seems relatively straightforward.\n\nHowever, several codecs support _segmentation_ where a frame is split into several independent segments in order to better utilize pipelining or parallelism. If such a segment supports referencing state updates from a different segment within the same frame - then in this case each segment could in fact be acked independently. This would complicate the frame id mechanism as well.\n\n",
+      "createdAt": "2025-04-07T15:31:42Z",
+      "updatedAt": "2025-04-07T15:31:42Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 3,
+      "id": "I_kwDOOIDm-M6xdWlh",
+      "title": "Consider supporting acknowledgement of received but not decoded frames",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/3",
+      "state": "OPEN",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The current text talks only about acking frames that have been received with a guarantee that the receiver will _attempt_ to decode it.\n\nA natural question is if there is value in also acknowledging that a frames has been received - but might _not_ be used for decoding (e.g. non-base layer temporal frames).\n\nSince this message is primarily designed to allow a sender to reason about the decoder state, this doesn't at first glance seem that useful. But it would be good to know if someone has a valid use, or else just document why this is _not_ included.",
+      "createdAt": "2025-04-07T15:35:10Z",
+      "updatedAt": "2025-04-07T15:35:10Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 4,
+      "id": "I_kwDOOIDm-M6xdeQg",
+      "title": "Consider adding explicit frame id to the Frame Acknowledgement Request header",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/4",
+      "state": "OPEN",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The current text does not specify how a frame should be identified - instead there is a prioritized list of alternatives for identifying frames, and the first available one on the list should be used. There are some pros and cons to this:\n\nPros\n* Avoids redundant frame id if it's already part of the transmission\n* Makes the request header itself very simple\n\nCons\n* Risk that the mechanism is fragile (e.g. if sender/receiver has different views of which id is in fact being used). Though this could be mitigated with an additional SDP attribute.\n* Some id mechanism requires tuples (e.g. timestamp + spatial layer, or even subindexing into segments).\n* Some mechanism have data in the payload, which might not be available to an SFU/SFM.\n* Some mechanism have large gaps between frames (e.g. using 90kHz clock timestamps), necessitating larger than desired sizes of the id fields in order to avoid wraparound issues.\n* A sender might only be interested in a small subset of frames, an generic id mechanisms will typically identify all frames - requiring status to be transmitted for \"uninteresting\" frames as well, in case a span of more than one frame is being inquired about.\n\nTo avoid the quite large list of cons, it might be desirable to explicitly identify the frames as part of the Frame Acknowledgement Request header extension instead. It should solve all of the cons with a relatively low overhead of extra data and slightly more complex parsing of the header.",
+      "createdAt": "2025-04-07T15:47:00Z",
+      "updatedAt": "2025-04-07T15:47:00Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 5,
+      "id": "I_kwDOOIDm-M6xdhyQ",
+      "title": "Consider add a \"to\" field in the request header",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/5",
+      "state": "OPEN",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The current text specified that the Frame Acknowledgement Request has the property that it \"...implies a status request for all frames starting at the given frame ID, up to and including the frame contained in the RTP packet the header extension is attached to...\".\n\nThe sender might in fact not be interested in all those frames - it might just be attempting to request a retransmit of the status for a single frame. For such use cases it would be useful with both a \"start\" and a \"end\" frame id, or potentially some type of flag that identified the id as both start and end if it's a single id.\n\nThis might complicate and enlarge the header extension, but also makes it more clear since there is no longer any ambiguity in what the end should be (if the packet it is attached to is not a frame).",
+      "createdAt": "2025-04-07T15:51:57Z",
+      "updatedAt": "2025-04-07T15:51:57Z",
       "closedAt": null,
       "comments": []
     }
