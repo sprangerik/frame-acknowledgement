@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-13T02:40:41.567365+00:00",
+  "timestamp": "2025-04-15T01:15:16.496056+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -102,9 +102,17 @@
       "labels": [],
       "body": "The current text talks only about acking frames that have been received with a guarantee that the receiver will _attempt_ to decode it.\n\nA natural question is if there is value in also acknowledging that a frames has been received - but might _not_ be used for decoding (e.g. non-base layer temporal frames).\n\nSince this message is primarily designed to allow a sender to reason about the decoder state, this doesn't at first glance seem that useful. But it would be good to know if someone has a valid use, or else just document why this is _not_ included.",
       "createdAt": "2025-04-07T15:35:10Z",
-      "updatedAt": "2025-04-07T15:35:10Z",
+      "updatedAt": "2025-04-14T06:23:10Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "shrim27",
+          "authorAssociation": "NONE",
+          "body": "Can we consider extending status field to indicate \n0 = Not received (may be split partially received, fully lost frame)\n1 = Received, not decoded (completely assembled and submitted to decode)\n2 = decoded \n3 = decode error\nIn case of decode error, PLI request would be sent but sender does not understand why PLI was issued. Decode error info is useful for sender to help adapt for certain clients/decoder.\nI feel more info sender has it can act better.",
+          "createdAt": "2025-04-14T06:23:09Z",
+          "updatedAt": "2025-04-14T06:23:09Z"
+        }
+      ]
     },
     {
       "number": 4,
@@ -118,9 +126,17 @@
       "labels": [],
       "body": "The current text does not specify how a frame should be identified - instead there is a prioritized list of alternatives for identifying frames, and the first available one on the list should be used. There are some pros and cons to this:\n\nPros\n* Avoids redundant frame id if it's already part of the transmission\n* Makes the request header itself very simple\n\nCons\n* Risk that the mechanism is fragile (e.g. if sender/receiver has different views of which id is in fact being used). Though this could be mitigated with an additional SDP attribute.\n* Some id mechanism requires tuples (e.g. timestamp + spatial layer, or even subindexing into segments).\n* Some mechanism have data in the payload, which might not be available to an SFU/SFM.\n* Some mechanism have large gaps between frames (e.g. using 90kHz clock timestamps), necessitating larger than desired sizes of the id fields in order to avoid wraparound issues.\n* A sender might only be interested in a small subset of frames, an generic id mechanisms will typically identify all frames - requiring status to be transmitted for \"uninteresting\" frames as well, in case a span of more than one frame is being inquired about.\n\nTo avoid the quite large list of cons, it might be desirable to explicitly identify the frames as part of the Frame Acknowledgement Request header extension instead. It should solve all of the cons with a relatively low overhead of extra data and slightly more complex parsing of the header.",
       "createdAt": "2025-04-07T15:47:00Z",
-      "updatedAt": "2025-04-07T15:47:00Z",
+      "updatedAt": "2025-04-14T10:33:10Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "alfredh",
+          "authorAssociation": "NONE",
+          "body": "Another way to encode it could be to include number of frames to report in the header,\nfor example: uint8_t count\n\nThe base frame id could be the one from DD header, and count could be number of frames before that.\n",
+          "createdAt": "2025-04-14T10:33:09Z",
+          "updatedAt": "2025-04-14T10:33:09Z"
+        }
+      ]
     },
     {
       "number": 5,
@@ -135,6 +151,70 @@
       "body": "The current text specified that the Frame Acknowledgement Request has the property that it \"...implies a status request for all frames starting at the given frame ID, up to and including the frame contained in the RTP packet the header extension is attached to...\".\n\nThe sender might in fact not be interested in all those frames - it might just be attempting to request a retransmit of the status for a single frame. For such use cases it would be useful with both a \"start\" and a \"end\" frame id, or potentially some type of flag that identified the id as both start and end if it's a single id.\n\nThis might complicate and enlarge the header extension, but also makes it more clear since there is no longer any ambiguity in what the end should be (if the packet it is attached to is not a frame).",
       "createdAt": "2025-04-07T15:51:57Z",
       "updatedAt": "2025-04-07T15:51:57Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 6,
+      "id": "I_kwDOOIDm-M6yVrJC",
+      "title": "SDP to negotiate RTP extension",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/6",
+      "state": "OPEN",
+      "author": "shrim27",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Should RFC include SDP syntax for defining SDP extension header ID. Probably RFC URL can be used to define extension type.",
+      "createdAt": "2025-04-14T06:30:30Z",
+      "updatedAt": "2025-04-14T06:30:30Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 7,
+      "id": "I_kwDOOIDm-M6yVs1C",
+      "title": "Frame acknowledgment request on recovered packets",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/7",
+      "state": "OPEN",
+      "author": "shrim27",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Does the draft need to explain how acknowledgment request on recovered packet be addressed. Ex: Nack or FEC recovered packet might have frame acknowledgement request, does receiver need to handle them same way as original request or neglect them.\nI think considering them as original probably is better way, not sure you have any considerations.",
+      "createdAt": "2025-04-14T06:33:51Z",
+      "updatedAt": "2025-04-14T06:33:51Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 8,
+      "id": "I_kwDOOIDm-M6yVyPd",
+      "title": "Receiver triggered Frame acknowledgement",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/8",
+      "state": "OPEN",
+      "author": "shrim27",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Current format is using request-based approach, keeping receiver dumb as much as possible. There is a advantage in having receiver triggered feedback, sender request could be overhead which may not be necessary for certain applications. \nSDP format can be added to distinguish between different modes such that application developer can choose what fits best. \nFeedback mainly helps under packet loss, and providing configuration like trigger feedback if no fresh frame is submitted to decoder for 'x' timeout time and retrigger it every new frame received but cant be submitted to decode since packet loss has not resolved. These help receiver recover faster rather than wait for new feedback request from sender.",
+      "createdAt": "2025-04-14T06:45:26Z",
+      "updatedAt": "2025-04-14T06:45:26Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 9,
+      "id": "I_kwDOOIDm-M6yV14_",
+      "title": "Mechanism to decode LTR frame",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/9",
+      "state": "OPEN",
+      "author": "shrim27",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Not sure this is relevant for draft but in general how do you think frame assembly would work with frame encoded using LTR frame.\nAs per my understanding webrtc currently waits for packet loss to recover or IDR frame to arrive for unblocking frames received to start decoding.\nWith frame acknowledgment, no longer need to wait for IDR, do you think webrtc frame assembly need to change and what information is needed for it handle this new feature? I think DD extension has mechanisms defined which could be useful here. Checking if there is any thoughts on this.",
+      "createdAt": "2025-04-14T06:53:25Z",
+      "updatedAt": "2025-04-14T06:53:25Z",
       "closedAt": null,
       "comments": []
     }
