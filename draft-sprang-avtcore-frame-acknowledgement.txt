@@ -4,8 +4,8 @@
 
 avtcore WG                                                     E. Språng
 Internet-Draft                                                    Google
-Intended status: Informational                              7 April 2025
-Expires: 9 October 2025
+Intended status: Informational                             15 April 2025
+Expires: 17 October 2025
 
 
       RTCP Feedback Message and Request Mechanism for Frame-level
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 9 October 2025.
+   This Internet-Draft will expire on 17 October 2025.
 
 Copyright Notice
 
