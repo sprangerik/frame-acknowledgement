@@ -1,13 +1,6 @@
-# Internet-Draft Template Repository
+# RTP Frame Acknowledgement
 
-Use this repository as a template if you want to start working on
-[IETF](https://www.ietf.org/) documents. [Click here to create a new repository using the
-template](https://github.com/martinthomson/internet-draft-template/generate).
-Make sure to check "Include all branches", or you will need to enable GitHub Pages manually.
+This repro is intended to host the draft proposal and discussion around signaling for frame acknowledgement in RTP.
+A formatted doc can be found at https://sprangerik.github.io/frame-acknowledgement/draft-sprang-avtcore-frame-acknowledgement.html
 
-[Read the
-instructions](https://github.com/martinthomson/i-d-template/blob/main/doc/TEMPLATE.md)
-for more information.
-
-Once you have created your own repository, start work by
-[renaming the `draft-todo-yourname-protocol.md` file](../../edit/main/draft-todo-yourname-protocol.md).
+The code here represents the latest state, and will then at some points be published as new versions of https://datatracker.ietf.org/doc/draft-sprang-avtcore-frame-acknowledgement/
