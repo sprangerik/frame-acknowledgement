@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-15T01:15:16.496056+00:00",
+  "timestamp": "2025-04-17T01:13:52.201109+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -102,7 +102,7 @@
       "labels": [],
       "body": "The current text talks only about acking frames that have been received with a guarantee that the receiver will _attempt_ to decode it.\n\nA natural question is if there is value in also acknowledging that a frames has been received - but might _not_ be used for decoding (e.g. non-base layer temporal frames).\n\nSince this message is primarily designed to allow a sender to reason about the decoder state, this doesn't at first glance seem that useful. But it would be good to know if someone has a valid use, or else just document why this is _not_ included.",
       "createdAt": "2025-04-07T15:35:10Z",
-      "updatedAt": "2025-04-14T06:23:10Z",
+      "updatedAt": "2025-04-15T12:14:43Z",
       "closedAt": null,
       "comments": [
         {
@@ -111,6 +111,13 @@
           "body": "Can we consider extending status field to indicate \n0 = Not received (may be split partially received, fully lost frame)\n1 = Received, not decoded (completely assembled and submitted to decode)\n2 = decoded \n3 = decode error\nIn case of decode error, PLI request would be sent but sender does not understand why PLI was issued. Decode error info is useful for sender to help adapt for certain clients/decoder.\nI feel more info sender has it can act better.",
           "createdAt": "2025-04-14T06:23:09Z",
           "updatedAt": "2025-04-14T06:23:09Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "I'm not really against it, but I'm trying to build a mental model of how it would actually be used/implemented.\n\nDo we need to distinguish between decoder errors that are \"recoverable\" or not? E.g. consider the cases where:\n1. A decoder returns an error code because the bitstream data is malformed and decoding of that frame could be completed. No internal state is updated and the decoder is still \"alive\" in the same state as before the decode call was made.\n2. A (presumably HW) decoder suffers some form of failure (e.g. OOM) and the entire decoder context is torn down and deallocated.\n\nThe first could be recovered from with a feedback. The second would necessitate a full keyframe.",
+          "createdAt": "2025-04-15T12:14:42Z",
+          "updatedAt": "2025-04-15T12:14:42Z"
         }
       ]
     },
@@ -126,7 +133,7 @@
       "labels": [],
       "body": "The current text does not specify how a frame should be identified - instead there is a prioritized list of alternatives for identifying frames, and the first available one on the list should be used. There are some pros and cons to this:\n\nPros\n* Avoids redundant frame id if it's already part of the transmission\n* Makes the request header itself very simple\n\nCons\n* Risk that the mechanism is fragile (e.g. if sender/receiver has different views of which id is in fact being used). Though this could be mitigated with an additional SDP attribute.\n* Some id mechanism requires tuples (e.g. timestamp + spatial layer, or even subindexing into segments).\n* Some mechanism have data in the payload, which might not be available to an SFU/SFM.\n* Some mechanism have large gaps between frames (e.g. using 90kHz clock timestamps), necessitating larger than desired sizes of the id fields in order to avoid wraparound issues.\n* A sender might only be interested in a small subset of frames, an generic id mechanisms will typically identify all frames - requiring status to be transmitted for \"uninteresting\" frames as well, in case a span of more than one frame is being inquired about.\n\nTo avoid the quite large list of cons, it might be desirable to explicitly identify the frames as part of the Frame Acknowledgement Request header extension instead. It should solve all of the cons with a relatively low overhead of extra data and slightly more complex parsing of the header.",
       "createdAt": "2025-04-07T15:47:00Z",
-      "updatedAt": "2025-04-14T10:33:10Z",
+      "updatedAt": "2025-04-15T11:55:32Z",
       "closedAt": null,
       "comments": [
         {
@@ -135,6 +142,13 @@
           "body": "Another way to encode it could be to include number of frames to report in the header,\nfor example: uint8_t count\n\nThe base frame id could be the one from DD header, and count could be number of frames before that.\n",
           "createdAt": "2025-04-14T10:33:09Z",
           "updatedAt": "2025-04-14T10:33:09Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "I'm not sure I like the offset counter for the frame id itself, but a count would indeed feel nicer than the absolute \"to\" I mention in https://github.com/sprangerik/frame-acknowledgement/issues/5",
+          "createdAt": "2025-04-15T11:55:30Z",
+          "updatedAt": "2025-04-15T11:55:30Z"
         }
       ]
     },
@@ -166,9 +180,17 @@
       "labels": [],
       "body": "Should RFC include SDP syntax for defining SDP extension header ID. Probably RFC URL can be used to define extension type.",
       "createdAt": "2025-04-14T06:30:30Z",
-      "updatedAt": "2025-04-14T06:30:30Z",
+      "updatedAt": "2025-04-15T11:53:06Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "Yes, that's a good point. We should also add SDP considerations for the RTCP message.",
+          "createdAt": "2025-04-15T11:53:04Z",
+          "updatedAt": "2025-04-15T11:53:04Z"
+        }
+      ]
     },
     {
       "number": 7,
@@ -182,9 +204,17 @@
       "labels": [],
       "body": "Does the draft need to explain how acknowledgment request on recovered packet be addressed. Ex: Nack or FEC recovered packet might have frame acknowledgement request, does receiver need to handle them same way as original request or neglect them.\nI think considering them as original probably is better way, not sure you have any considerations.",
       "createdAt": "2025-04-14T06:33:51Z",
-      "updatedAt": "2025-04-14T06:33:51Z",
+      "updatedAt": "2025-04-15T11:51:01Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "Good point, this should be clearly specified.\n\nI think a reasonable action would be to treat them as original - unless a later feedback request has already been processed, in which case it should be ignored. The same point should hold for any case where there is packet reordering.",
+          "createdAt": "2025-04-15T11:51:00Z",
+          "updatedAt": "2025-04-15T11:51:00Z"
+        }
+      ]
     },
     {
       "number": 8,
@@ -198,9 +228,17 @@
       "labels": [],
       "body": "Current format is using request-based approach, keeping receiver dumb as much as possible. There is a advantage in having receiver triggered feedback, sender request could be overhead which may not be necessary for certain applications. \nSDP format can be added to distinguish between different modes such that application developer can choose what fits best. \nFeedback mainly helps under packet loss, and providing configuration like trigger feedback if no fresh frame is submitted to decoder for 'x' timeout time and retrigger it every new frame received but cant be submitted to decode since packet loss has not resolved. These help receiver recover faster rather than wait for new feedback request from sender.",
       "createdAt": "2025-04-14T06:45:26Z",
-      "updatedAt": "2025-04-14T06:45:26Z",
+      "updatedAt": "2025-04-15T11:48:01Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "That might be interesting, although I feel like packet-level feedback (e.g. TWCC or RFC8888) might already be enough.\n\nIf we were to support receive-side initiated feedback, it could interfere with the mechanism which describes which frames states the receiver needs to keep track of. It might be that in this case we need mark the feedback as being out of bounds with respect to the requested feedback.\n",
+          "createdAt": "2025-04-15T11:48:00Z",
+          "updatedAt": "2025-04-15T11:48:00Z"
+        }
+      ]
     },
     {
       "number": 9,
@@ -214,9 +252,41 @@
       "labels": [],
       "body": "Not sure this is relevant for draft but in general how do you think frame assembly would work with frame encoded using LTR frame.\nAs per my understanding webrtc currently waits for packet loss to recover or IDR frame to arrive for unblocking frames received to start decoding.\nWith frame acknowledgment, no longer need to wait for IDR, do you think webrtc frame assembly need to change and what information is needed for it handle this new feature? I think DD extension has mechanisms defined which could be useful here. Checking if there is any thoughts on this.",
       "createdAt": "2025-04-14T06:53:25Z",
-      "updatedAt": "2025-04-14T06:53:25Z",
+      "updatedAt": "2025-04-15T11:41:29Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "I don't think the receiver logic needs any update. At least in libwebrtc, the video jitter buffer looks at the dependency chain and waits for frames to be decodable - it doesn't really distinguish between recovery via retransmissions, fec, or new frames with dependencies on received frames.\n\nWe also don't really care if the dependencies are described via DependecyDescriptors, FrameMarking or one of the older payload-specific formats.\n\nIn essence, recover via LTR isn't different from say temporal layering and fast-forwarding to the next TL0 frame if one or more upper-layer frames have become stalled.",
+          "createdAt": "2025-04-15T11:41:27Z",
+          "updatedAt": "2025-04-15T11:41:27Z"
+        }
+      ]
+    },
+    {
+      "number": 10,
+      "id": "I_kwDOOIDm-M6ylyIP",
+      "title": "Consider if we need a way to signal \"not interest in feedback for frames prior to X\"",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/10",
+      "state": "OPEN",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The current proposal specifies that \"If a new Frame Acknowledgement Request is sent with an incremented Frame ID, all status values prior to that Frame ID are considered as acknowledged and can be culled by the receiver. \".\n\nHowever, a situation could feasibly arise where a sender does not request feedback for an extended period of time simply because it is not interested in feedback at that time. The receiver cannot know that and must thus keep buffering frame states, possibly indefinitely.\n\nA workaround is to require the sender to request feedback with some interval, and it would then simply ignore the feedback.\n\nIt would be nicer if we had a way to signal that the sender is not interested in feedback prior to frame X, all such state can be culled, and no immediate feedback is requested.",
+      "createdAt": "2025-04-15T12:24:30Z",
+      "updatedAt": "2025-04-15T16:23:45Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "shrim27",
+          "authorAssociation": "NONE",
+          "body": "Something similar to \"rtx-time=<rtx-time-val>\" defined rfc4588 could be used as reference here.",
+          "createdAt": "2025-04-15T16:23:44Z",
+          "updatedAt": "2025-04-15T16:23:44Z"
+        }
+      ]
     }
   ],
   "pulls": []
