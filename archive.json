@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-17T01:13:52.201109+00:00",
+  "timestamp": "2025-04-20T01:18:59.415101+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -252,7 +252,7 @@
       "labels": [],
       "body": "Not sure this is relevant for draft but in general how do you think frame assembly would work with frame encoded using LTR frame.\nAs per my understanding webrtc currently waits for packet loss to recover or IDR frame to arrive for unblocking frames received to start decoding.\nWith frame acknowledgment, no longer need to wait for IDR, do you think webrtc frame assembly need to change and what information is needed for it handle this new feature? I think DD extension has mechanisms defined which could be useful here. Checking if there is any thoughts on this.",
       "createdAt": "2025-04-14T06:53:25Z",
-      "updatedAt": "2025-04-15T11:41:29Z",
+      "updatedAt": "2025-04-18T04:51:37Z",
       "closedAt": null,
       "comments": [
         {
@@ -261,6 +261,13 @@
           "body": "I don't think the receiver logic needs any update. At least in libwebrtc, the video jitter buffer looks at the dependency chain and waits for frames to be decodable - it doesn't really distinguish between recovery via retransmissions, fec, or new frames with dependencies on received frames.\n\nWe also don't really care if the dependencies are described via DependecyDescriptors, FrameMarking or one of the older payload-specific formats.\n\nIn essence, recover via LTR isn't different from say temporal layering and fast-forwarding to the next TL0 frame if one or more upper-layer frames have become stalled.",
           "createdAt": "2025-04-15T11:41:27Z",
           "updatedAt": "2025-04-15T11:41:27Z"
+        },
+        {
+          "author": "shrim27",
+          "authorAssociation": "NONE",
+          "body": "Thanks Erik, if you could point to libwebrtc code where its handled would be helpful.",
+          "createdAt": "2025-04-18T04:51:36Z",
+          "updatedAt": "2025-04-18T04:51:36Z"
         }
       ]
     },
