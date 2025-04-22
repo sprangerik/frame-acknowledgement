@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-20T01:18:59.415101+00:00",
+  "timestamp": "2025-04-22T01:14:35.003808+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -102,7 +102,7 @@
       "labels": [],
       "body": "The current text talks only about acking frames that have been received with a guarantee that the receiver will _attempt_ to decode it.\n\nA natural question is if there is value in also acknowledging that a frames has been received - but might _not_ be used for decoding (e.g. non-base layer temporal frames).\n\nSince this message is primarily designed to allow a sender to reason about the decoder state, this doesn't at first glance seem that useful. But it would be good to know if someone has a valid use, or else just document why this is _not_ included.",
       "createdAt": "2025-04-07T15:35:10Z",
-      "updatedAt": "2025-04-15T12:14:43Z",
+      "updatedAt": "2025-04-21T21:18:57Z",
       "closedAt": null,
       "comments": [
         {
@@ -118,6 +118,13 @@
           "body": "I'm not really against it, but I'm trying to build a mental model of how it would actually be used/implemented.\n\nDo we need to distinguish between decoder errors that are \"recoverable\" or not? E.g. consider the cases where:\n1. A decoder returns an error code because the bitstream data is malformed and decoding of that frame could be completed. No internal state is updated and the decoder is still \"alive\" in the same state as before the decode call was made.\n2. A (presumably HW) decoder suffers some form of failure (e.g. OOM) and the entire decoder context is torn down and deallocated.\n\nThe first could be recovered from with a feedback. The second would necessitate a full keyframe.",
           "createdAt": "2025-04-15T12:14:42Z",
           "updatedAt": "2025-04-15T12:14:42Z"
+        },
+        {
+          "author": "shrim27",
+          "authorAssociation": "NONE",
+          "body": "I believe decode errors triggers PLI requests that would make issuing IDR frame. Having decode status in feedback helps sender take actions if LTR frame decode was successful or triggered error. Sender is aware of frames sent so that it can correct in case there are any faulty decoder exists. At this point I am not sure we need to distinguish decode errors. If there are more cases to be covered, dont see problem expanding decode error status.",
+          "createdAt": "2025-04-21T21:18:57Z",
+          "updatedAt": "2025-04-21T21:18:57Z"
         }
       ]
     },
@@ -228,7 +235,7 @@
       "labels": [],
       "body": "Current format is using request-based approach, keeping receiver dumb as much as possible. There is a advantage in having receiver triggered feedback, sender request could be overhead which may not be necessary for certain applications. \nSDP format can be added to distinguish between different modes such that application developer can choose what fits best. \nFeedback mainly helps under packet loss, and providing configuration like trigger feedback if no fresh frame is submitted to decoder for 'x' timeout time and retrigger it every new frame received but cant be submitted to decode since packet loss has not resolved. These help receiver recover faster rather than wait for new feedback request from sender.",
       "createdAt": "2025-04-14T06:45:26Z",
-      "updatedAt": "2025-04-15T11:48:01Z",
+      "updatedAt": "2025-04-21T21:10:33Z",
       "closedAt": null,
       "comments": [
         {
@@ -237,6 +244,13 @@
           "body": "That might be interesting, although I feel like packet-level feedback (e.g. TWCC or RFC8888) might already be enough.\n\nIf we were to support receive-side initiated feedback, it could interfere with the mechanism which describes which frames states the receiver needs to keep track of. It might be that in this case we need mark the feedback as being out of bounds with respect to the requested feedback.\n",
           "createdAt": "2025-04-15T11:48:00Z",
           "updatedAt": "2025-04-15T11:48:00Z"
+        },
+        {
+          "author": "shrim27",
+          "authorAssociation": "NONE",
+          "body": "Problem with using (TWCC or RFC 8888) is they dont provide current frame serviced by decoder hence it not very useful for LTR during packet loss.\nFor cases where RTD is high, sender requested feedback is very delayed and can lead to big impacts on decoder recovery time. Hence proposing having mode where receiver can trigger the feedback.\nWe could negotiate mode using SDP also RTCP message can have flag to indicate sender requested or receiver generated to distinguish, so that there is less for interpretation.\nIn terms of frames to keep track of I was suggesting interval can be defined, (Ex:  similar to \"rtx-time=\" ) shared details in another thread. Feedback could include highest frameID decoded to highest frame-ID received.",
+          "createdAt": "2025-04-21T21:10:32Z",
+          "updatedAt": "2025-04-21T21:10:32Z"
         }
       ]
     },
