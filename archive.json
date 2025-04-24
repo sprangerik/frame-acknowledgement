@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-04-22T01:14:35.003808+00:00",
+  "timestamp": "2025-04-24T01:14:39.666738+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -102,7 +102,7 @@
       "labels": [],
       "body": "The current text talks only about acking frames that have been received with a guarantee that the receiver will _attempt_ to decode it.\n\nA natural question is if there is value in also acknowledging that a frames has been received - but might _not_ be used for decoding (e.g. non-base layer temporal frames).\n\nSince this message is primarily designed to allow a sender to reason about the decoder state, this doesn't at first glance seem that useful. But it would be good to know if someone has a valid use, or else just document why this is _not_ included.",
       "createdAt": "2025-04-07T15:35:10Z",
-      "updatedAt": "2025-04-21T21:18:57Z",
+      "updatedAt": "2025-04-22T11:57:29Z",
       "closedAt": null,
       "comments": [
         {
@@ -125,6 +125,13 @@
           "body": "I believe decode errors triggers PLI requests that would make issuing IDR frame. Having decode status in feedback helps sender take actions if LTR frame decode was successful or triggered error. Sender is aware of frames sent so that it can correct in case there are any faulty decoder exists. At this point I am not sure we need to distinguish decode errors. If there are more cases to be covered, dont see problem expanding decode error status.",
           "createdAt": "2025-04-21T21:18:57Z",
           "updatedAt": "2025-04-21T21:18:57Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "> I believe decode errors triggers PLI requests that would make issuing IDR frame.\n\nIfaik, PLI isn't explicitly intended as a keyframe request (even if that is how libwebrtc currently uses it). Rather it's what is call, a \"picture loss indication\" and it should be up to the receiver to deal with that loss. FIR is strictly a keyframe request however.\n\nI'm still not entirely convinced there are realistic cases where all of the following are true:\n\n1. The jitter buffer logic determines frame A is decodable\n2. The decoder despite that fails to decode frame A\n3. The decoder is still in a usable state and _can_ successfully decode a new frame, using previous state as reference.\n\nIn my experience, decode errors are very rare - and once they occur the decoder is essentially in an unknown state and needs to be reset anyway.\n\nDo you have any data to the contrary?",
+          "createdAt": "2025-04-22T11:57:28Z",
+          "updatedAt": "2025-04-22T11:57:28Z"
         }
       ]
     },
@@ -235,7 +242,7 @@
       "labels": [],
       "body": "Current format is using request-based approach, keeping receiver dumb as much as possible. There is a advantage in having receiver triggered feedback, sender request could be overhead which may not be necessary for certain applications. \nSDP format can be added to distinguish between different modes such that application developer can choose what fits best. \nFeedback mainly helps under packet loss, and providing configuration like trigger feedback if no fresh frame is submitted to decoder for 'x' timeout time and retrigger it every new frame received but cant be submitted to decode since packet loss has not resolved. These help receiver recover faster rather than wait for new feedback request from sender.",
       "createdAt": "2025-04-14T06:45:26Z",
-      "updatedAt": "2025-04-21T21:10:33Z",
+      "updatedAt": "2025-04-22T13:28:50Z",
       "closedAt": null,
       "comments": [
         {
@@ -251,6 +258,13 @@
           "body": "Problem with using (TWCC or RFC 8888) is they dont provide current frame serviced by decoder hence it not very useful for LTR during packet loss.\nFor cases where RTD is high, sender requested feedback is very delayed and can lead to big impacts on decoder recovery time. Hence proposing having mode where receiver can trigger the feedback.\nWe could negotiate mode using SDP also RTCP message can have flag to indicate sender requested or receiver generated to distinguish, so that there is less for interpretation.\nIn terms of frames to keep track of I was suggesting interval can be defined, (Ex:  similar to \"rtx-time=\" ) shared details in another thread. Feedback could include highest frameID decoded to highest frame-ID received.",
           "createdAt": "2025-04-21T21:10:32Z",
           "updatedAt": "2025-04-21T21:10:32Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "The request shouldn't be delayed. If the sender knows it wants feedback for a given frame N (e.g. because it has been assigned as an LTR frame), the sender will add the request header extension to the very packets containing the payload data for frame N - so that the receiver can send feedback as soon as the frame has been assembled.\n\nIf we add a status symbol for \"frame partially received\", that could be sent immediately to notify the sender so that it can determine which recovery method to use for recovery (e.g. FEC/RTX/LTR/etc)\n\nMaybe it would help if we had concrete examples.\n\nwdyt?",
+          "createdAt": "2025-04-22T13:28:50Z",
+          "updatedAt": "2025-04-22T13:28:50Z"
         }
       ]
     },
@@ -266,7 +280,7 @@
       "labels": [],
       "body": "Not sure this is relevant for draft but in general how do you think frame assembly would work with frame encoded using LTR frame.\nAs per my understanding webrtc currently waits for packet loss to recover or IDR frame to arrive for unblocking frames received to start decoding.\nWith frame acknowledgment, no longer need to wait for IDR, do you think webrtc frame assembly need to change and what information is needed for it handle this new feature? I think DD extension has mechanisms defined which could be useful here. Checking if there is any thoughts on this.",
       "createdAt": "2025-04-14T06:53:25Z",
-      "updatedAt": "2025-04-18T04:51:37Z",
+      "updatedAt": "2025-04-22T12:50:34Z",
       "closedAt": null,
       "comments": [
         {
@@ -282,6 +296,13 @@
           "body": "Thanks Erik, if you could point to libwebrtc code where its handled would be helpful.",
           "createdAt": "2025-04-18T04:51:36Z",
           "updatedAt": "2025-04-18T04:51:36Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "> Thanks Erik, if you could point to libwebrtc code where its handled would be helpful.\n\nThe code is spread out across a number of classes, but in general is coordinated by this one: https://source.chromium.org/chromium/chromium/src/+/main:third_party/webrtc/video/rtp_video_stream_receiver2.h",
+          "createdAt": "2025-04-22T12:50:33Z",
+          "updatedAt": "2025-04-22T12:50:33Z"
         }
       ]
     },
