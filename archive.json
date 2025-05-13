@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-05-11T01:21:15.508368+00:00",
+  "timestamp": "2025-05-13T01:17:45.814053+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -102,7 +102,7 @@
       "labels": [],
       "body": "The current text talks only about acking frames that have been received with a guarantee that the receiver will _attempt_ to decode it.\n\nA natural question is if there is value in also acknowledging that a frames has been received - but might _not_ be used for decoding (e.g. non-base layer temporal frames).\n\nSince this message is primarily designed to allow a sender to reason about the decoder state, this doesn't at first glance seem that useful. But it would be good to know if someone has a valid use, or else just document why this is _not_ included.",
       "createdAt": "2025-04-07T15:35:10Z",
-      "updatedAt": "2025-04-22T11:57:29Z",
+      "updatedAt": "2025-05-12T09:11:44Z",
       "closedAt": null,
       "comments": [
         {
@@ -132,6 +132,20 @@
           "body": "> I believe decode errors triggers PLI requests that would make issuing IDR frame.\n\nIfaik, PLI isn't explicitly intended as a keyframe request (even if that is how libwebrtc currently uses it). Rather it's what is call, a \"picture loss indication\" and it should be up to the receiver to deal with that loss. FIR is strictly a keyframe request however.\n\nI'm still not entirely convinced there are realistic cases where all of the following are true:\n\n1. The jitter buffer logic determines frame A is decodable\n2. The decoder despite that fails to decode frame A\n3. The decoder is still in a usable state and _can_ successfully decode a new frame, using previous state as reference.\n\nIn my experience, decode errors are very rare - and once they occur the decoder is essentially in an unknown state and needs to be reset anyway.\n\nDo you have any data to the contrary?",
           "createdAt": "2025-04-22T11:57:28Z",
           "updatedAt": "2025-04-22T11:57:28Z"
+        },
+        {
+          "author": "shrim27",
+          "authorAssociation": "NONE",
+          "body": "Do not have data to show, agree that decode errors are very rare for atleast older codec formats (since decoders have matured).\nKeeping the status helps future cases, based on that suggestion was made. Alternatively, option to expand new status would help add such cases Ex: reserved status etc.\nWhile experimenting feature, it can be defined if needed.\nWdyt?",
+          "createdAt": "2025-05-12T06:27:59Z",
+          "updatedAt": "2025-05-12T06:27:59Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "That sounds good to me, let's keep 3 as \"reserved\" for now and we can decide later if that is the right use case.",
+          "createdAt": "2025-05-12T09:11:42Z",
+          "updatedAt": "2025-05-12T09:11:42Z"
         }
       ]
     },
