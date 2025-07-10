@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-08T01:20:45.373933+00:00",
+  "timestamp": "2025-07-10T01:21:32.290956+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -345,5 +345,34 @@
       ]
     }
   ],
-  "pulls": []
+  "pulls": [
+    {
+      "number": 11,
+      "id": "PR_kwDOOIDm-M6eGLdk",
+      "title": "Improve definition of a frame",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/pull/11",
+      "state": "OPEN",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "sprangerik"
+      ],
+      "labels": [],
+      "body": "Adds a more unambiguous definition of a frame for the context of this document.\r\n\r\nFixes #2 ",
+      "createdAt": "2025-07-09T10:21:26Z",
+      "updatedAt": "2025-07-09T10:22:13Z",
+      "baseRepository": "sprangerik/frame-acknowledgement",
+      "baseRefName": "main",
+      "baseRefOid": "4ad62a15b9f4c4f6b83c5f70a71e8568524f9044",
+      "headRepository": "sprangerik/frame-acknowledgement",
+      "headRefName": "frame_definition",
+      "headRefOid": "1965a869d3dc461ee9417a765113889062ba7747",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    }
+  ]
 }
