@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-13T01:38:49.025191+00:00",
+  "timestamp": "2025-07-17T01:24:34.173616+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -360,7 +360,7 @@
       "labels": [],
       "body": "Adds a more unambiguous definition of a frame for the context of this document.\r\n\r\nFixes #2 ",
       "createdAt": "2025-07-09T10:21:26Z",
-      "updatedAt": "2025-07-09T10:22:13Z",
+      "updatedAt": "2025-07-16T16:50:13Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4ad62a15b9f4c4f6b83c5f70a71e8568524f9044",
@@ -372,7 +372,48 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOIDm-M60J6Pp",
+          "commit": {
+            "abbreviatedOid": "1965a86"
+          },
+          "author": "shrim27",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-15T22:10:24Z",
+          "updatedAt": "2025-07-15T22:10:24Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "Is slice be treated as frame since it is decodable unit and can result in codec state update (entropy table)",
+              "createdAt": "2025-07-15T22:10:24Z",
+              "updatedAt": "2025-07-15T22:10:24Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M60W25R",
+          "commit": {
+            "abbreviatedOid": "1965a86"
+          },
+          "author": "hcmaniar",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-16T16:50:01Z",
+          "updatedAt": "2025-07-16T16:50:13Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "...makes updates `to` encoder state...?",
+              "createdAt": "2025-07-16T16:50:01Z",
+              "updatedAt": "2025-07-16T16:50:13Z"
+            }
+          ]
+        }
+      ]
     },
     {
       "number": 12,
@@ -386,7 +427,7 @@
       "labels": [],
       "body": "This PR removes usage of an external identification mechanism (such as Dependency Descriptors) in favor of having it built-in to the same extensions. \r\n\r\nThis makes the logic much cleaner and unambiguous.\r\nSince we now only deal with frames the sender is interested in feedback about, we can reduce the ID to a single 8-bit value. \"Being interested in\" implies that a reference frame state is being kept in anticipation of being re-used, so up to 256 outstanding frames should be plenty.\r\n\r\n",
       "createdAt": "2025-07-11T13:10:02Z",
-      "updatedAt": "2025-07-11T13:10:02Z",
+      "updatedAt": "2025-07-16T00:29:36Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4ad62a15b9f4c4f6b83c5f70a71e8568524f9044",
@@ -398,7 +439,46 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOIDm-M60KeWw",
+          "commit": {
+            "abbreviatedOid": "13beb5f"
+          },
+          "author": "shrim27",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-15T23:52:38Z",
+          "updatedAt": "2025-07-16T00:29:36Z",
+          "comments": [
+            {
+              "originalPosition": 46,
+              "body": "Can you please expand what FFR stands for.",
+              "createdAt": "2025-07-15T23:52:39Z",
+              "updatedAt": "2025-07-16T00:29:36Z"
+            },
+            {
+              "originalPosition": 56,
+              "body": "Frame ID - 8 bits seems very small, for 120fps or higher wrap arounds very quickly (less than 2seconds). I think 16bits should be better.",
+              "createdAt": "2025-07-15T23:54:35Z",
+              "updatedAt": "2025-07-16T00:29:36Z"
+            },
+            {
+              "originalPosition": 65,
+              "body": "Can you add ascii reference to 2 byte header as well? ",
+              "createdAt": "2025-07-16T00:08:41Z",
+              "updatedAt": "2025-07-16T00:29:36Z"
+            },
+            {
+              "originalPosition": 106,
+              "body": "What is the usecase for this? Is this request sent on non-video packets? Frame-ID probably needed for all packets, making that optional seems not required. Please help understand if you have something particular case in mind.",
+              "createdAt": "2025-07-16T00:19:34Z",
+              "updatedAt": "2025-07-16T16:59:44Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
