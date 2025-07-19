@@ -10,7 +10,7 @@
        This document describes a mechanism for signaling which video frames have been received and decoded by a remote peer. It comprises an RTCP feedback message and an RTP header extension used to request said feedback. 
        One of the main use cases for this data is to implement various forms of Long Term Reference (LTR) reference structures. 
     " name="description">
-<meta content="xml2rfc 3.29.0" name="generator">
+<meta content="xml2rfc 3.30.0" name="generator">
 <meta content="RTP" name="keyword">
 <meta content="RTCP" name="keyword">
 <meta content="Header Extension" name="keyword">
@@ -18,7 +18,7 @@
 <meta content="LTR" name="keyword">
 <meta content="draft-sprang-avtcore-frame-acknowledgement-00" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.29.0
+  xml2rfc 3.30.0
     Python 3.12.11
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
@@ -1053,7 +1053,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Språng</td>
-<td class="center">Expires 12 January 2026</td>
+<td class="center">Expires 20 January 2026</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1066,12 +1066,12 @@ svg :is([fill="white"], [fill^="#fff"]) {
 <dd class="internet-draft">draft-sprang-avtcore-frame-acknowledgement-00</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2025-07-11" class="published">11 July 2025</time>
+<time datetime="2025-07-19" class="published">19 July 2025</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2026-01-12">12 January 2026</time></dd>
+<dd class="expires"><time datetime="2026-01-20">20 January 2026</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1122,7 +1122,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 12 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 20 January 2026.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1179,7 +1179,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
                 <p id="section-toc.1-1.6.2.3.1"><a href="#section-6.3" class="auto internal xref">6.3</a>.  <a href="#name-frame-acknowledgment-request" class="internal xref">Frame Acknowledgment Request Data Layout</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3.2.1">
-                    <p id="section-toc.1-1.6.2.3.2.1.1"><a href="#section-6.3.1" class="auto internal xref">6.3.1</a>.  <a href="#name-ffr-2-bits" class="internal xref">FFR (2 bits)</a></p>
+                    <p id="section-toc.1-1.6.2.3.2.1.1"><a href="#section-6.3.1" class="auto internal xref">6.3.1</a>.  <a href="#name-ffr-frameid-feedback-reques" class="internal xref">FFR: FrameID / Feedback Request (2 bits)</a></p>
 </li>
                 </ul>
 </li>
@@ -1364,10 +1364,21 @@ The extension data starts with the FFR/Reserved byte.<a href="#section-6.3-1" cl
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 </code>
 Where "Extension data" is <code>N+1</code> bytes as described above, starting with the FFR/Reserved byte.<a href="#section-6.3-5" class="pilcrow">¶</a></p>
-<div id="ffr-2-bits">
+<p id="section-6.3-6">The Two-Byte RTP header extension format is:
+<code>ascii-art
+    0                   1
+    0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |       ID      |   length=N    |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+   |         Extension data        |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+</code>
+Where "Extension data" is <code>N</code> bytes as described above, starting with the FFR/Reserved byte.<a href="#section-6.3-6" class="pilcrow">¶</a></p>
+<div id="ffr-frameid-feedback-request-2-bits">
 <section id="section-6.3.1">
-          <h4 id="name-ffr-2-bits">
-<a href="#section-6.3.1" class="section-number selfRef">6.3.1. </a><a href="#name-ffr-2-bits" class="section-name selfRef">FFR (2 bits)</a>
+          <h4 id="name-ffr-frameid-feedback-reques">
+<a href="#section-6.3.1" class="section-number selfRef">6.3.1. </a><a href="#name-ffr-frameid-feedback-reques" class="section-name selfRef">FFR: FrameID / Feedback Request (2 bits)</a>
           </h4>
 <p id="section-6.3.1-1">This field is located in the first byte of the extension data. It indicates the presence and meaning of the subsequent optional fields. The total number of bytes for the extension data (and thus the value of <code>N</code> for the one-byte header's <code>len</code> field, or the <code>length</code> field for two-byte headers) depends on the FFR value:<a href="#section-6.3.1-1" class="pilcrow">¶</a></p>
 <ul class="normal">

@@ -4,8 +4,8 @@
 
 avtcore WG                                                     E. Språng
 Internet-Draft                                                    Google
-Intended status: Informational                              11 July 2025
-Expires: 12 January 2026
+Intended status: Informational                              19 July 2025
+Expires: 20 January 2026
 
 
       RTCP Feedback Message and Request Mechanism for Frame-level
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 January 2026.
+   This Internet-Draft will expire on 20 January 2026.
 
 Copyright Notice
 
@@ -82,7 +82,7 @@ Table of Contents
      6.1.  Frame Identifier
      6.2.  Frame Acknowledgment Request
      6.3.  Frame Acknowledgment Request Data Layout
-       6.3.1.  FFR (2 bits)
+       6.3.1.  FFR: FrameID / Feedback Request (2 bits)
      6.4.  Frame Acknowledgment Feedback RTCP Message
        6.4.1.  Start Frame ID (8 bits)
    7.  Security Considerations
@@ -275,7 +275,13 @@ Table of Contents
    "Extension data" is N+1 bytes as described above, starting with the
    FFR/Reserved byte.
 
-6.3.1.  FFR (2 bits)
+   The Two-Byte RTP header extension format is: ascii-art 0 1 0 1 2 3 4
+   5 6 7 8 9 0 1 2 3 4 5 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ | ID |
+   length=N | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ | Extension data |
+   +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ Where "Extension data" is N bytes
+   as described above, starting with the FFR/Reserved byte.
+
+6.3.1.  FFR: FrameID / Feedback Request (2 bits)
 
    This field is located in the first byte of the extension data.  It
    indicates the presence and meaning of the subsequent optional fields.
