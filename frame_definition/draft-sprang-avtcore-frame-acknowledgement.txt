@@ -4,8 +4,8 @@
 
 avtcore WG                                                     E. Språng
 Internet-Draft                                                    Google
-Intended status: Informational                               9 July 2025
-Expires: 10 January 2026
+Intended status: Informational                              19 July 2025
+Expires: 20 January 2026
 
 
       RTCP Feedback Message and Request Mechanism for Frame-level
@@ -55,7 +55,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 10 January 2026.
+   This Internet-Draft will expire on 20 January 2026.
 
 Copyright Notice
 
@@ -146,8 +146,9 @@ Table of Contents
    used as a reference for any subsequent decodable unit of bitstream
    data.  Typically that will be a full frame, but also include cases
    such as a "no show" frame intended for later reference or even a part
-   of a frame such as a tile if it is independently decodable and makes
-   updates encoder state that other tiles/frames can later reference.
+   of a frame such as a tile or a slice if it is independently decodable
+   and makes updates to encoder state that other tiles/frames can later
+   reference.
 
 3.  Applicability
 
