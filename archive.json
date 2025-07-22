@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-20T01:40:16.143592+00:00",
+  "timestamp": "2025-07-22T01:24:29.666374+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -343,6 +343,38 @@
           "updatedAt": "2025-04-15T16:23:44Z"
         }
       ]
+    },
+    {
+      "number": 13,
+      "id": "I_kwDOOIDm-M7BwAuF",
+      "title": "Motivation for requesting feedback about more than just current frame in Frame Acknowledgment Request",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/13",
+      "state": "OPEN",
+      "author": "gchandok",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "The current draft says \"The request implies a status request for all frames starting at the given frame ID, up to and including the frame contained in the RTP packet the header extension is attached to - even if that frame is not yet complete.\"\n\nCan you expand on the use case for this? Why is it not sufficient to just ask for feedback about the frame contained in the RTP packet the header extension is attached to?",
+      "createdAt": "2025-07-22T01:14:28Z",
+      "updatedAt": "2025-07-22T01:14:28Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 14,
+      "id": "I_kwDOOIDm-M7BwBTY",
+      "title": "Use case for sending frame acknowledgement request on an RTP packet not containing a video frame",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/14",
+      "state": "OPEN",
+      "author": "gchandok",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "The current draft says, \"If the extension is attached to a packet not containing a video frame, the feedback should be up to and including the immediately preceding frame ID.\"\n\nWhat is the use case for sending frame acknowledgement request on an RTP packet not containing a video frame?",
+      "createdAt": "2025-07-22T01:15:52Z",
+      "updatedAt": "2025-07-22T01:15:52Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
