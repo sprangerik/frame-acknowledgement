@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-22T01:24:29.666374+00:00",
+  "timestamp": "2025-07-24T01:25:03.393587+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -356,9 +356,17 @@
       "labels": [],
       "body": "The current draft says \"The request implies a status request for all frames starting at the given frame ID, up to and including the frame contained in the RTP packet the header extension is attached to - even if that frame is not yet complete.\"\n\nCan you expand on the use case for this? Why is it not sufficient to just ask for feedback about the frame contained in the RTP packet the header extension is attached to?",
       "createdAt": "2025-07-22T01:14:28Z",
-      "updatedAt": "2025-07-22T01:14:28Z",
+      "updatedAt": "2025-07-22T09:08:14Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "I think this issues is a dupe of issue #14. It's to be able to essentially make a retransmission request for feedback of a frame if we think it won't arrive in a timely manner.",
+          "createdAt": "2025-07-22T09:08:14Z",
+          "updatedAt": "2025-07-22T09:08:14Z"
+        }
+      ]
     },
     {
       "number": 14,
@@ -372,9 +380,24 @@
       "labels": [],
       "body": "The current draft says, \"If the extension is attached to a packet not containing a video frame, the feedback should be up to and including the immediately preceding frame ID.\"\n\nWhat is the use case for sending frame acknowledgement request on an RTP packet not containing a video frame?",
       "createdAt": "2025-07-22T01:15:52Z",
-      "updatedAt": "2025-07-22T01:15:52Z",
+      "updatedAt": "2025-07-22T09:06:49Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "The use-case is to enable guaranteed delivery of feedback. E.g. if either feedback request or the RTCP feedback response is lost, the sender can just request feedback covering the same range again.\n\nThis can be done either reactively (reacting to e.g. packet loss signals or timeouts) or preemptively (e.g. always sending two requests per frame with some spacing in order to reduce risk of lost information).",
+          "createdAt": "2025-07-22T09:04:38Z",
+          "updatedAt": "2025-07-22T09:04:38Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "...and just to clarify, if you want to re-send a feedback request X ms later, you might not have a frame ready to be sent. In that case you can attach the feedback request to any other packet on the same SSRC, such as a padding packet.",
+          "createdAt": "2025-07-22T09:06:49Z",
+          "updatedAt": "2025-07-22T09:06:49Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -392,7 +415,7 @@
       "labels": [],
       "body": "Adds a more unambiguous definition of a frame for the context of this document.\r\n\r\nFixes #2 ",
       "createdAt": "2025-07-09T10:21:26Z",
-      "updatedAt": "2025-07-19T09:55:22Z",
+      "updatedAt": "2025-07-22T08:50:34Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4ad62a15b9f4c4f6b83c5f70a71e8568524f9044",
@@ -464,6 +487,46 @@
               "updatedAt": "2025-07-19T09:55:22Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M61Q5-7",
+          "commit": {
+            "abbreviatedOid": "1965a86"
+          },
+          "author": "shrim27",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-22T05:20:08Z",
+          "updatedAt": "2025-07-22T05:20:08Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "I would have liked frame_ID be tied to complete frame since LTR or any other feature would work for complete frame. But not against having this, since it provides unique ID to slice which could be helpful for some use-cases.",
+              "createdAt": "2025-07-22T05:20:08Z",
+              "updatedAt": "2025-07-22T05:20:08Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M61T_J9",
+          "commit": {
+            "abbreviatedOid": "1965a86"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-22T08:50:34Z",
+          "updatedAt": "2025-07-22T08:50:34Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "You can absolutely still be done on a full-frame basis if that's what you want to do. Just put the FrameID on the last packet of a frame (i.e. the RTP packet with marker bit set for that frame), that would implicitly cover the whole frame. \r\nThis new definition just makes it possible to mark parts of a frame with FrameIDs in order to make other uses cases possible _in addition to_ what we already have. You don't need to mark a sub-frame with a FrameID unless you are interested in that specific part being decoded for purposes of how you encode subsequent sub-frames. That's a very niche use case.",
+              "createdAt": "2025-07-22T08:50:34Z",
+              "updatedAt": "2025-07-22T08:50:34Z"
+            }
+          ]
         }
       ]
     },
@@ -481,7 +544,7 @@
       "labels": [],
       "body": "This PR removes usage of an external identification mechanism (such as Dependency Descriptors) in favor of having it built-in to the same extensions. \r\n\r\nThis makes the logic much cleaner and unambiguous.\r\nSince we now only deal with frames the sender is interested in feedback about, we can reduce the ID to a single 8-bit value. \"Being interested in\" implies that a reference frame state is being kept in anticipation of being re-used, so up to 256 outstanding frames should be plenty.\r\n\r\n",
       "createdAt": "2025-07-11T13:10:02Z",
-      "updatedAt": "2025-07-19T17:40:56Z",
+      "updatedAt": "2025-07-22T12:01:36Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4ad62a15b9f4c4f6b83c5f70a71e8568524f9044",
@@ -609,6 +672,66 @@
               "body": "Sure, I'll add that.",
               "createdAt": "2025-07-19T10:18:10Z",
               "updatedAt": "2025-07-19T10:18:11Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M61RSzR",
+          "commit": {
+            "abbreviatedOid": "13beb5f"
+          },
+          "author": "shrim27",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-22T05:44:54Z",
+          "updatedAt": "2025-07-22T05:44:54Z",
+          "comments": [
+            {
+              "originalPosition": 56,
+              "body": "My main concern is with varied network and fps use-cases wrap around should not create issue with incorrect mapping of frame_ID to sender frame number. To me 256 seems very small range which could create issues interpreting the feedback on sender side.",
+              "createdAt": "2025-07-22T05:44:54Z",
+              "updatedAt": "2025-07-22T05:44:54Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M61UFoa",
+          "commit": {
+            "abbreviatedOid": "13beb5f"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-22T08:55:31Z",
+          "updatedAt": "2025-07-22T08:55:31Z",
+          "comments": [
+            {
+              "originalPosition": 56,
+              "body": "I disagree, if you have more than 32 _marked_ frames in flight you are already on very thin ice. The way to solve that is to just not stash new frames (or at least reduce the rate of them) until you receive feedback for the pending data.",
+              "createdAt": "2025-07-22T08:55:31Z",
+              "updatedAt": "2025-07-22T08:55:31Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M61W1_T",
+          "commit": {
+            "abbreviatedOid": "13beb5f"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-22T12:01:36Z",
+          "updatedAt": "2025-07-22T12:01:36Z",
+          "comments": [
+            {
+              "originalPosition": 106,
+              "body": "I guess that should say \"retransmission\", not RTX - as the latter will typically use a different SSRC.",
+              "createdAt": "2025-07-22T12:01:36Z",
+              "updatedAt": "2025-07-22T12:01:36Z"
             }
           ]
         }
