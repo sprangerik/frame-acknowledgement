@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-24T01:25:03.393587+00:00",
+  "timestamp": "2025-07-27T01:40:55.684690+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -356,7 +356,7 @@
       "labels": [],
       "body": "The current draft says \"The request implies a status request for all frames starting at the given frame ID, up to and including the frame contained in the RTP packet the header extension is attached to - even if that frame is not yet complete.\"\n\nCan you expand on the use case for this? Why is it not sufficient to just ask for feedback about the frame contained in the RTP packet the header extension is attached to?",
       "createdAt": "2025-07-22T01:14:28Z",
-      "updatedAt": "2025-07-22T09:08:14Z",
+      "updatedAt": "2025-07-24T21:11:42Z",
       "closedAt": null,
       "comments": [
         {
@@ -365,6 +365,13 @@
           "body": "I think this issues is a dupe of issue #14. It's to be able to essentially make a retransmission request for feedback of a frame if we think it won't arrive in a timely manner.",
           "createdAt": "2025-07-22T09:08:14Z",
           "updatedAt": "2025-07-22T09:08:14Z"
+        },
+        {
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "body": "Thanks that helped. There were two parts to my question I do have the answer for one \"why can't we just imply current frame\". The second part is why do we need solicit feedback for all frames upto current (i.e a range) vs requesting feedback for 1 frame. Do we need to confirm the decode of more than just the most recent LTR frame? ",
+          "createdAt": "2025-07-24T21:11:42Z",
+          "updatedAt": "2025-07-24T21:11:42Z"
         }
       ]
     },
@@ -380,7 +387,7 @@
       "labels": [],
       "body": "The current draft says, \"If the extension is attached to a packet not containing a video frame, the feedback should be up to and including the immediately preceding frame ID.\"\n\nWhat is the use case for sending frame acknowledgement request on an RTP packet not containing a video frame?",
       "createdAt": "2025-07-22T01:15:52Z",
-      "updatedAt": "2025-07-22T09:06:49Z",
+      "updatedAt": "2025-07-24T21:04:20Z",
       "closedAt": null,
       "comments": [
         {
@@ -396,6 +403,13 @@
           "body": "...and just to clarify, if you want to re-send a feedback request X ms later, you might not have a frame ready to be sent. In that case you can attach the feedback request to any other packet on the same SSRC, such as a padding packet.",
           "createdAt": "2025-07-22T09:06:49Z",
           "updatedAt": "2025-07-22T09:06:49Z"
+        },
+        {
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "body": "Sounds good. Can we document this in the draft? \n\nBy padding packets I am guessing you are referring to https://webrtc.googlesource.com/src/+/HEAD/pc/g3doc/rtp.md#padding-probes? What RTP timestamps do you use for such packets? ",
+          "createdAt": "2025-07-24T21:04:20Z",
+          "updatedAt": "2025-07-24T21:04:20Z"
         }
       ]
     }
