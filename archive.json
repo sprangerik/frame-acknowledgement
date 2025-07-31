@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-27T01:40:55.684690+00:00",
+  "timestamp": "2025-07-31T01:25:54.988394+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -429,7 +429,7 @@
       "labels": [],
       "body": "Adds a more unambiguous definition of a frame for the context of this document.\r\n\r\nFixes #2 ",
       "createdAt": "2025-07-09T10:21:26Z",
-      "updatedAt": "2025-07-22T08:50:34Z",
+      "updatedAt": "2025-07-29T21:53:54Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4ad62a15b9f4c4f6b83c5f70a71e8568524f9044",
@@ -541,6 +541,26 @@
               "updatedAt": "2025-07-22T08:50:34Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M628hKS",
+          "commit": {
+            "abbreviatedOid": "1965a86"
+          },
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-29T21:53:54Z",
+          "updatedAt": "2025-07-29T21:53:54Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "Seems fine to me to have this granularity if needed",
+              "createdAt": "2025-07-29T21:53:54Z",
+              "updatedAt": "2025-07-29T21:53:55Z"
+            }
+          ]
         }
       ]
     },
@@ -558,7 +578,7 @@
       "labels": [],
       "body": "This PR removes usage of an external identification mechanism (such as Dependency Descriptors) in favor of having it built-in to the same extensions. \r\n\r\nThis makes the logic much cleaner and unambiguous.\r\nSince we now only deal with frames the sender is interested in feedback about, we can reduce the ID to a single 8-bit value. \"Being interested in\" implies that a reference frame state is being kept in anticipation of being re-used, so up to 256 outstanding frames should be plenty.\r\n\r\n",
       "createdAt": "2025-07-11T13:10:02Z",
-      "updatedAt": "2025-07-22T12:01:36Z",
+      "updatedAt": "2025-07-29T23:01:59Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4ad62a15b9f4c4f6b83c5f70a71e8568524f9044",
@@ -746,6 +766,72 @@
               "body": "I guess that should say \"retransmission\", not RTX - as the latter will typically use a different SSRC.",
               "createdAt": "2025-07-22T12:01:36Z",
               "updatedAt": "2025-07-22T12:01:36Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M62869g",
+          "commit": {
+            "abbreviatedOid": "e66d605"
+          },
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-29T22:56:02Z",
+          "updatedAt": "2025-07-29T22:57:53Z",
+          "comments": [
+            {
+              "originalPosition": 56,
+              "body": "We should add considerations about the SFU case where a recevier may be switched over to a different stream without the chance to provide feedback for some frames then it could provide a stale response when it switches back to the stream, by which time the frameID may have rolled over. We should provide some guidance on culling all decoder state when the stream swiches on the receiver. Also the SFU should consider the any pending feedback requests acknowledge post a stream switch",
+              "createdAt": "2025-07-29T22:56:03Z",
+              "updatedAt": "2025-07-29T22:57:53Z"
+            },
+            {
+              "originalPosition": 61,
+              "body": "Above text is standard for all header extensions. Just referring RFC5285 should sufficient ",
+              "createdAt": "2025-07-29T22:57:51Z",
+              "updatedAt": "2025-07-29T22:57:53Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M6289KA",
+          "commit": {
+            "abbreviatedOid": "e66d605"
+          },
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-29T23:00:06Z",
+          "updatedAt": "2025-07-29T23:00:07Z",
+          "comments": [
+            {
+              "originalPosition": 108,
+              "body": "What is the use can for 00? We are tagging a frame as long term reference but not asking for feedback for it? ",
+              "createdAt": "2025-07-29T23:00:06Z",
+              "updatedAt": "2025-07-29T23:00:07Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M62891l",
+          "commit": {
+            "abbreviatedOid": "e66d605"
+          },
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-07-29T23:01:57Z",
+          "updatedAt": "2025-07-29T23:01:59Z",
+          "comments": [
+            {
+              "originalPosition": 106,
+              "body": "In a separate issue you mentioned we may want to re-request feedback on a padding packet. Have you considered adding an explicit RTCP message for this? Sending a padding RTP packet for this seems hacky.",
+              "createdAt": "2025-07-29T23:01:58Z",
+              "updatedAt": "2025-07-29T23:01:59Z"
             }
           ]
         }
