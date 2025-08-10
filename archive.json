@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-07-31T01:25:54.988394+00:00",
+  "timestamp": "2025-08-10T01:39:26.186597+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -412,6 +412,22 @@
           "updatedAt": "2025-07-24T21:04:20Z"
         }
       ]
+    },
+    {
+      "number": 15,
+      "id": "I_kwDOOIDm-M7E1a2f",
+      "title": "Define an RTP header extension for the frame acknowledgement for cases when there is a return traffic",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/15",
+      "state": "OPEN",
+      "author": "gchandok",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "As described in https://www.rfc-editor.org/rfc/rfc9392.pdf, we can avoid the overhead of sending RTCP packets when there is a return channel (e.g. in case of a 2 way video call). For those cases can we define an RTP header extension to carry the same acknowledgment information as the RTCP message? ",
+      "createdAt": "2025-08-08T01:32:30Z",
+      "updatedAt": "2025-08-08T01:32:30Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
