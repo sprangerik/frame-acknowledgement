@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-08-10T01:39:26.186597+00:00",
+  "timestamp": "2025-08-19T01:17:38.048196+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -594,7 +594,7 @@
       "labels": [],
       "body": "This PR removes usage of an external identification mechanism (such as Dependency Descriptors) in favor of having it built-in to the same extensions. \r\n\r\nThis makes the logic much cleaner and unambiguous.\r\nSince we now only deal with frames the sender is interested in feedback about, we can reduce the ID to a single 8-bit value. \"Being interested in\" implies that a reference frame state is being kept in anticipation of being re-used, so up to 256 outstanding frames should be plenty.\r\n\r\n",
       "createdAt": "2025-07-11T13:10:02Z",
-      "updatedAt": "2025-07-29T23:01:59Z",
+      "updatedAt": "2025-08-18T14:53:10Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4ad62a15b9f4c4f6b83c5f70a71e8568524f9044",
@@ -848,6 +848,66 @@
               "body": "In a separate issue you mentioned we may want to re-request feedback on a padding packet. Have you considered adding an explicit RTCP message for this? Sending a padding RTP packet for this seems hacky.",
               "createdAt": "2025-07-29T23:01:58Z",
               "updatedAt": "2025-07-29T23:01:59Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M66fD9c",
+          "commit": {
+            "abbreviatedOid": "13beb5f"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-08-18T14:47:44Z",
+          "updatedAt": "2025-08-18T14:47:44Z",
+          "comments": [
+            {
+              "originalPosition": 106,
+              "body": "> In a separate issue you mentioned we may want to re-request feedback on a padding packet. Have you considered adding an explicit RTCP message for this? Sending a padding RTP packet for this seems hacky.\r\n\r\nFor the vast majority of cases, sending requests in a padding packet wont be necessary. You would typically only have these headers on actual video frames. Having it on a padding packet is indeed a bit hacky, but I don't think we need to prevent that usage either.\r\n\r\nI did consider using an RTCP message, but decided not to for a few reasons. Primarily it's that it would necessitate another packet - and apart from extra overhead that might lead to those packets having different timing and the possibility of loss of just on of the two. We'd also and up with complication of an RTP header extension plus two RTCP messages...",
+              "createdAt": "2025-08-18T14:47:44Z",
+              "updatedAt": "2025-08-18T14:47:44Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M66fHE8",
+          "commit": {
+            "abbreviatedOid": "13beb5f"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-08-18T14:50:52Z",
+          "updatedAt": "2025-08-18T14:50:52Z",
+          "comments": [
+            {
+              "originalPosition": 56,
+              "body": "> We should add considerations about the SFU case where a recevier may be switched over to a different stream without the chance to provide feedback for some frames then it could provide a stale response when it switches back to the stream, by which time the frameID may have rolled over. We should provide some guidance on culling all decoder state when the stream swiches on the receiver. Also the SFU should consider the any pending feedback requests acknowledge post a stream switch\r\n\r\nThat's a very good point. I'll add a section about that. I think the whole sequence number handling requires a paragraph...",
+              "createdAt": "2025-08-18T14:50:52Z",
+              "updatedAt": "2025-08-18T14:50:52Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M66fJBB",
+          "commit": {
+            "abbreviatedOid": "13beb5f"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-08-18T14:53:10Z",
+          "updatedAt": "2025-08-18T14:53:10Z",
+          "comments": [
+            {
+              "originalPosition": 108,
+              "body": "My thinking there was around the (yet to be defined) receive-side triggered feedback mode.\r\nBut it's a fair point. I'll remove it / mark it as reserved for now - and then let's iterate on that use case.",
+              "createdAt": "2025-08-18T14:53:10Z",
+              "updatedAt": "2025-08-18T14:53:10Z"
             }
           ]
         }
