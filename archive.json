@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-08-19T01:17:38.048196+00:00",
+  "timestamp": "2025-08-21T01:14:32.171556+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -356,7 +356,7 @@
       "labels": [],
       "body": "The current draft says \"The request implies a status request for all frames starting at the given frame ID, up to and including the frame contained in the RTP packet the header extension is attached to - even if that frame is not yet complete.\"\n\nCan you expand on the use case for this? Why is it not sufficient to just ask for feedback about the frame contained in the RTP packet the header extension is attached to?",
       "createdAt": "2025-07-22T01:14:28Z",
-      "updatedAt": "2025-07-24T21:11:42Z",
+      "updatedAt": "2025-08-19T13:04:09Z",
       "closedAt": null,
       "comments": [
         {
@@ -372,6 +372,13 @@
           "body": "Thanks that helped. There were two parts to my question I do have the answer for one \"why can't we just imply current frame\". The second part is why do we need solicit feedback for all frames upto current (i.e a range) vs requesting feedback for 1 frame. Do we need to confirm the decode of more than just the most recent LTR frame? ",
           "createdAt": "2025-07-24T21:11:42Z",
           "updatedAt": "2025-07-24T21:11:42Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "Yes, there are a few cases where independent acknowledgements are useful.\n\nOne of them is when sending a simulcast-like mode on a single SSRC (e.g. using an [S3T1](https://www.w3.org/TR/webrtc-svc/#S3T1*) scalability mode). There the most recent fram per spatial layer is required.\n\nAnother case occurs when we consider multi-way applications. If on receiver has decoded frames {1, 3, 4} and another decoded {2, 3, 5} - then actually 3 would be signalled back to the sender as the only acked frame even if the receivers individually at at 4 and 5 respectively.",
+          "createdAt": "2025-08-19T13:04:09Z",
+          "updatedAt": "2025-08-19T13:04:09Z"
         }
       ]
     },
@@ -387,7 +394,7 @@
       "labels": [],
       "body": "The current draft says, \"If the extension is attached to a packet not containing a video frame, the feedback should be up to and including the immediately preceding frame ID.\"\n\nWhat is the use case for sending frame acknowledgement request on an RTP packet not containing a video frame?",
       "createdAt": "2025-07-22T01:15:52Z",
-      "updatedAt": "2025-07-24T21:04:20Z",
+      "updatedAt": "2025-08-19T13:12:00Z",
       "closedAt": null,
       "comments": [
         {
@@ -410,6 +417,13 @@
           "body": "Sounds good. Can we document this in the draft? \n\nBy padding packets I am guessing you are referring to https://webrtc.googlesource.com/src/+/HEAD/pc/g3doc/rtp.md#padding-probes? What RTP timestamps do you use for such packets? ",
           "createdAt": "2025-07-24T21:04:20Z",
           "updatedAt": "2025-07-24T21:04:20Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "Sure, adding that to the doc would be good. Let me do that in a separate PR so the latest state can make progress on the latest state.\n\nPadding probes are the most common padding packet sent today, yes. I think the timestamp will be the same as the last sent frame. The libwebrtc source that sets timestamps for packets should be this: https://source.chromium.org/chromium/chromium/src/+/main:third_party/webrtc/modules/rtp_rtcp/source/packet_sequencer.cc",
+          "createdAt": "2025-08-19T13:12:00Z",
+          "updatedAt": "2025-08-19T13:12:00Z"
         }
       ]
     },
@@ -425,9 +439,17 @@
       "labels": [],
       "body": "As described in https://www.rfc-editor.org/rfc/rfc9392.pdf, we can avoid the overhead of sending RTCP packets when there is a return channel (e.g. in case of a 2 way video call). For those cases can we define an RTP header extension to carry the same acknowledgment information as the RTCP message? ",
       "createdAt": "2025-08-08T01:32:30Z",
-      "updatedAt": "2025-08-08T01:32:30Z",
+      "updatedAt": "2025-08-19T13:14:57Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "I think that technically we can, but then we couldn't use that if there is no return channel. For things like remote desktop and cloud gaming there typically won't be - so there we'd need the RTCP message anyway.\nI'm not sure it's worth the complexity to add both a header extension and an RTCP message, especially if we'll need seemingly fragile logic to map incoming header extension on incoming media to some other state on outgoing media on a different SSRC...",
+          "createdAt": "2025-08-19T13:14:57Z",
+          "updatedAt": "2025-08-19T13:14:57Z"
+        }
+      ]
     }
   ],
   "pulls": [
@@ -594,13 +616,13 @@
       "labels": [],
       "body": "This PR removes usage of an external identification mechanism (such as Dependency Descriptors) in favor of having it built-in to the same extensions. \r\n\r\nThis makes the logic much cleaner and unambiguous.\r\nSince we now only deal with frames the sender is interested in feedback about, we can reduce the ID to a single 8-bit value. \"Being interested in\" implies that a reference frame state is being kept in anticipation of being re-used, so up to 256 outstanding frames should be plenty.\r\n\r\n",
       "createdAt": "2025-07-11T13:10:02Z",
-      "updatedAt": "2025-08-18T14:53:10Z",
+      "updatedAt": "2025-08-19T12:56:58Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4ad62a15b9f4c4f6b83c5f70a71e8568524f9044",
       "headRepository": "sprangerik/frame-acknowledgement",
       "headRefName": "flexible-draft-updates",
-      "headRefOid": "e66d605c3713c8df6a382ea6bd07e5ab7308db8c",
+      "headRefOid": "259b4334978ae4aa3ccbe043bb29f3647da8984f",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -908,6 +930,46 @@
               "body": "My thinking there was around the (yet to be defined) receive-side triggered feedback mode.\r\nBut it's a fair point. I'll remove it / mark it as reserved for now - and then let's iterate on that use case.",
               "createdAt": "2025-08-18T14:53:10Z",
               "updatedAt": "2025-08-18T14:53:10Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M66sZTd",
+          "commit": {
+            "abbreviatedOid": "e66d605"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-08-19T12:55:54Z",
+          "updatedAt": "2025-08-19T12:55:54Z",
+          "comments": [
+            {
+              "originalPosition": 61,
+              "body": "Done.",
+              "createdAt": "2025-08-19T12:55:54Z",
+              "updatedAt": "2025-08-19T12:55:54Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M66saUx",
+          "commit": {
+            "abbreviatedOid": "e66d605"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-08-19T12:56:58Z",
+          "updatedAt": "2025-08-19T12:56:58Z",
+          "comments": [
+            {
+              "originalPosition": 56,
+              "body": "Added a \"Frame ID consideration\" section. ptal!",
+              "createdAt": "2025-08-19T12:56:58Z",
+              "updatedAt": "2025-08-19T12:56:58Z"
             }
           ]
         }
