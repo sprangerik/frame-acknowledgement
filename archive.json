@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-08-21T01:14:32.171556+00:00",
+  "timestamp": "2025-09-16T01:10:36.305776+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -467,7 +467,7 @@
       "labels": [],
       "body": "Adds a more unambiguous definition of a frame for the context of this document.\r\n\r\nFixes #2 ",
       "createdAt": "2025-07-09T10:21:26Z",
-      "updatedAt": "2025-07-29T21:53:54Z",
+      "updatedAt": "2025-09-15T22:38:06Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4ad62a15b9f4c4f6b83c5f70a71e8568524f9044",
@@ -599,6 +599,19 @@
               "updatedAt": "2025-07-29T21:53:55Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7AUOM2",
+          "commit": {
+            "abbreviatedOid": "b41a859"
+          },
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "state": "APPROVED",
+          "body": "",
+          "createdAt": "2025-09-15T22:38:06Z",
+          "updatedAt": "2025-09-15T22:38:06Z",
+          "comments": []
         }
       ]
     },
@@ -616,7 +629,7 @@
       "labels": [],
       "body": "This PR removes usage of an external identification mechanism (such as Dependency Descriptors) in favor of having it built-in to the same extensions. \r\n\r\nThis makes the logic much cleaner and unambiguous.\r\nSince we now only deal with frames the sender is interested in feedback about, we can reduce the ID to a single 8-bit value. \"Being interested in\" implies that a reference frame state is being kept in anticipation of being re-used, so up to 256 outstanding frames should be plenty.\r\n\r\n",
       "createdAt": "2025-07-11T13:10:02Z",
-      "updatedAt": "2025-08-19T12:56:58Z",
+      "updatedAt": "2025-09-15T22:37:13Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4ad62a15b9f4c4f6b83c5f70a71e8568524f9044",
@@ -970,6 +983,72 @@
               "body": "Added a \"Frame ID consideration\" section. ptal!",
               "createdAt": "2025-08-19T12:56:58Z",
               "updatedAt": "2025-08-19T12:56:58Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7AT3yz",
+          "commit": {
+            "abbreviatedOid": "13beb5f"
+          },
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-09-15T21:49:28Z",
+          "updatedAt": "2025-09-15T21:49:28Z",
+          "comments": [
+            {
+              "originalPosition": 106,
+              "body": "We can discuss the explicit RTCP message separately",
+              "createdAt": "2025-09-15T21:49:28Z",
+              "updatedAt": "2025-09-15T21:49:28Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7AT5ui",
+          "commit": {
+            "abbreviatedOid": "259b433"
+          },
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "state": "CHANGES_REQUESTED",
+          "body": "",
+          "createdAt": "2025-09-15T21:53:59Z",
+          "updatedAt": "2025-09-15T21:57:20Z",
+          "comments": [
+            {
+              "originalPosition": 104,
+              "body": "\"the sender MUST increment the Frame ID by one for each new frame in sending order\"\r\n\r\nshould we change each new frame, to each new \"long term reference frame\". Something to indicate that this is not expected to increase for each frame just frames considered reference frames by the encoder. Frame ID won't be present for every frame but reading this sentence in isolation causes some confusion",
+              "createdAt": "2025-09-15T21:53:59Z",
+              "updatedAt": "2025-09-15T21:57:20Z"
+            },
+            {
+              "originalPosition": 112,
+              "body": "When considering a multi-way application with an SFU/SFM-type relay in the middle, the middlebox may need to do translations/rewriting of Frame IDs such that the outgoing FrameIDs **from** a middlebox to a receiver still fulfill**~~s~~** the requirement that the FrameIDs are incremented by one for each new frame that is marked for feedback. This must be true even if independent video streams for different senders are multiplexed onto the same SSRC. Further the middlebox should typically not acknowledge a frame to a sender unless all active receivers have acknowledged that frame.\r\n",
+              "createdAt": "2025-09-15T21:57:02Z",
+              "updatedAt": "2025-09-15T21:57:20Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7AUNq4",
+          "commit": {
+            "abbreviatedOid": "13beb5f"
+          },
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-09-15T22:37:12Z",
+          "updatedAt": "2025-09-15T22:37:13Z",
+          "comments": [
+            {
+              "originalPosition": 56,
+              "body": "@sprangerik I think we need some more info in Frame ID considerations to cover the SFU implications above. We can do that in a separate PR. ",
+              "createdAt": "2025-09-15T22:37:13Z",
+              "updatedAt": "2025-09-15T22:37:13Z"
             }
           ]
         }
