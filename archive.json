@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-09-16T01:10:36.305776+00:00",
+  "timestamp": "2025-10-07T01:11:38.426933+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -629,7 +629,7 @@
       "labels": [],
       "body": "This PR removes usage of an external identification mechanism (such as Dependency Descriptors) in favor of having it built-in to the same extensions. \r\n\r\nThis makes the logic much cleaner and unambiguous.\r\nSince we now only deal with frames the sender is interested in feedback about, we can reduce the ID to a single 8-bit value. \"Being interested in\" implies that a reference frame state is being kept in anticipation of being re-used, so up to 256 outstanding frames should be plenty.\r\n\r\n",
       "createdAt": "2025-07-11T13:10:02Z",
-      "updatedAt": "2025-09-15T22:37:13Z",
+      "updatedAt": "2025-10-06T20:26:46Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4ad62a15b9f4c4f6b83c5f70a71e8568524f9044",
@@ -1049,6 +1049,26 @@
               "body": "@sprangerik I think we need some more info in Frame ID considerations to cover the SFU implications above. We can do that in a separate PR. ",
               "createdAt": "2025-09-15T22:37:13Z",
               "updatedAt": "2025-09-15T22:37:13Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7FH0Uu",
+          "commit": {
+            "abbreviatedOid": "13beb5f"
+          },
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-06T20:26:46Z",
+          "updatedAt": "2025-10-06T20:26:46Z",
+          "comments": [
+            {
+              "originalPosition": 56,
+              "body": "> I disagree, if you have more than 32 marked frames in flight you are already on very thin ice. The way to solve that is to just not stash new frames (or at least reduce the rate of them) until you receive feedback for the pending data.\r\n\r\n@sprangerik I can imagine the encoder wanting to mark new frames as LTR and solicit acks for them even if the previous one have not been acknowledged in the spirit of having as recent a frame as possible as reference in case of loss. Encoder should be free to drop older unacknowledged frames from its buffers. \r\n\r\nIt would be good to set up a call with shrim27 to discuss this topic",
+              "createdAt": "2025-10-06T20:26:46Z",
+              "updatedAt": "2025-10-06T20:26:46Z"
             }
           ]
         }
