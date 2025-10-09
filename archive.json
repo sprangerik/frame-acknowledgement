@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-07T01:11:38.426933+00:00",
+  "timestamp": "2025-10-09T01:12:07.179435+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -629,7 +629,7 @@
       "labels": [],
       "body": "This PR removes usage of an external identification mechanism (such as Dependency Descriptors) in favor of having it built-in to the same extensions. \r\n\r\nThis makes the logic much cleaner and unambiguous.\r\nSince we now only deal with frames the sender is interested in feedback about, we can reduce the ID to a single 8-bit value. \"Being interested in\" implies that a reference frame state is being kept in anticipation of being re-used, so up to 256 outstanding frames should be plenty.\r\n\r\n",
       "createdAt": "2025-07-11T13:10:02Z",
-      "updatedAt": "2025-10-06T20:26:46Z",
+      "updatedAt": "2025-10-07T12:45:40Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4ad62a15b9f4c4f6b83c5f70a71e8568524f9044",
@@ -1069,6 +1069,26 @@
               "body": "> I disagree, if you have more than 32 marked frames in flight you are already on very thin ice. The way to solve that is to just not stash new frames (or at least reduce the rate of them) until you receive feedback for the pending data.\r\n\r\n@sprangerik I can imagine the encoder wanting to mark new frames as LTR and solicit acks for them even if the previous one have not been acknowledged in the spirit of having as recent a frame as possible as reference in case of loss. Encoder should be free to drop older unacknowledged frames from its buffers. \r\n\r\nIt would be good to set up a call with shrim27 to discuss this topic",
               "createdAt": "2025-10-06T20:26:46Z",
               "updatedAt": "2025-10-06T20:26:46Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7FSdjX",
+          "commit": {
+            "abbreviatedOid": "13beb5f"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-07T12:45:40Z",
+          "updatedAt": "2025-10-07T12:45:40Z",
+          "comments": [
+            {
+              "originalPosition": 56,
+              "body": "Sure, if feedback is not received in a timely manner the sender is free to essentially designate pending frames as not available so that the corresponding reference buffer can be re-used for newer frames. There still 8 wraparounds of that 32-frame window before we risk having frame id conflicts, and that point you'll most likely need a keyframe recovery anyway.\r\n\r\nBut yeah, let's have a chat and discuss in realtime!\r\nI feel like there's lots of room to improve on this doc and make all these questions to a new reader, since it's already not 100% clear between just us :)",
+              "createdAt": "2025-10-07T12:45:40Z",
+              "updatedAt": "2025-10-07T12:45:40Z"
             }
           ]
         }
