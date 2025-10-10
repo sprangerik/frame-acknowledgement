@@ -83,6 +83,9 @@ Table of Contents
      6.2.  Frame Acknowledgment Request
      6.3.  Frame Acknowledgment Request Data Layout
        6.3.1.  FFR: FrameID / Feedback Request (2 bits)
+       6.3.2.  Frame ID (8 bits)
+       6.3.3.  Feedback Start (8 bits)
+       6.3.4.  Feedback Length (8 bits)
    7.  Frame Acknowledgment Feedback RTCP Message
      7.1.  Start Frame ID (8 bits)
      7.2.  Length (8 bits)
@@ -315,27 +318,27 @@ Table of Contents
    The remaining 6 bits of the FFR/Reserved byte are reserved and SHOULD
    be set to 0.
 
-6.3.1.1.  Frame ID (8 bits)
+6.3.2.  Frame ID (8 bits)
 
    Present if FFR is 00, 01, or 10.  An unsigned integer that uniquely
    identifies a frame.  It MUST be incremented by one for each new frame
    (in sending order) that needs to be identified.  It wraps around to 0
    on overflow.
 
-6.3.1.2.  Feedback Start (8 bits)
+6.3.3.  Feedback Start (8 bits)
 
    Present if FFR is 10 or 11.  An unsigned integer that corresponds to
    the first Frame ID (inclusive) the sender is requesting feedback for.
    It wraps around to 0 on overflow.
 
-6.3.1.3.  Feedback Length (8 bits)
+6.3.4.  Feedback Length (8 bits)
 
    Present if FFR is 10 or 11.  An unsigned integer that indicates the
    number of consecutive frames the sender is requesting feedback for,
    starting from Feedback Start.  A value of 0 means no frames are being
    requested.  A value of 1 means only the frame identified by Feedback
-   Start is requested.  The range is [Feedback Start, Feedback Start +
-   Feedback Length - 1], inclusive, with wrap-around logic applied to
+   Start is requested.  The range is Feedback Start to Feedback Start +
+   Feedback Length - 1, inclusive, with wrap-around logic applied to
    Frame IDs.
 
    Note that since the Frame ID, Feedback Start, and Feedback Length are
