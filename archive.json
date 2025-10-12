@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-09T01:12:07.179435+00:00",
+  "timestamp": "2025-10-12T01:15:20.025979+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -79,15 +79,15 @@
       "id": "I_kwDOOIDm-M6xdT2w",
       "title": "Add a better definition of what a \"frame\" is",
       "url": "https://github.com/sprangerik/frame-acknowledgement/issues/2",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "sprangerik",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "The current draft says that what is being acknowledged is that \"video frames have been received and decoded\", but we should probably be more precise what we mean with a frame.\n\nFor the context of this message, what we are interested in is that the sender can reason about the codec state. A potential phrasing could be the we acknowledge:\n\n> ...any decodable unit of bitstream data that results in the update of codec state (e.g. reference buffers, entropy tables, etc) that can be used as a reference for any subsequent decodable unit of bitstream data.\n\nWhen using SVC with inter-layer dependencies (i.e. references between e.g. spatial or quality layers), then each layer would constitute a separate frame. That seems relatively straightforward.\n\nHowever, several codecs support _segmentation_ where a frame is split into several independent segments in order to better utilize pipelining or parallelism. If such a segment supports referencing state updates from a different segment within the same frame - then in this case each segment could in fact be acked independently. This would complicate the frame id mechanism as well.\n\n",
       "createdAt": "2025-04-07T15:31:42Z",
-      "updatedAt": "2025-04-07T15:31:42Z",
-      "closedAt": null,
+      "updatedAt": "2025-10-10T13:12:55Z",
+      "closedAt": "2025-10-10T13:12:55Z",
       "comments": []
     },
     {
@@ -154,15 +154,15 @@
       "id": "I_kwDOOIDm-M6xdeQg",
       "title": "Consider adding explicit frame id to the Frame Acknowledgement Request header",
       "url": "https://github.com/sprangerik/frame-acknowledgement/issues/4",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "sprangerik",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "The current text does not specify how a frame should be identified - instead there is a prioritized list of alternatives for identifying frames, and the first available one on the list should be used. There are some pros and cons to this:\n\nPros\n* Avoids redundant frame id if it's already part of the transmission\n* Makes the request header itself very simple\n\nCons\n* Risk that the mechanism is fragile (e.g. if sender/receiver has different views of which id is in fact being used). Though this could be mitigated with an additional SDP attribute.\n* Some id mechanism requires tuples (e.g. timestamp + spatial layer, or even subindexing into segments).\n* Some mechanism have data in the payload, which might not be available to an SFU/SFM.\n* Some mechanism have large gaps between frames (e.g. using 90kHz clock timestamps), necessitating larger than desired sizes of the id fields in order to avoid wraparound issues.\n* A sender might only be interested in a small subset of frames, an generic id mechanisms will typically identify all frames - requiring status to be transmitted for \"uninteresting\" frames as well, in case a span of more than one frame is being inquired about.\n\nTo avoid the quite large list of cons, it might be desirable to explicitly identify the frames as part of the Frame Acknowledgement Request header extension instead. It should solve all of the cons with a relatively low overhead of extra data and slightly more complex parsing of the header.",
       "createdAt": "2025-04-07T15:47:00Z",
-      "updatedAt": "2025-04-15T11:55:32Z",
-      "closedAt": null,
+      "updatedAt": "2025-10-10T13:15:58Z",
+      "closedAt": "2025-10-10T13:15:58Z",
       "comments": [
         {
           "author": "alfredh",
@@ -177,6 +177,13 @@
           "body": "I'm not sure I like the offset counter for the frame id itself, but a count would indeed feel nicer than the absolute \"to\" I mention in https://github.com/sprangerik/frame-acknowledgement/issues/5",
           "createdAt": "2025-04-15T11:55:30Z",
           "updatedAt": "2025-04-15T11:55:30Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "Fixed as if PR #12.",
+          "createdAt": "2025-10-10T13:15:58Z",
+          "updatedAt": "2025-10-10T13:15:58Z"
         }
       ]
     },
@@ -185,16 +192,24 @@
       "id": "I_kwDOOIDm-M6xdhyQ",
       "title": "Consider add a \"to\" field in the request header",
       "url": "https://github.com/sprangerik/frame-acknowledgement/issues/5",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "sprangerik",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "The current text specified that the Frame Acknowledgement Request has the property that it \"...implies a status request for all frames starting at the given frame ID, up to and including the frame contained in the RTP packet the header extension is attached to...\".\n\nThe sender might in fact not be interested in all those frames - it might just be attempting to request a retransmit of the status for a single frame. For such use cases it would be useful with both a \"start\" and a \"end\" frame id, or potentially some type of flag that identified the id as both start and end if it's a single id.\n\nThis might complicate and enlarge the header extension, but also makes it more clear since there is no longer any ambiguity in what the end should be (if the packet it is attached to is not a frame).",
       "createdAt": "2025-04-07T15:51:57Z",
-      "updatedAt": "2025-04-07T15:51:57Z",
-      "closedAt": null,
-      "comments": []
+      "updatedAt": "2025-10-10T13:16:09Z",
+      "closedAt": "2025-10-10T13:16:09Z",
+      "comments": [
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "Fixed as if PR #12.",
+          "createdAt": "2025-10-10T13:16:09Z",
+          "updatedAt": "2025-10-10T13:16:09Z"
+        }
+      ]
     },
     {
       "number": 6,
@@ -325,15 +340,15 @@
       "id": "I_kwDOOIDm-M6ylyIP",
       "title": "Consider if we need a way to signal \"not interest in feedback for frames prior to X\"",
       "url": "https://github.com/sprangerik/frame-acknowledgement/issues/10",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "sprangerik",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "The current proposal specifies that \"If a new Frame Acknowledgement Request is sent with an incremented Frame ID, all status values prior to that Frame ID are considered as acknowledged and can be culled by the receiver. \".\n\nHowever, a situation could feasibly arise where a sender does not request feedback for an extended period of time simply because it is not interested in feedback at that time. The receiver cannot know that and must thus keep buffering frame states, possibly indefinitely.\n\nA workaround is to require the sender to request feedback with some interval, and it would then simply ignore the feedback.\n\nIt would be nicer if we had a way to signal that the sender is not interested in feedback prior to frame X, all such state can be culled, and no immediate feedback is requested.",
       "createdAt": "2025-04-15T12:24:30Z",
-      "updatedAt": "2025-04-15T16:23:45Z",
-      "closedAt": null,
+      "updatedAt": "2025-10-10T13:18:19Z",
+      "closedAt": "2025-10-10T13:18:19Z",
       "comments": [
         {
           "author": "shrim27",
@@ -341,6 +356,13 @@
           "body": "Something similar to \"rtx-time=<rtx-time-val>\" defined rfc4588 could be used as reference here.",
           "createdAt": "2025-04-15T16:23:44Z",
           "updatedAt": "2025-04-15T16:23:44Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "Fixed as if PR #12.",
+          "createdAt": "2025-10-10T13:18:19Z",
+          "updatedAt": "2025-10-10T13:18:19Z"
         }
       ]
     },
@@ -450,6 +472,22 @@
           "updatedAt": "2025-08-19T13:14:57Z"
         }
       ]
+    },
+    {
+      "number": 16,
+      "id": "I_kwDOOIDm-M7Qxw2g",
+      "title": "Motivate field length of Frame ID",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/16",
+      "state": "OPEN",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "In PR #12 questions were raised around the decision to use an 8-bit length for the Frame ID field. \n\n**The spec should clearly describe how to handle this to avoid Frame ID conflicts and wrap-around problems.**\n\nWith a value span of 256 the risk for wraparound issues where sender and receiver are out of sync is definitely higher than a previous revision using 16-bit length. However, in practice this should not be an issue.\n\nMarking a frame with a Frame ID so that we can get feedback for it is only useful if we also allocate a _reference buffer_ in the codec state so that subsequent frames can predict from it. That effectively becomes the upper bound on how many frames in flight you can have, since number of reference buffers available is significantly smaller than 256 for any of the common codecs.\n\nThe maximum number of reference buffers available varies with codec and sometimes even level/profile, but as far as I can find the maximum number reference buffers for any major codec is H.265 which has up to 16 buffers. AV1 has up to 8. VP8 has only 3.\n\nWe should make sure the doc clearly explains this, as well as given instructions on how to deal with wraparounds in general.\n\nFor instance, it might be that we never receive feedback for a given frame - and the sender should not have to wait indefinitely before releasing that reference buffer. Instead the sender should be clear regard a frame as \"lost\" if it has not received feedback in what it determines to be an adequate time.\n\nWe also must make sure that the spec explains how multi-way scenarios should be handled, a middle-box may have to translate Frame IDs.\n\nPerhaps we should have a concrete example illustrating a simple strategy for when 1/fps is small relative to the RTT. ",
+      "createdAt": "2025-10-10T12:34:16Z",
+      "updatedAt": "2025-10-10T12:34:16Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -458,7 +496,7 @@
       "id": "PR_kwDOOIDm-M6eGLdk",
       "title": "Improve definition of a frame",
       "url": "https://github.com/sprangerik/frame-acknowledgement/pull/11",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "sprangerik",
       "authorAssociation": "OWNER",
       "assignees": [
@@ -467,17 +505,19 @@
       "labels": [],
       "body": "Adds a more unambiguous definition of a frame for the context of this document.\r\n\r\nFixes #2 ",
       "createdAt": "2025-07-09T10:21:26Z",
-      "updatedAt": "2025-09-15T22:38:06Z",
+      "updatedAt": "2025-10-10T13:12:54Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4ad62a15b9f4c4f6b83c5f70a71e8568524f9044",
       "headRepository": "sprangerik/frame-acknowledgement",
       "headRefName": "frame_definition",
       "headRefOid": "b41a8598df726a510fdc730da14c3f3162ceabd4",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2025-10-10T13:12:54Z",
+      "mergedAt": "2025-10-10T13:12:54Z",
+      "mergedBy": "sprangerik",
+      "mergeCommit": {
+        "oid": "00bb1b17dc6c2bb48f75cac42397cf105f9e0c39"
+      },
       "comments": [],
       "reviews": [
         {
@@ -620,7 +660,7 @@
       "id": "PR_kwDOOIDm-M6efqk4",
       "title": "Add both Frame ID and Frame Feedback Request to the same extensions",
       "url": "https://github.com/sprangerik/frame-acknowledgement/pull/12",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "sprangerik",
       "authorAssociation": "OWNER",
       "assignees": [
@@ -629,17 +669,19 @@
       "labels": [],
       "body": "This PR removes usage of an external identification mechanism (such as Dependency Descriptors) in favor of having it built-in to the same extensions. \r\n\r\nThis makes the logic much cleaner and unambiguous.\r\nSince we now only deal with frames the sender is interested in feedback about, we can reduce the ID to a single 8-bit value. \"Being interested in\" implies that a reference frame state is being kept in anticipation of being re-used, so up to 256 outstanding frames should be plenty.\r\n\r\n",
       "createdAt": "2025-07-11T13:10:02Z",
-      "updatedAt": "2025-10-07T12:45:40Z",
+      "updatedAt": "2025-10-10T13:15:05Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4ad62a15b9f4c4f6b83c5f70a71e8568524f9044",
       "headRepository": "sprangerik/frame-acknowledgement",
       "headRefName": "flexible-draft-updates",
-      "headRefOid": "259b4334978ae4aa3ccbe043bb29f3647da8984f",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "2de043dd3731087c1f3635be3d86f73247d95b2e",
+      "closedAt": "2025-10-10T13:15:05Z",
+      "mergedAt": "2025-10-10T13:15:05Z",
+      "mergedBy": "sprangerik",
+      "mergeCommit": {
+        "oid": "b39b0ba2296bed93af1a37c52b5d236861189f5e"
+      },
       "comments": [],
       "reviews": [
         {
@@ -1091,8 +1133,144 @@
               "updatedAt": "2025-10-07T12:45:40Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7GEwb8",
+          "commit": {
+            "abbreviatedOid": "13beb5f"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-10T12:34:45Z",
+          "updatedAt": "2025-10-10T12:34:45Z",
+          "comments": [
+            {
+              "originalPosition": 56,
+              "body": "I filed issue #16 so that we can follow up on that topic separately.",
+              "createdAt": "2025-10-10T12:34:45Z",
+              "updatedAt": "2025-10-10T12:34:45Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7GFncl",
+          "commit": {
+            "abbreviatedOid": "259b433"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-10T13:08:42Z",
+          "updatedAt": "2025-10-10T13:08:43Z",
+          "comments": [
+            {
+              "originalPosition": 104,
+              "body": "Add clarification that it should be incremented for each new frame with the header extension present.",
+              "createdAt": "2025-10-10T13:08:42Z",
+              "updatedAt": "2025-10-10T13:08:43Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7GFpfT",
+          "commit": {
+            "abbreviatedOid": "259b433"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-10T13:09:48Z",
+          "updatedAt": "2025-10-10T13:09:48Z",
+          "comments": [
+            {
+              "originalPosition": 112,
+              "body": "Fixed!",
+              "createdAt": "2025-10-10T13:09:48Z",
+              "updatedAt": "2025-10-10T13:09:48Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7GFx9k",
+          "commit": {
+            "abbreviatedOid": "13beb5f"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2025-10-10T13:14:04Z",
+          "updatedAt": "2025-10-10T13:14:04Z",
+          "comments": [
+            {
+              "originalPosition": 106,
+              "body": "Yes, let's discuss in issue #15.",
+              "createdAt": "2025-10-10T13:14:04Z",
+              "updatedAt": "2025-10-10T13:14:04Z"
+            }
+          ]
         }
       ]
+    },
+    {
+      "number": 17,
+      "id": "PR_kwDOOIDm-M6tF_YT",
+      "title": "move to version 01",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/pull/17",
+      "state": "MERGED",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2025-10-10T13:30:51Z",
+      "updatedAt": "2025-10-10T13:31:13Z",
+      "baseRepository": "sprangerik/frame-acknowledgement",
+      "baseRefName": "main",
+      "baseRefOid": "b39b0ba2296bed93af1a37c52b5d236861189f5e",
+      "headRepository": "sprangerik/frame-acknowledgement",
+      "headRefName": "v2",
+      "headRefOid": "00123bce7ce26bd5457bae7f5951d52cfd98bd38",
+      "closedAt": "2025-10-10T13:31:13Z",
+      "mergedAt": "2025-10-10T13:31:13Z",
+      "mergedBy": "sprangerik",
+      "mergeCommit": {
+        "oid": "8bb88616838b8f40ecc7ef00fddb7104f0345d13"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 18,
+      "id": "PR_kwDOOIDm-M6tGLET",
+      "title": "Fix some kramdown issues",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/pull/18",
+      "state": "MERGED",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "It didn't like the use if [] brackets and the nesting if chapter levels had a gap.",
+      "createdAt": "2025-10-10T13:41:39Z",
+      "updatedAt": "2025-10-10T13:42:25Z",
+      "baseRepository": "sprangerik/frame-acknowledgement",
+      "baseRefName": "main",
+      "baseRefOid": "8bb88616838b8f40ecc7ef00fddb7104f0345d13",
+      "headRepository": "sprangerik/frame-acknowledgement",
+      "headRefName": "parentheses",
+      "headRefOid": "344d2afef56b0607ff57296655e1bf139aa81caf",
+      "closedAt": "2025-10-10T13:42:25Z",
+      "mergedAt": "2025-10-10T13:42:25Z",
+      "mergedBy": "sprangerik",
+      "mergeCommit": {
+        "oid": "f973f9178749f8c3c18c5199cfb6da8448e62931"
+      },
+      "comments": [],
+      "reviews": []
     }
   ]
 }
