@@ -4,8 +4,11 @@
 
 avtcore WG                                                     E. Språng
 Internet-Draft                                                    Google
-Intended status: Informational                           10 October 2025
-Expires: 13 April 2026
+Intended status: Informational                             G. S. Chandok
+Expires: 13 April 2026                                             Apple
+                                                               S. Majali
+                                                                  Nvidia
+                                                         10 October 2025
 
 
       RTCP Feedback Message and Request Mechanism for Frame-level
@@ -98,7 +101,7 @@ Table of Contents
      11.1.  Normative References
      11.2.  Informative References
    Acknowledgments
-   Author's Address
+   Authors' Addresses
 
 1.  Introduction
 
@@ -514,8 +517,16 @@ Table of Contents
 
 Acknowledgments
 
-Author's Address
+Authors' Addresses
 
    Erik Språng
    Google
    Email: sprang@google.com
+
+
+   Gurtej Singh Chandok
+   Apple
+
+
+   Shridhar Majali
+   Nvidia
