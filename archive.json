@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-26T01:19:42.744231+00:00",
+  "timestamp": "2025-10-28T01:13:56.208579+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -485,15 +485,15 @@
       "id": "I_kwDOOIDm-M7Qxw2g",
       "title": "Motivate field length of Frame ID",
       "url": "https://github.com/sprangerik/frame-acknowledgement/issues/16",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "sprangerik",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "In PR #12 questions were raised around the decision to use an 8-bit length for the Frame ID field. \n\n**The spec should clearly describe how to handle this to avoid Frame ID conflicts and wrap-around problems.**\n\nWith a value span of 256 the risk for wraparound issues where sender and receiver are out of sync is definitely higher than a previous revision using 16-bit length. However, in practice this should not be an issue.\n\nMarking a frame with a Frame ID so that we can get feedback for it is only useful if we also allocate a _reference buffer_ in the codec state so that subsequent frames can predict from it. That effectively becomes the upper bound on how many frames in flight you can have, since number of reference buffers available is significantly smaller than 256 for any of the common codecs.\n\nThe maximum number of reference buffers available varies with codec and sometimes even level/profile, but as far as I can find the maximum number reference buffers for any major codec is H.265 which has up to 16 buffers. AV1 has up to 8. VP8 has only 3.\n\nWe should make sure the doc clearly explains this, as well as given instructions on how to deal with wraparounds in general.\n\nFor instance, it might be that we never receive feedback for a given frame - and the sender should not have to wait indefinitely before releasing that reference buffer. Instead the sender should be clear regard a frame as \"lost\" if it has not received feedback in what it determines to be an adequate time.\n\nWe also must make sure that the spec explains how multi-way scenarios should be handled, a middle-box may have to translate Frame IDs.\n\nPerhaps we should have a concrete example illustrating a simple strategy for when 1/fps is small relative to the RTT. ",
       "createdAt": "2025-10-10T12:34:16Z",
-      "updatedAt": "2025-10-24T23:57:21Z",
-      "closedAt": null,
+      "updatedAt": "2025-10-27T11:20:56Z",
+      "closedAt": "2025-10-27T11:20:56Z",
       "comments": [
         {
           "author": "gchandok",
@@ -508,6 +508,13 @@
           "body": "@sprangerik Do you think we need a justification in the spec to raise the the frameID size to 2 bytes or we should just do that? I think it should be fine to have at 2 bytes without reasoning. I think it is more important to have reasoning if we left it at 1 byte",
           "createdAt": "2025-10-24T23:57:21Z",
           "updatedAt": "2025-10-24T23:57:21Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "Justification in the spec might not be needed, but let's mention it as one close issue in the next progress update. That should leave enough of a trail if someone is interested. I'll close this issue for now.",
+          "createdAt": "2025-10-27T11:20:56Z",
+          "updatedAt": "2025-10-27T11:20:56Z"
         }
       ]
     },
