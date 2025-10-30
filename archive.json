@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-28T01:13:56.208579+00:00",
+  "timestamp": "2025-10-30T01:18:19.105513+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -55,15 +55,15 @@
       "id": "I_kwDOOIDm-M6uhBeo",
       "title": "Some opens about the avtcore-frame-acknowledgement draft proposal",
       "url": "https://github.com/sprangerik/frame-acknowledgement/issues/1",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "taste1981",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Hi,\n\nI read the avtcore-frame-acknowledgement document, and I have a few questions:\n\n1.\tIf the request for a frame is sent, and receiver has already decoded corresponding frame, but subsequent decoding error happens and receiver decides to flush the decode picture buffers(DPB) before it acks the request. Should receiver still send the ACK?\n\n2.\tFor uniquely identifying a frame, should we always rely on existence of DD for this? Or we should rely on some more generic frame markers? Or this can be from application\n\n3.\tAny consideration why we do not use timestamp instead?\n\n4.\tIn the context of SFU/MCU, where you have 1 sender and multiple receivers, how would you expect those feedbacks to be routed and handled by sender?\n\nRegards\nJohnny\n",
       "createdAt": "2025-03-18T10:04:58Z",
-      "updatedAt": "2025-04-07T15:04:27Z",
-      "closedAt": null,
+      "updatedAt": "2025-10-29T09:21:27Z",
+      "closedAt": "2025-10-29T09:21:27Z",
       "comments": [
         {
           "author": "sprangerik",
@@ -71,6 +71,13 @@
           "body": "1. I think it should respond, though in practice it won't really matter. If a receiver has a failure of that type, it will need to send a keyframe request to recover anyway.\n2.  The idea is that we have a prioritized list of identification methods, and we pick the first available one. DD is relatively straightforward so I added that as a startpoint. I'll open a separate issue on this topic, because I'm starting to doubt it's the right choice.\n3. Timestamps alone are not enough, it would need to be at least timestamp + spatial index (which might not be easily available). With the timestamp scale being 90kHz we'd also need a rather large data type to avoid potential wraparound issues.\n4. For and SFU/SFM I don't really see an option other than to ack only those frames acked by _all_ receivers for which that frame has been forwarded. For an MCU however, the uplink can be considered a separate point-to-point connection and then it's kind up to the encode/send part of the server to be designed in a way that makes sense for its application. The receivers will just blindly ack anything they decode.",
           "createdAt": "2025-04-07T15:04:26Z",
           "updatedAt": "2025-04-07T15:04:26Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "I think these questions have been answered and incorporated in the draft (or is covered by other issues). I'll close this one for now.",
+          "createdAt": "2025-10-29T09:21:27Z",
+          "updatedAt": "2025-10-29T09:21:27Z"
         }
       ]
     },
