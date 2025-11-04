@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-10-30T01:18:19.105513+00:00",
+  "timestamp": "2025-11-04T01:16:27.111890+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -271,15 +271,15 @@
       "id": "I_kwDOOIDm-M6yVyPd",
       "title": "Receiver triggered Frame acknowledgement",
       "url": "https://github.com/sprangerik/frame-acknowledgement/issues/8",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "shrim27",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Current format is using request-based approach, keeping receiver dumb as much as possible. There is a advantage in having receiver triggered feedback, sender request could be overhead which may not be necessary for certain applications. \nSDP format can be added to distinguish between different modes such that application developer can choose what fits best. \nFeedback mainly helps under packet loss, and providing configuration like trigger feedback if no fresh frame is submitted to decoder for 'x' timeout time and retrigger it every new frame received but cant be submitted to decode since packet loss has not resolved. These help receiver recover faster rather than wait for new feedback request from sender.",
       "createdAt": "2025-04-14T06:45:26Z",
-      "updatedAt": "2025-10-21T06:37:20Z",
-      "closedAt": null,
+      "updatedAt": "2025-11-03T17:24:18Z",
+      "closedAt": "2025-11-03T17:24:18Z",
       "comments": [
         {
           "author": "sprangerik",
@@ -308,6 +308,13 @@
           "body": "On the call on 10/17 we discussed that this may be resolved by having an explicit signal from the receiver it requires a codec resync. Created https://github.com/sprangerik/frame-acknowledgement/issues/19",
           "createdAt": "2025-10-21T06:37:20Z",
           "updatedAt": "2025-10-21T06:37:20Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "Let's call this done, and covered by #19 instead.",
+          "createdAt": "2025-11-03T17:24:18Z",
+          "updatedAt": "2025-11-03T17:24:18Z"
         }
       ]
     },
