@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-11-04T01:16:27.111890+00:00",
+  "timestamp": "2025-12-11T01:22:12.554655+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -1388,6 +1388,32 @@
           "comments": []
         }
       ]
+    },
+    {
+      "number": 22,
+      "id": "PR_kwDOOIDm-M64Bybr",
+      "title": "Change Frame ID length from 8-bit to 16-bit",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/pull/22",
+      "state": "OPEN",
+      "author": "shrim27",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "16-bit Frame ID is helpful especially during high fps streaming.",
+      "createdAt": "2025-12-09T23:48:44Z",
+      "updatedAt": "2025-12-09T23:48:44Z",
+      "baseRepository": "sprangerik/frame-acknowledgement",
+      "baseRefName": "main",
+      "baseRefOid": "7ef39d3b8b5b080cb8c0708648cbc850e7d89dd2",
+      "headRepository": "shrim27/frame-acknowledgement",
+      "headRefName": "TwoByteFrameID",
+      "headRefOid": "3092e22f8b0969911e6f5244b712d28d1e1b7e4e",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
