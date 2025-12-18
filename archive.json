@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2025-12-11T01:22:12.554655+00:00",
+  "timestamp": "2025-12-18T01:18:28.721997+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -563,6 +563,37 @@
       "updatedAt": "2025-10-21T11:51:45Z",
       "closedAt": "2025-10-21T11:51:45Z",
       "comments": []
+    },
+    {
+      "number": 23,
+      "id": "I_kwDOOIDm-M7e6QHl",
+      "title": "Update Frame ID from 8-bit to 16bit.",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/23",
+      "state": "OPEN",
+      "author": "shrim27",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "From previous discussion its decided that 8-bit frmeID is not sufficient especially for high FPS streaming, very small wrap around time.\nChange FrameID to 16bit. ",
+      "createdAt": "2025-12-17T17:33:54Z",
+      "updatedAt": "2025-12-17T17:35:39Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "shrim27",
+          "authorAssociation": "NONE",
+          "body": "Pull request to fix it https://github.com/sprangerik/frame-acknowledgement/pull/22",
+          "createdAt": "2025-12-17T17:34:14Z",
+          "updatedAt": "2025-12-17T17:34:14Z"
+        },
+        {
+          "author": "shrim27",
+          "authorAssociation": "NONE",
+          "body": "@gchandok @sprangerik please review.",
+          "createdAt": "2025-12-17T17:35:39Z",
+          "updatedAt": "2025-12-17T17:35:39Z"
+        }
+      ]
     }
   ],
   "pulls": [
