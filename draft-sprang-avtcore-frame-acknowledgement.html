@@ -24,12 +24,12 @@
     Python 3.12.12
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
-    intervaltree 3.1.0
+    intervaltree 3.2.1
     Jinja2 3.1.6
-    lxml 5.3.1
-    platformdirs 4.5.0
+    lxml 6.0.2
+    platformdirs 4.5.1
     pycountry 24.6.1
-    PyYAML 6.0.2
+    PyYAML 6.0.3
     requests 2.32.5
     wcwidth 0.2.14
 -->
@@ -1191,10 +1191,10 @@ svg :is([fill="white"], [fill^="#fff"]) {
                     <p id="section-toc.1-1.6.2.3.2.1.1"><a href="#section-6.3.1" class="auto internal xref">6.3.1</a>.  <a href="#name-ffr-frameid-feedback-reques" class="internal xref">FFR: FrameID / Feedback Request (2 bits)</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3.2.2">
-                    <p id="section-toc.1-1.6.2.3.2.2.1"><a href="#section-6.3.2" class="auto internal xref">6.3.2</a>.  <a href="#name-frame-id-8-bits" class="internal xref">Frame ID (8 bits)</a></p>
+                    <p id="section-toc.1-1.6.2.3.2.2.1"><a href="#section-6.3.2" class="auto internal xref">6.3.2</a>.  <a href="#name-frame-id-16-bits" class="internal xref">Frame ID (16 bits)</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3.2.3">
-                    <p id="section-toc.1-1.6.2.3.2.3.1"><a href="#section-6.3.3" class="auto internal xref">6.3.3</a>.  <a href="#name-feedback-start-8-bits" class="internal xref">Feedback Start (8 bits)</a></p>
+                    <p id="section-toc.1-1.6.2.3.2.3.1"><a href="#section-6.3.3" class="auto internal xref">6.3.3</a>.  <a href="#name-feedback-start-16-bits" class="internal xref">Feedback Start (16 bits)</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6.2.3.2.4">
                     <p id="section-toc.1-1.6.2.3.2.4.1"><a href="#section-6.3.4" class="auto internal xref">6.3.4</a>.  <a href="#name-feedback-length-8-bits" class="internal xref">Feedback Length (8 bits)</a></p>
@@ -1207,7 +1207,7 @@ svg :is([fill="white"], [fill^="#fff"]) {
             <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-frame-acknowledgment-feedba" class="internal xref">Frame Acknowledgment Feedback RTCP Message</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.1">
-                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-start-frame-id-8-bits" class="internal xref">Start Frame ID (8 bits)</a></p>
+                <p id="section-toc.1-1.7.2.1.1"><a href="#section-7.1" class="auto internal xref">7.1</a>.  <a href="#name-start-frame-id-16-bits" class="internal xref">Start Frame ID (16 bits)</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7.2.2">
                 <p id="section-toc.1-1.7.2.2.1"><a href="#section-7.2" class="auto internal xref">7.2</a>.  <a href="#name-length-8-bits" class="internal xref">Length (8 bits)</a></p>
@@ -1352,7 +1352,7 @@ It <span class="bcp14">SHOULD</span> appear on the last packet of a video frame,
         <h3 id="name-frame-identifier">
 <a href="#section-6.1" class="section-number selfRef">6.1. </a><a href="#name-frame-identifier" class="section-name selfRef">Frame Identifier</a>
         </h3>
-<p id="section-6.1-1">In order to request and receive information about decoded frames, we must be able to identify them. The frame acknowledgement header extension may contain a Frame ID field for this purpose. The Frame ID is an 8-bit unsigned integer field, that wraps around to 0 on overflow.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
+<p id="section-6.1-1">In order to request and receive information about decoded frames, we must be able to identify them. The frame acknowledgement header extension may contain a Frame ID field for this purpose. The Frame ID is an 16-bit unsigned integer field, that wraps around to 0 on overflow.<a href="#section-6.1-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="frame-acknowledgment-request">
@@ -1374,7 +1374,8 @@ The feedback request comprises a Start Frame ID and Length field. Specifying the
 The extension data starts with the FFR/Reserved byte.<a href="#section-6.3-1" class="pilcrow">¶</a></p>
 <p id="section-6.3-2">For a One-Byte Header (as defined in <span>[<a href="#RFC5285" class="cite xref">RFC5285</a>]</span>, Section 4.2), the <code>ID</code> field identifies the extension, and the <code>len</code> field is a 4-bit value <code>N</code> that indicates the number of data bytes following the <code>ID</code> and <code>len</code> fields, <em>minus one</em>. Thus, the total number of bytes for the extension data is <code>N+1</code>.<a href="#section-6.3-2" class="pilcrow">¶</a></p>
 <p id="section-6.3-3">For a Two-Byte Header (as defined in <span>[<a href="#RFC5285" class="cite xref">RFC5285</a>]</span>, Section 4.3), the <code>ID</code> field identifies the extension, and the 8-bit <code>length</code> field indicates the total number of bytes for the extension data (i.e., the FFR/Reserved byte plus any optional fields).<a href="#section-6.3-3" class="pilcrow">¶</a></p>
-<p id="section-6.3-4"><code>ascii-art
+<div class="alignLeft art-text artwork" id="section-6.3-4">
+<pre>
  Extension Data:
      0
      0 1 2 3 4 5 6 7
@@ -1383,11 +1384,16 @@ The extension data starts with the FFR/Reserved byte.<a href="#section-6.3-1" cl
     +-+-+-+-+-+-+-+-+
     |   Frame ID    |  (OPTIONAL, see FFR)
     +-+-+-+-+-+-+-+-+
-    | Feedb. Start  |  (OPTIONAL, see FFR)
+    | Frame ID cont.|  (OPTIONAL, see FFR)
     +-+-+-+-+-+-+-+-+
-    | Feedb. Length |  (OPTIONAL, see FFR)
+    |   Fb. Start   |  (OPTIONAL, see FFR)
     +-+-+-+-+-+-+-+-+
-</code><a href="#section-6.3-4" class="pilcrow">¶</a></p>
+    | Fb. Start cont|  (OPTIONAL, see FFR)
+    +-+-+-+-+-+-+-+-+
+    |  Fb. Length   |  (OPTIONAL, see FFR)
+    +-+-+-+-+-+-+-+-+
+</pre><a href="#section-6.3-4" class="pilcrow">¶</a>
+</div>
 <div id="ffr-frameid-feedback-request-2-bits">
 <section id="section-6.3.1">
           <h4 id="name-ffr-frameid-feedback-reques">
@@ -1398,25 +1404,25 @@ The extension data starts with the FFR/Reserved byte.<a href="#section-6.3-1" cl
 <li class="normal" id="section-6.3.1-2.1">
               <p id="section-6.3.1-2.1.1"><strong>00: Frame ID only.</strong>
 The FFR/Reserved byte is followed by a one-byte Frame ID field.
-Total extension data bytes = 1 (FFR/Reserved + Frame ID).
-For one-byte header: <code>len</code> = 0.
-For two-byte header: <code>length</code> = 1.
+Total extension data bytes = 3 (FFR/Reserved + Frame ID).
+For one-byte header: <code>len</code> = 2.
+For two-byte header: <code>length</code> = 3.
 No feedback is explicitly requested by this header.<a href="#section-6.3.1-2.1.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-6.3.1-2.2">
               <p id="section-6.3.1-2.2.1"><strong>01: Frame ID + implicit feedback request.</strong>
 The FFR/Reserved byte is followed by a one-byte Frame ID field.
-Total extension data bytes = 1 (FFR/Reserved + Frame ID).
-For one-byte header: <code>len</code> = 0.
-For two-byte header: <code>length</code> = 1.
+Total extension data bytes = 3 (FFR/Reserved + Frame ID).
+For one-byte header: <code>len</code> = 2.
+For two-byte header: <code>length</code> = 3.
 Feedback is requested for the frame identified by Frame ID (i.e., Feedback Start = Frame ID, Feedback Length = 1).<a href="#section-6.3.1-2.2.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-6.3.1-2.3">
               <p id="section-6.3.1-2.3.1"><strong>10: Frame ID + independent feedback request.</strong>
-The FFR/Reserved byte is followed by three bytes: a one-byte Frame ID, a one-byte Feedback Start, and a one-byte Feedback Length field.
-Total extension data bytes = 3 (FFR/Reserved + Frame ID + Feedback Start + Feedback Length).
-For one-byte header: <code>len</code> = 2.
-For two-byte header: <code>length</code> = 3.
+The FFR/Reserved byte is followed by five bytes: a two-byte Frame ID, a two-byte Feedback Start, and a one-byte Feedback Length field.
+Total extension data bytes = 6 (FFR/Reserved + Frame ID + Feedback Start + Feedback Length).
+For one-byte header: <code>len</code> = 5.
+For two-byte header: <code>length</code> = 6.
 This implies both a frame marking with Frame ID and an independent feedback request for the specified range.<a href="#section-6.3.1-2.3.1" class="pilcrow">¶</a></p>
 </li>
             <li class="normal" id="section-6.3.1-2.4">
@@ -1426,19 +1432,19 @@ This implies both a frame marking with Frame ID and an independent feedback requ
 <p id="section-6.3.1-3">The remaining 6 bits of the FFR/Reserved byte are reserved and <span class="bcp14">SHOULD</span> be set to 0.<a href="#section-6.3.1-3" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="frame-id-8-bits">
+<div id="frame-id-16-bits">
 <section id="section-6.3.2">
-          <h4 id="name-frame-id-8-bits">
-<a href="#section-6.3.2" class="section-number selfRef">6.3.2. </a><a href="#name-frame-id-8-bits" class="section-name selfRef">Frame ID (8 bits)</a>
+          <h4 id="name-frame-id-16-bits">
+<a href="#section-6.3.2" class="section-number selfRef">6.3.2. </a><a href="#name-frame-id-16-bits" class="section-name selfRef">Frame ID (16 bits)</a>
           </h4>
 <p id="section-6.3.2-1">Present if FFR is 00, 01, or 10.
 An unsigned integer that uniquely identifies a frame. It <span class="bcp14">MUST</span> be incremented by one for each new frame (in sending order) that needs to be identified. It wraps around to 0 on overflow.<a href="#section-6.3.2-1" class="pilcrow">¶</a></p>
 </section>
 </div>
-<div id="feedback-start-8-bits">
+<div id="feedback-start-16-bits">
 <section id="section-6.3.3">
-          <h4 id="name-feedback-start-8-bits">
-<a href="#section-6.3.3" class="section-number selfRef">6.3.3. </a><a href="#name-feedback-start-8-bits" class="section-name selfRef">Feedback Start (8 bits)</a>
+          <h4 id="name-feedback-start-16-bits">
+<a href="#section-6.3.3" class="section-number selfRef">6.3.3. </a><a href="#name-feedback-start-16-bits" class="section-name selfRef">Feedback Start (16 bits)</a>
           </h4>
 <p id="section-6.3.3-1">Present if FFR is 10 or 11.
 An unsigned integer that corresponds to the first Frame ID (inclusive) the sender is requesting feedback for. It wraps around to 0 on overflow.<a href="#section-6.3.3-1" class="pilcrow">¶</a></p>
@@ -1451,7 +1457,7 @@ An unsigned integer that corresponds to the first Frame ID (inclusive) the sende
           </h4>
 <p id="section-6.3.4-1">Present if FFR is 10 or 11.
 An unsigned integer that indicates the number of consecutive frames the sender is requesting feedback for, starting from Feedback Start. A value of 0 means no frames are being requested. A value of 1 means only the frame identified by Feedback Start is requested. The range is Feedback Start to Feedback Start + Feedback Length - 1, inclusive, with wrap-around logic applied to Frame IDs.<a href="#section-6.3.4-1" class="pilcrow">¶</a></p>
-<p id="section-6.3.4-2">Note that since the Frame ID, Feedback Start, and Feedback Length are 8-bit fields that wrap, care must be taken when calculating ranges. For example, a request with Feedback Start = 254 and Feedback Length = 3 indicates the sender is requesting feedback for frames with Frame IDs 254, 255, and 0.<a href="#section-6.3.4-2" class="pilcrow">¶</a></p>
+<p id="section-6.3.4-2">Note that since the Frame ID and Feedback Start are 16-bit fields that wrap, care must be taken when calculating ranges. For example, a request with Feedback Start = 65534 and Feedback Length = 3 indicates the sender is requesting feedback for frames with Frame IDs 65534, 65535, and 0.<a href="#section-6.3.4-2" class="pilcrow">¶</a></p>
 <p id="section-6.3.4-3">If a sender is not interested in feedback for frames prior to and including a given Frame ID, it can effectively signal this by sending a request (FFR=01, 10, or 10) where the Feedback Start (or Frame ID for FFR=01) is more recent. This implicitly acknowledges prior frames up to the new Feedback Start. Alternatively, a Feedback Length of 0 can be used with FFR=10 if no specific frames need feedback but an acknowledgment point needs to be set.<a href="#section-6.3.4-3" class="pilcrow">¶</a></p>
 </section>
 </div>
@@ -1466,7 +1472,8 @@ An unsigned integer that indicates the number of consecutive frames the sender i
       </h2>
 <p id="section-7-1">The Frame Acknowledgement Feedback message is an RTCP message (<span>[<a href="#RFC4585" class="cite xref">RFC4585</a>]</span>) containing a vector of status symbols, corresponding to the state for the frames requested in a Frame Acknowledgement Extension.<a href="#section-7-1" class="pilcrow">¶</a></p>
 <p id="section-7-2">This message is identified by PT = RTPFB (205) and FMT = TBD (to be assigned by IANA, suggested value 12).<a href="#section-7-2" class="pilcrow">¶</a></p>
-<p id="section-7-3"><code>ascii-art
+<div class="alignLeft art-text artwork" id="section-7-3">
+<pre>
      0                   1                   2                   3
      0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -1476,15 +1483,16 @@ An unsigned integer that indicates the number of consecutive frames the sender i
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                  SSRC of media source                         |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    | Start FrameID |    Length     |      status vector + padding  |
+    | Start FrameID                 |    Length     | status vector |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    |                            ...                                |
+    |                 status vector + padding                       |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-</code><a href="#section-7-3" class="pilcrow">¶</a></p>
-<div id="start-frame-id-8-bits">
+</pre><a href="#section-7-3" class="pilcrow">¶</a>
+</div>
+<div id="start-frame-id-16-bits">
 <section id="section-7.1">
-        <h3 id="name-start-frame-id-8-bits">
-<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-start-frame-id-8-bits" class="section-name selfRef">Start Frame ID (8 bits)</a>
+        <h3 id="name-start-frame-id-16-bits">
+<a href="#section-7.1" class="section-number selfRef">7.1. </a><a href="#name-start-frame-id-16-bits" class="section-name selfRef">Start Frame ID (16 bits)</a>
         </h3>
 <p id="section-7.1-1">The first Frame ID (inclusive) for which feedback is provided in this message. This corresponds to a Frame ID previously sent in a Frame Acknowledgment Request extension.<a href="#section-7.1-1" class="pilcrow">¶</a></p>
 </section>
