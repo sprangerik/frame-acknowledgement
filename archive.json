@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-01-08T01:24:49.345222+00:00",
+  "timestamp": "2026-01-18T01:40:15.465068+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -569,29 +569,36 @@
       "id": "I_kwDOOIDm-M7e6QHl",
       "title": "Update Frame ID from 8-bit to 16bit.",
       "url": "https://github.com/sprangerik/frame-acknowledgement/issues/23",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "shrim27",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "From previous discussion its decided that 8-bit frmeID is not sufficient especially for high FPS streaming, very small wrap around time.\nChange FrameID to 16bit. ",
       "createdAt": "2025-12-17T17:33:54Z",
-      "updatedAt": "2025-12-17T17:35:39Z",
-      "closedAt": null,
+      "updatedAt": "2026-01-16T12:47:33Z",
+      "closedAt": "2026-01-16T12:47:33Z",
       "comments": [
         {
           "author": "shrim27",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "Pull request to fix it https://github.com/sprangerik/frame-acknowledgement/pull/22",
           "createdAt": "2025-12-17T17:34:14Z",
           "updatedAt": "2025-12-17T17:34:14Z"
         },
         {
           "author": "shrim27",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "body": "@gchandok @sprangerik please review.",
           "createdAt": "2025-12-17T17:35:39Z",
           "updatedAt": "2025-12-17T17:35:39Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "Marking as fixed as of #22 ",
+          "createdAt": "2026-01-16T12:47:33Z",
+          "updatedAt": "2026-01-16T12:47:33Z"
         }
       ]
     }
@@ -1425,24 +1432,26 @@
       "id": "PR_kwDOOIDm-M64Bybr",
       "title": "Change Frame ID length from 8-bit to 16-bit",
       "url": "https://github.com/sprangerik/frame-acknowledgement/pull/22",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "shrim27",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "16-bit Frame ID is helpful especially during high fps streaming.",
       "createdAt": "2025-12-09T23:48:44Z",
-      "updatedAt": "2026-01-07T07:02:32Z",
+      "updatedAt": "2026-01-16T12:43:48Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "7ef39d3b8b5b080cb8c0708648cbc850e7d89dd2",
       "headRepository": "shrim27/frame-acknowledgement",
       "headRefName": "TwoByteFrameID",
       "headRefOid": "98f6afc8a8921263f552b6f2a6ce34186fa1a0bd",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-01-16T12:43:48Z",
+      "mergedAt": "2026-01-16T12:43:48Z",
+      "mergedBy": "sprangerik",
+      "mergeCommit": {
+        "oid": "2f838d8c8860b47a6ab38a2170f228b1287022a7"
+      },
       "comments": [],
       "reviews": [
         {
@@ -1471,7 +1480,7 @@
             "abbreviatedOid": "3092e22"
           },
           "author": "shrim27",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2026-01-07T07:02:32Z",
