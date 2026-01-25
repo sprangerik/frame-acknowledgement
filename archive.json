@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-01-18T01:40:15.465068+00:00",
+  "timestamp": "2026-01-25T01:42:38.162165+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -544,9 +544,17 @@
       "labels": [],
       "body": "We need an explicit signal from the receiver back to sender indicating that decoder has gone out of sync with the encoder and that it requires a frame encoded with a reference that has been previously acknowledged by the receiver. This is required to cover the case where the receiver has received a partial frame which could not be recovered using FEC or RTX and its playout time has passed and the receiver would like to move on to a more recent frame but would need it to be encoded using a acknowledged reference frame.",
       "createdAt": "2025-10-21T06:35:03Z",
-      "updatedAt": "2025-10-21T06:35:03Z",
+      "updatedAt": "2026-01-22T23:04:31Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "shrim27",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Updated draft to address this issue\nhttps://github.com/sprangerik/frame-acknowledgement/pull/24",
+          "createdAt": "2026-01-22T23:04:30Z",
+          "updatedAt": "2026-01-22T23:04:30Z"
+        }
+      ]
     },
     {
       "number": 20,
@@ -1495,6 +1503,32 @@
           ]
         }
       ]
+    },
+    {
+      "number": 24,
+      "id": "PR_kwDOOIDm-M6-z2AY",
+      "title": "Update the draft with receiver triggered feedback",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/pull/24",
+      "state": "OPEN",
+      "author": "shrim27",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Decoder resynchronization during partial or full frame loss without using key-frame.",
+      "createdAt": "2026-01-22T23:03:50Z",
+      "updatedAt": "2026-01-22T23:03:50Z",
+      "baseRepository": "sprangerik/frame-acknowledgement",
+      "baseRefName": "main",
+      "baseRefOid": "2f838d8c8860b47a6ab38a2170f228b1287022a7",
+      "headRepository": "shrim27/frame-acknowledgement",
+      "headRefName": "receiverRsync",
+      "headRefOid": "a2ea8b1244b746f086d7434e5b22457b42b56f82",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
