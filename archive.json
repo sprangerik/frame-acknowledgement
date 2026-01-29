@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-01-25T01:42:38.162165+00:00",
+  "timestamp": "2026-01-29T01:47:56.846243+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -544,7 +544,7 @@
       "labels": [],
       "body": "We need an explicit signal from the receiver back to sender indicating that decoder has gone out of sync with the encoder and that it requires a frame encoded with a reference that has been previously acknowledged by the receiver. This is required to cover the case where the receiver has received a partial frame which could not be recovered using FEC or RTX and its playout time has passed and the receiver would like to move on to a more recent frame but would need it to be encoded using a acknowledged reference frame.",
       "createdAt": "2025-10-21T06:35:03Z",
-      "updatedAt": "2026-01-22T23:04:31Z",
+      "updatedAt": "2026-01-28T05:48:15Z",
       "closedAt": null,
       "comments": [
         {
@@ -553,6 +553,13 @@
           "body": "Updated draft to address this issue\nhttps://github.com/sprangerik/frame-acknowledgement/pull/24",
           "createdAt": "2026-01-22T23:04:30Z",
           "updatedAt": "2026-01-22T23:04:30Z"
+        },
+        {
+          "author": "shrim27",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "@sprangerik @gchandok Please help review.",
+          "createdAt": "2026-01-28T05:48:15Z",
+          "updatedAt": "2026-01-28T05:48:15Z"
         }
       ]
     },
@@ -1516,7 +1523,7 @@
       "labels": [],
       "body": "Decoder resynchronization during partial or full frame loss without using key-frame.",
       "createdAt": "2026-01-22T23:03:50Z",
-      "updatedAt": "2026-01-22T23:03:50Z",
+      "updatedAt": "2026-01-28T18:11:49Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "2f838d8c8860b47a6ab38a2170f228b1287022a7",
@@ -1528,7 +1535,46 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOIDm-M7dnv9i",
+          "commit": {
+            "abbreviatedOid": "a2ea8b1"
+          },
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "Thanks for making these changes. Look good overall but I would like to discuss potentially having a separate message to request refresh frame",
+          "createdAt": "2026-01-28T18:00:42Z",
+          "updatedAt": "2026-01-28T18:11:49Z",
+          "comments": [
+            {
+              "originalPosition": 13,
+              "body": "\"The Frame Acknowledgement Feedback message provides a mechanism for the receiver to request such resynchronization frames\". Reading this statement makes it sound like we are overloading the frame ack feedback message to do something it was not originally intended for. Could potentially be fixed by renaming the original message to something more generic or introducing a different message",
+              "createdAt": "2026-01-28T18:00:42Z",
+              "updatedAt": "2026-01-28T18:11:50Z"
+            },
+            {
+              "originalPosition": 42,
+              "body": "This also implies that that the first bit of the status vector will always be 1 if R is 1, correct? ",
+              "createdAt": "2026-01-28T18:05:19Z",
+              "updatedAt": "2026-01-28T18:11:50Z"
+            },
+            {
+              "originalPosition": 42,
+              "body": "Having a single R bit at the start of the status vector does make the implementation a bit more involved than it was before. Not a deal breaker but worth discussing. ",
+              "createdAt": "2026-01-28T18:07:19Z",
+              "updatedAt": "2026-01-28T18:11:50Z"
+            },
+            {
+              "originalPosition": 42,
+              "body": "I feel we can make this cleaner by just having a separate RTCP message that only contains the latest frameID and skips the length and the status vector. Do you feel it is important for this message to carry the status vector? ",
+              "createdAt": "2026-01-28T18:09:21Z",
+              "updatedAt": "2026-01-28T18:11:50Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
