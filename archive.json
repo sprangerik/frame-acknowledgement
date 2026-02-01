@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-01-29T01:47:56.846243+00:00",
+  "timestamp": "2026-02-01T02:03:02.577050+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -1523,7 +1523,7 @@
       "labels": [],
       "body": "Decoder resynchronization during partial or full frame loss without using key-frame.",
       "createdAt": "2026-01-22T23:03:50Z",
-      "updatedAt": "2026-01-28T18:11:49Z",
+      "updatedAt": "2026-01-30T14:18:51Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "2f838d8c8860b47a6ab38a2170f228b1287022a7",
@@ -1571,6 +1571,70 @@
               "body": "I feel we can make this cleaner by just having a separate RTCP message that only contains the latest frameID and skips the length and the status vector. Do you feel it is important for this message to carry the status vector? ",
               "createdAt": "2026-01-28T18:09:21Z",
               "updatedAt": "2026-01-28T18:11:50Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7ePQrc",
+          "commit": {
+            "abbreviatedOid": "a2ea8b1"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-01-30T14:00:52Z",
+          "updatedAt": "2026-01-30T14:00:53Z",
+          "comments": [
+            {
+              "originalPosition": 13,
+              "body": "\"avoiding the need for a full keyframe\" I'd say this is the primary goal regardless of we use receive-side triggered feedback or not. The one thing that receive-side triggered feedback could improve is to reduce the latency between loss and recovery that a purely send-side requested feedback may be able to deliver.",
+              "createdAt": "2026-01-30T14:00:52Z",
+              "updatedAt": "2026-01-30T14:00:53Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7ePYwc",
+          "commit": {
+            "abbreviatedOid": "a2ea8b1"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "Thanks for writing this up! Some good questions raised here.",
+          "createdAt": "2026-01-30T14:06:44Z",
+          "updatedAt": "2026-01-30T14:18:51Z",
+          "comments": [
+            {
+              "originalPosition": 13,
+              "body": "Nit: Extra white space in \"has been  acknowledged.\"",
+              "createdAt": "2026-01-30T14:06:44Z",
+              "updatedAt": "2026-01-30T14:18:51Z"
+            },
+            {
+              "originalPosition": 42,
+              "body": "I'm not sure a completely new message is warranted. This is still very much feedback about the decoder state. Depending on the scenario, just the latest acknowledged frame id also might not be enough - so you would still need a feedback vector.",
+              "createdAt": "2026-01-30T14:09:17Z",
+              "updatedAt": "2026-01-30T14:18:51Z"
+            },
+            {
+              "originalPosition": 40,
+              "body": "Instead of 1 bit, would it make sense to reserve a full byte - so we have a few reserved bits if we want to extend this?",
+              "createdAt": "2026-01-30T14:10:01Z",
+              "updatedAt": "2026-01-30T14:18:51Z"
+            },
+            {
+              "originalPosition": 42,
+              "body": "I wonder if we can optimize both the send-side and the receive-side triggered paths here. Let the start frame id be the first *not* decoded frame after the current start of window (i.e. the first failed frame after last frame id that we know the sender has received feedback for). ",
+              "createdAt": "2026-01-30T14:13:45Z",
+              "updatedAt": "2026-01-30T14:18:51Z"
+            },
+            {
+              "originalPosition": 63,
+              "body": "I'd probably state this as somthing like \n```\n1. Check if at least on Frame ID that has been acknowledged is still available in the reference buffers.\n2. Encode the next frame using only acknowledged frames as references.\n3. If no acknowledged frames are available in the reference buffers, the sender SHOULD encode a keyframe.\n4. ```",
+              "createdAt": "2026-01-30T14:17:35Z",
+              "updatedAt": "2026-01-30T14:18:51Z"
             }
           ]
         }
