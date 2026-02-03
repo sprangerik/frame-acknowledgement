@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-02-01T02:03:02.577050+00:00",
+  "timestamp": "2026-02-03T01:54:06.614958+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -1523,7 +1523,7 @@
       "labels": [],
       "body": "Decoder resynchronization during partial or full frame loss without using key-frame.",
       "createdAt": "2026-01-22T23:03:50Z",
-      "updatedAt": "2026-01-30T14:18:51Z",
+      "updatedAt": "2026-02-02T16:46:38Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "2f838d8c8860b47a6ab38a2170f228b1287022a7",
@@ -1635,6 +1635,98 @@
               "body": "I'd probably state this as somthing like \n```\n1. Check if at least on Frame ID that has been acknowledged is still available in the reference buffers.\n2. Encode the next frame using only acknowledged frames as references.\n3. If no acknowledged frames are available in the reference buffers, the sender SHOULD encode a keyframe.\n4. ```",
               "createdAt": "2026-01-30T14:17:35Z",
               "updatedAt": "2026-01-30T14:18:51Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7evU3Y",
+          "commit": {
+            "abbreviatedOid": "a2ea8b1"
+          },
+          "author": "shrim27",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-02-02T01:12:22Z",
+          "updatedAt": "2026-02-02T01:44:27Z",
+          "comments": [
+            {
+              "originalPosition": 40,
+              "body": "Sure, having reserve bits is always better than breaking protocol in case of addition.",
+              "createdAt": "2026-02-02T01:12:22Z",
+              "updatedAt": "2026-02-02T01:44:27Z"
+            },
+            {
+              "originalPosition": 42,
+              "body": "Agree adding R bit makes the implementation bit complicated. I like the idea Erik suggested to instead of 1 bit make the flags 1 byte that way it can be extended if needed.\nAlso having full vector is useful, I dont want to restrict information for future cases it can help optimize sender algos. \nI also debated weather it was really needed, but I erred on the side of conservative to make it future proof.",
+              "createdAt": "2026-02-02T01:16:32Z",
+              "updatedAt": "2026-02-02T01:44:27Z"
+            },
+            {
+              "originalPosition": 63,
+              "body": "Ok, makes it more generic than my wordings. I will update. Thanks",
+              "createdAt": "2026-02-02T01:19:43Z",
+              "updatedAt": "2026-02-02T01:44:28Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7e9Ddd",
+          "commit": {
+            "abbreviatedOid": "a2ea8b1"
+          },
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-02-02T16:24:43Z",
+          "updatedAt": "2026-02-02T16:24:43Z",
+          "comments": [
+            {
+              "originalPosition": 42,
+              "body": "@shrim27 I am aligned with making this a byte but lets have it as the first field in the message body, even before the frameID",
+              "createdAt": "2026-02-02T16:24:43Z",
+              "updatedAt": "2026-02-02T16:24:43Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7e9PC5",
+          "commit": {
+            "abbreviatedOid": "a2ea8b1"
+          },
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-02-02T16:31:18Z",
+          "updatedAt": "2026-02-02T16:31:18Z",
+          "comments": [
+            {
+              "originalPosition": 42,
+              "body": "How does the receiver know for sure that the sender has received feedback for some frame? The receiver may have sent the feedback but sender may not have received it. Making receiver more stateful for this optimization may increase complexity of implementation",
+              "createdAt": "2026-02-02T16:31:18Z",
+              "updatedAt": "2026-02-02T16:31:18Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7e9nGB",
+          "commit": {
+            "abbreviatedOid": "a2ea8b1"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-02-02T16:46:38Z",
+          "updatedAt": "2026-02-02T16:46:38Z",
+          "comments": [
+            {
+              "originalPosition": 42,
+              "body": "> How does the receiver know for sure that the sender has received feedback for some frame?\r\n\r\nThat is already part of the normal mechanism. If the sender requests feedback for Frame ID X, then any Frame ID Y < X has been automatically acknowledged by the sender. So even with receiver side feedback, I think it reasonable to require that the sender periodically acknowledges the feedback. This can be done with a request with [Feedback Length (8 bits)](https://sprangerik.github.io/frame-acknowledgement/draft-sprang-avtcore-frame-acknowledgement.html#name-feedback-length-8-bits) set to the value 0 if no actual feedback is wanted at that time.\r\n\r\nWe should probably add text describing this behavior in more detail though.",
+              "createdAt": "2026-02-02T16:46:38Z",
+              "updatedAt": "2026-02-02T16:46:38Z"
             }
           ]
         }
