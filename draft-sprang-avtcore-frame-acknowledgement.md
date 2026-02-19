@@ -89,7 +89,7 @@ On the other hand, if the encoder is able to reason about which frames have been
 
 In order to achieve this the sender must be able to reason about the state of the receiver, necessitating the need for feedback signals. In this document a new RTCP message called "Frame Acknowledgement" is introduced as a codec agnostic feedback message for this purpose. Further, an RTP header extension is introduced that allows the sender to actively request feedback on decoding of the associated frame. This allows the sender to both request quick feedback on frames that are important for latency, and enables resilience against loss of feedback packets.
 
-Additionally, there are situations where the receiver may experience partial or full frame loss that cannot be recovered through retransmission or other means. In such cases, the receiver may wish to skip the unrecoverable frame and move forward, but needs a frame encoded with a reference that has been  acknowledged. The Frame Acknowledgement Feedback message provides a mechanism for the receiver to request such resynchronization frames, avoiding the need for a full keyframe and thereby minimizing recovery latency and bandwidth usage.
+Additionally, there are situations where the receiver may experience partial or full frame loss that cannot be recovered through retransmission or other means. In such cases, the receiver may wish to skip the unrecoverable frame and move forward, but needs a frame encoded with a reference that has been acknowledged. The Frame Acknowledgement Feedback message provides a mechanism for the receiver to request such resynchronization frames, avoiding the need for a full keyframe and thereby minimizing recovery latency and bandwidth usage.
 
 Note that it is allowed to report a frame as decoded even if the decode process is not complete - as long as the receiver guarantees that it will attempt to decode the frame. The rationale for this is that we want to reduce the feedback delay as much as possible. Should the decoding of a frame that has been acknowledged fail, then the receiver MUST request a keyframe to recover, even if the failed decoding belongs to a droppable layer.
 
@@ -247,11 +247,23 @@ This message is identified by PT = RTPFB (205) and FMT = TBD (to be assigned by 
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                  SSRC of media source                         |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    | Start FrameID                 |    Length     |R| status vect.|
+    |R| Reserved    | Start FrameID                 |    Length     |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                 status vector + padding                       |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ~~~
+
+## Flags (8 bits)
+
+The flags byte contains the Resync Request Flag and reserved bits for future use.
+
+### Resync Request Flag (1 bit)
+
+The most significant bit (bit 0) of the flags byte indicates whether the receiver is requesting a resync frame. When set to 1, indicates that the receiver is requesting a resync frame. When set to 0, acknowledgement is triggered by sender request. If R=1, Start Frame ID should indicate latest decoded frame ID and status vector contatining frames upto latest received Frame ID assuming length field is less than 256.
+
+### Reserved (7 bits)
+
+The remaining 7 bits (bits 1-7) are reserved for future use and MUST be set to 0 by senders and MUST be ignored by receivers.
 
 ## Start Frame ID (16 bits)
 
@@ -261,17 +273,13 @@ The first Frame ID (inclusive) for which feedback is provided in this message. T
 
 An unsigned integer denoting how many consecutive frames, starting from Start Frame ID, this message contains feedback for. The last Frame ID included in the feedback is (Start Frame ID + Length - 1), with wrap-around logic applied to Frame IDs. A Length of 0 indicates no feedback information is present, though this SHOULD NOT be sent.
 
-## R: Resync Request Flag (1 bit)
-
-When set to 1, indicates that the receiver is requesting a resync frame. When set to 0, acknowledgement is triggered by sender request. If R=1, Start Frame ID should indicate latest decoded frame ID and status vector contatining frames upto latest received Frame ID assuming length field is less than 256.
-
 ## status vector (variable length)
 
 A bit vector of the size indicated by the Length field. Each bit corresponds to a Frame ID, starting from Start Frame ID and incrementing by one for each subsequent bit.
 *   A value of **0** indicates the frame has not been received or has not been decoded (or is not expected to be decoded).
 *   A value of **1** indicates the frame has been received and has been or will be decoded.
 
-The status vector MUST be padded with 0 to align to the next 32-bit boundary if its length plus the R flag is not a multiple of 32 bits. This padding is not included in the Length field but is included in the RTCP packet's length field.
+The status vector MUST be padded with 0 to align to the next 32-bit boundary if its length is not a multiple of 32 bits. This padding is not included in the Length field but is included in the RTCP packet's length field.
 
 # Frame ID considerations {#frame_id_considerations}
 
@@ -280,7 +288,7 @@ Since feedback is only really necessary for frames which the codec stores in a r
 
 ## Resync Request Handling
 
-When a receiver detects that its decoder state has become out of sync with the encoder (for example, due to an unrecoverable partial frame loss), it MAY send a Frame Acknowledgement Feedback message with the R flag set to 1 and specify status vector from latest decoded FrameID upto latest received FrameID.
+When a receiver detects that its decoder state has become out of sync with the encoder (for example, due to an unrecoverable partial frame loss), it MAY send a Frame Acknowledgement Feedback message with the R flag (bit 0) set to 1 and specify status vector from latest decoded FrameID upto latest received FrameID.
 
 Upon receiving a resync request, the sender SHOULD:
 1. Verify that the decoded Frame ID corresponds to a frame that is still available in its reference buffer.
