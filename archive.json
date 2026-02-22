@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-02-03T01:54:06.614958+00:00",
+  "timestamp": "2026-02-22T01:54:19.307249+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -1523,13 +1523,13 @@
       "labels": [],
       "body": "Decoder resynchronization during partial or full frame loss without using key-frame.",
       "createdAt": "2026-01-22T23:03:50Z",
-      "updatedAt": "2026-02-02T16:46:38Z",
+      "updatedAt": "2026-02-19T07:26:30Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "2f838d8c8860b47a6ab38a2170f228b1287022a7",
       "headRepository": "shrim27/frame-acknowledgement",
       "headRefName": "receiverRsync",
-      "headRefOid": "a2ea8b1244b746f086d7434e5b22457b42b56f82",
+      "headRefOid": "924eeedf0ea6943d88061e932ba1b8bb0399fde7",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -1727,6 +1727,66 @@
               "body": "> How does the receiver know for sure that the sender has received feedback for some frame?\r\n\r\nThat is already part of the normal mechanism. If the sender requests feedback for Frame ID X, then any Frame ID Y < X has been automatically acknowledged by the sender. So even with receiver side feedback, I think it reasonable to require that the sender periodically acknowledges the feedback. This can be done with a request with [Feedback Length (8 bits)](https://sprangerik.github.io/frame-acknowledgement/draft-sprang-avtcore-frame-acknowledgement.html#name-feedback-length-8-bits) set to the value 0 if no actual feedback is wanted at that time.\r\n\r\nWe should probably add text describing this behavior in more detail though.",
               "createdAt": "2026-02-02T16:46:38Z",
               "updatedAt": "2026-02-02T16:46:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7j67tT",
+          "commit": {
+            "abbreviatedOid": "a2ea8b1"
+          },
+          "author": "shrim27",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-02-19T07:14:40Z",
+          "updatedAt": "2026-02-19T07:14:40Z",
+          "comments": [
+            {
+              "originalPosition": 42,
+              "body": "Updated in new commit, please take a look.",
+              "createdAt": "2026-02-19T07:14:40Z",
+              "updatedAt": "2026-02-19T07:14:40Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7j676b",
+          "commit": {
+            "abbreviatedOid": "a2ea8b1"
+          },
+          "author": "shrim27",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-02-19T07:14:56Z",
+          "updatedAt": "2026-02-19T07:14:56Z",
+          "comments": [
+            {
+              "originalPosition": 40,
+              "body": "Updated in new commit. Please check",
+              "createdAt": "2026-02-19T07:14:56Z",
+              "updatedAt": "2026-02-19T07:14:57Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7j7FAq",
+          "commit": {
+            "abbreviatedOid": "a2ea8b1"
+          },
+          "author": "shrim27",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-02-19T07:26:30Z",
+          "updatedAt": "2026-02-19T07:26:30Z",
+          "comments": [
+            {
+              "originalPosition": 42,
+              "body": "In case no frame is acknowledged by sender, do we want to keep current decoder FrameID as start? I think that makes it easier for receive side triggered feedback where sender never asks/acknowledges.\r\nAnd we add details for case where sender acknowledges so that usual mechanism is complimented with receiver triggered path.",
+              "createdAt": "2026-02-19T07:26:30Z",
+              "updatedAt": "2026-02-19T07:26:30Z"
             }
           ]
         }
