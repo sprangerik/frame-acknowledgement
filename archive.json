@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-02-22T01:54:19.307249+00:00",
+  "timestamp": "2026-02-26T01:50:44.654945+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -616,6 +616,22 @@
           "updatedAt": "2026-01-16T12:47:33Z"
         }
       ]
+    },
+    {
+      "number": 25,
+      "id": "I_kwDOOIDm-M7tTFFX",
+      "title": "Include an example flow in the appendix",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/25",
+      "state": "OPEN",
+      "author": "gchandok",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "We should include an example flow in the appendix that describes the sender and receiver roles; how feedback is requested , how state is maintained on receiver, how feedback is provided from receiver, how receiver can request a resync and how the sender generates the refresh frame",
+      "createdAt": "2026-02-24T02:53:17Z",
+      "updatedAt": "2026-02-24T02:53:17Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -1523,7 +1539,7 @@
       "labels": [],
       "body": "Decoder resynchronization during partial or full frame loss without using key-frame.",
       "createdAt": "2026-01-22T23:03:50Z",
-      "updatedAt": "2026-02-19T07:26:30Z",
+      "updatedAt": "2026-02-24T22:05:15Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "2f838d8c8860b47a6ab38a2170f228b1287022a7",
@@ -1787,6 +1803,92 @@
               "body": "In case no frame is acknowledged by sender, do we want to keep current decoder FrameID as start? I think that makes it easier for receive side triggered feedback where sender never asks/acknowledges.\r\nAnd we add details for case where sender acknowledges so that usual mechanism is complimented with receiver triggered path.",
               "createdAt": "2026-02-19T07:26:30Z",
               "updatedAt": "2026-02-19T07:26:30Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7lKCqN",
+          "commit": {
+            "abbreviatedOid": "924eeed"
+          },
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-02-24T02:13:27Z",
+          "updatedAt": "2026-02-24T02:13:28Z",
+          "comments": [
+            {
+              "originalPosition": 44,
+              "body": "```suggestion\nThe most significant bit (bit 0) of the flags byte indicates whether the receiver is requesting a resync frame. When set to 1, indicates that the receiver is requesting a resync frame. When set to 0, acknowledgement is triggered by sender request. If R=1, Start Frame ID should indicate latest decoded frame ID and status vector containing frames upto latest received Frame ID assuming length field is less than 256.\n```\n\ntypo in containing",
+              "createdAt": "2026-02-24T02:13:28Z",
+              "updatedAt": "2026-02-24T02:13:28Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7lKH6B",
+          "commit": {
+            "abbreviatedOid": "924eeed"
+          },
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-02-24T02:17:34Z",
+          "updatedAt": "2026-02-24T02:50:08Z",
+          "comments": [
+            {
+              "originalPosition": 44,
+              "body": "Thought about this a bit more. \"Start Frame ID should indicate latest decoded frame ID and status vector containing frames upto latest received Frame ID assuming length field is less than 256.\"\n\nsince status vector bit is only supposed to be set to 1 for frames that are decoded (or certain to be decoded) would this not imply that the status vector in this receiver initiated feedback message would be 1 followed by all zeroes? Given that we have a bit for R we should just be able to drop the length and status vector field. What is the purpose of sending this status vector? @shrim27 ",
+              "createdAt": "2026-02-24T02:17:35Z",
+              "updatedAt": "2026-02-24T02:50:08Z"
+            },
+            {
+              "originalPosition": 42,
+              "body": "So in effect @sprangerik you are saying receiver should report back whatever frame decode status vector it is currently maintaining back to the sender. But it should not clear the state till the sender requests some feedback. \r\n\r\nAre we imagining a mode where there is no sender requested feedback and receiver just maintains the last decoded frameID and includes that in the resync request? This would be sufficient for non-SVC configurations; do you'll think it extends to SVC as well?\r\n\r\nIf we are able to negotiate ahead of time whether sender is going to request feedback and cares about multiple frameIDs we can maintain some history of status vectors on the receiver and report it all. If the sender does not request feedback we can just fallback to single frameID history mode on the receiver. I think there is value in keeping this simpler single frame mode.",
+              "createdAt": "2026-02-24T02:49:02Z",
+              "updatedAt": "2026-02-24T02:50:08Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7lYZBR",
+          "commit": {
+            "abbreviatedOid": "a2ea8b1"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-02-24T14:39:44Z",
+          "updatedAt": "2026-02-24T14:39:44Z",
+          "comments": [
+            {
+              "originalPosition": 42,
+              "body": "> So in effect @sprangerik you are saying receiver should report back whatever frame decode status vector it is currently maintaining back to the sender. But it should not clear the state till the sender requests some feedback.\r\n\r\nYes, that's exactly it.\r\n\r\nI think it's reasonable to expect the sender to notify the receiver about the frame id range it expects the receiver to maintain - even if it doesn't actively request feedback. E.g. as it retires old reference buffers it should send a header with FFR = 10, indicate the Frame ID of the current frame but then also request feedback of length 0 starting from the oldest frame id it is still interested in the state of.\r\n\r\nThat way it's unambiguous for the receiver what it needs to do and what data it needs to still keep track of. It doesn't need to know which \"mode\" is being used or what layering scheme is being encoded.",
+              "createdAt": "2026-02-24T14:39:44Z",
+              "updatedAt": "2026-02-24T14:39:44Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7lhkGr",
+          "commit": {
+            "abbreviatedOid": "924eeed"
+          },
+          "author": "shrim27",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-02-24T22:05:14Z",
+          "updatedAt": "2026-02-24T22:05:15Z",
+          "comments": [
+            {
+              "originalPosition": 44,
+              "body": "Yes in current form makes not much sense. We want to expand status bit to provide more info \r\nhttps://github.com/sprangerik/frame-acknowledgement/issues/3\r\nI guess we need one more change for this. I can make that once we land this change.",
+              "createdAt": "2026-02-24T22:05:14Z",
+              "updatedAt": "2026-02-24T22:05:15Z"
             }
           ]
         }
