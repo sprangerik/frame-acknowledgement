@@ -319,6 +319,7 @@ The RTCP message uses PT = 205 (RTPFB, Generic RTP Feedback). As of writing, the
 {:numbered="false"}
 
 ## Notation Legend
+{:numbered="false"}
 
 The sequence diagrams in this appendix use the following notation:
 
@@ -333,6 +334,7 @@ The sequence diagrams in this appendix use the following notation:
 - **Vector**: Status vector in RTCP feedback - bit vector indicating decoded status (1=decoded, 0=not decoded)
 
 ## Normal Operation Flow
+{:numbered="false"}
 
 In this scenario, the Media Sender transmits several frames and then requests feedback to confirm which frames have been decoded by the Media Receiver.
 
@@ -377,6 +379,7 @@ On decoding the frame with ID=4, the decoder clears older long term reference fr
 
 
 ## Sender-side Recovery From Frame Loss
+{:numbered="false"}
 
 In this scenario, a frame is lost in transit. The Media Sender uses a pattern of requesting feedback for the last 2 frames plus the current frame on each feedback request.
 
@@ -407,6 +410,7 @@ The Media Receiver sends feedback indicating that Frame ID 5 was decoded (bit se
 Upon receiving this feedback, the Media Sender updates its state: Frame ID 5 confirmed decoded, Frame IDs 6 and 7 are marked as not decoded. The sender can choose to encode future frames without referencing Frame IDs 6 or 7.
 
 ## Receiver-Triggered Resync Request
+{:numbered="false"}
 
 Continuing from the frame loss scenario, suppose a frame at timestamp 600 was partially received. When it is time to decode this frame to meet its presentation deadline, the receiver discovers that it is incomplete and marks it as lost. Since retransmission is not viable within the latency budget and the Media Receiver's decoder is out of sync, the receiver immediately sends a resync request.
 
@@ -452,6 +456,7 @@ Frames at timestamps 600 and 700 are sent without the Frame Acknowledgement exte
 If the Media Sender no longer had Frame ID 5 available in its reference buffer, it would instead encode and send a keyframe (IDR frame) to allow the receiver to resynchronize.
 
 ## Feedback Loss and Recovery
+{:numbered="false"}
 
 The Frame Acknowledgement mechanism provides resilience against lost feedback messages through re-requests.
 
