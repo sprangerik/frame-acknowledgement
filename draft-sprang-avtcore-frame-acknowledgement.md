@@ -359,21 +359,8 @@ Media Sender                              Media Receiver
 
 Frames 4, 5, and 6 are sent without the Frame Acknowledgement extension since the sender does not need feedback for them. Frame 7 is marked with Frame ID=4 (incrementing from the last assigned ID) and uses FFR=01 for an implicit feedback request.
 
-On decoding frame 7 (ID=4), the decoder clears older long term reference frames and also updates its status vector with just one entry for frameID 4. It sends feedback with Start Frame ID=4, and implicitly signals that frames prior to 4 (frames 0-3) are no longer being tracked.
+On decoding frame 7 (ID=4), the decoder clears older long term reference frames and also updates its status vector with just one entry for Frame ID=4. It sends feedback with Start Frame ID=4, and implicitly signals that frames prior to 4 (frames 0-3) are no longer being tracked.
 
-**Sender State Maintenance:**
-
-- Frame ID Counter: increments by 1 for each frame sent with the extension
-- Outstanding Feedback Range: tracks which frames have been requested but not yet acknowledged
-- Reference Buffer Map: maps Frame IDs to codec reference buffer slots
-- Decoded Frame Set: set of Frame IDs confirmed as decoded by receiver
-
-**Receiver State Maintenance:**
-
-- Received Frames: tracking of which Frame IDs have been received
-- Decoded Frames: tracking of which Frame IDs have been successfully decoded
-- Last Feedback Start: the most recent Start Frame ID sent in feedback (frames before this can be discarded from tracking)
-- Decoder Sync Status: whether decoder state matches expected state
 
 ## Partial Frame Loss Scenario
 
@@ -382,7 +369,7 @@ In this scenario, Frame 6 is lost in transit. The Media Receiver receives Frame 
 ```
 Media Sender                              Media Receiver
     |                                          |
-    |--- Frame 5 (FFR=00, ID=5, refs 3) ------>|
+    |--- Frame 5 (FFR=00, ID=5, refs 4) ------>|
     |--- Frame 6 (FFR=00, ID=6, refs 5) ---X   |
     |--- Frame 7 (FFR=01, ID=7, refs 6) ------>|
     |--- Frame 8 (FFR=10, ID=8, -------------->|
