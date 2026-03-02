@@ -75,7 +75,7 @@ informative:
 
 This document describes a mechanism for signaling which video frames have been received and decoded by a remote peer. It comprises an RTCP feedback message and an RTP header extension used to request said feedback.
 
-One of the main use cases for this data is to implement various forms of Long Term Reference (LTR) reference structures.
+One of the main use cases for this data is to implement various forms of Long Term Reference (LTR) reference structures. Additionally, the mechanism provides a way for receivers to request resynchronization frames that reference acknowledged frames, enabling efficient recovery from partial or full frame loss without requiring a full keyframe.
 
 --- middle
 
@@ -88,6 +88,8 @@ In such a scenario, the video encoder produces frames "blindly" without real kno
 On the other hand, if the encoder is able to reason about which frames have been received and decoded it can be more proactive. One way is to store frames that are known to be received so that they can be later used as guaranteed good references in the case of e.g. large loss events, avoiding the need for potentially large retransmissions etc. Collectively this is often referred to as "Long Term Reference" structures or LTR for short, although the exact structure may vary.
 
 In order to achieve this the sender must be able to reason about the state of the receiver, necessitating the need for feedback signals. In this document a new RTCP message called "Frame Acknowledgement" is introduced as a codec agnostic feedback message for this purpose. Further, an RTP header extension is introduced that allows the sender to actively request feedback on decoding of the associated frame. This allows the sender to both request quick feedback on frames that are important for latency, and enables resilience against loss of feedback packets.
+
+Additionally, there are situations where the receiver may experience partial or full frame loss that cannot be recovered through retransmission or other means. In such cases, the receiver may wish to skip the unrecoverable frame and move forward, but needs a frame encoded with a reference that has been acknowledged. The Frame Acknowledgement Feedback message provides a mechanism for the receiver to request such resynchronization frames, avoiding the need for a full keyframe and thereby minimizing recovery latency and bandwidth usage.
 
 Note that it is allowed to report a frame as decoded even if the decode process is not complete - as long as the receiver guarantees that it will attempt to decode the frame. The rationale for this is that we want to reduce the feedback delay as much as possible. Should the decoding of a frame that has been acknowledged fail, then the receiver MUST request a keyframe to recover, even if the failed decoding belongs to a droppable layer.
 
@@ -137,6 +139,8 @@ The messages in this proposal are intended to fulfill the following requirements
   The latency should be small, with the sender being able to tune delay vs rate tradeoff.
 8. Low Overhead
   The network overhead in terms of both packet rate and bitrate should be minimized.
+9. Resynchronization Support
+  The receiver should be able to request frames encoded with previously acknowledged references when the decoder state becomes out of sync, enabling efficient recovery without requiring a full keyframe.
 
 # Frame Acknowledgment Extension
 
@@ -243,11 +247,23 @@ This message is identified by PT = RTPFB (205) and FMT = TBD (to be assigned by 
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                  SSRC of media source                         |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-    | Start FrameID                 |    Length     | status vector |
+    |R| Reserved    | Start FrameID                 |    Length     |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     |                 status vector + padding                       |
     +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ~~~
+
+## Flags (8 bits)
+
+The flags byte contains the Resync Request Flag and reserved bits for future use.
+
+### Resync Request Flag (1 bit)
+
+The most significant bit (bit 0) of the flags byte indicates whether the receiver is requesting a resync frame. When set to 1, indicates that the receiver is requesting a resync frame. When set to 0, acknowledgement is triggered by sender request. If R=1, Start Frame ID should indicate latest decoded frame ID and status vector contatining frames upto latest received Frame ID assuming length field is less than 256.
+
+### Reserved (7 bits)
+
+The remaining 7 bits (bits 1-7) are reserved for future use and MUST be set to 0 by senders and MUST be ignored by receivers.
 
 ## Start Frame ID (16 bits)
 
@@ -263,12 +279,23 @@ A bit vector of the size indicated by the Length field. Each bit corresponds to 
 *   A value of **0** indicates the frame has not been received or has not been decoded (or is not expected to be decoded).
 *   A value of **1** indicates the frame has been received and has been or will be decoded.
 
-The status vector MUST be padded with 0 to 23 zero bits to align to the next 32-bit boundary if its length is not a multiple of 32 bits. This padding is not included in the Length field but is included in the RTCP packet's length field.
+The status vector MUST be padded with 0 to align to the next 32-bit boundary if its length is not a multiple of 32 bits. This padding is not included in the Length field but is included in the RTCP packet's length field.
 
 # Frame ID considerations {#frame_id_considerations}
 
 As stated above, the sender MUST increment the Frame ID by one for each new frame with the Frame Acknowledgement header extension present, in sending order. More than that, it must make sure that no wrap-around ambiguity can occur.
 Since feedback is only really necessary for frames which the codec stores in a reference buffer pending future use, the number of outstanding frames is in practice limited by the number of available reference buffers. E.g. for AV1, the upper limit will be 8. Although the optimal behavior will be application dependent, it is often advisable to spread reference buffer usage out across an RTT and to cull earlier buffer usage once later frames have been acknowledged.
+
+## Resync Request Handling
+
+When a receiver detects that its decoder state has become out of sync with the encoder (for example, due to an unrecoverable partial frame loss), it MAY send a Frame Acknowledgement Feedback message with the R flag (bit 0) set to 1 and specify status vector from latest decoded FrameID upto latest received FrameID.
+
+Upon receiving a resync request, the sender SHOULD:
+1. Verify that the decoded Frame ID corresponds to a frame that is still available in its reference buffer.
+2. Encode the next frame using the specified frame or another frame with references it knows to be available at the receiver .
+3. If the specified frame is no longer available in the reference buffer, the sender SHOULD encode a keyframe.
+
+This mechanism allows for efficient recovery from decoder desynchronization without the overhead of a full keyframe, as the sender can encode a frame referencing a known good state at the receiver.
 
 ## Point-to-Multi-Point
 
