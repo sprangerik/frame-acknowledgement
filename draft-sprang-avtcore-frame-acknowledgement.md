@@ -376,7 +376,7 @@ Frames at timestamps 400, 500, and 600 are sent without the Frame Acknowledgemen
 On decoding the frame with ID=4, the decoder clears older long term reference frames and also updates its status vector with just one entry for Frame ID=4. It sends feedback with Start Frame ID=4, and implicitly signals that frames prior to ID=4 (Frame IDs 0-3) are no longer being tracked.
 
 
-## Frame Loss Scenario
+## Sender-side Recovery From Frame Loss
 
 In this scenario, a frame is lost in transit. The Media Sender uses a pattern of requesting feedback for the last 2 frames plus the current frame on each feedback request.
 
