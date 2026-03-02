@@ -430,7 +430,7 @@ Upon receiving the resync request (R=1) with status vector 100, the Media Sender
 
 1. Examines the feedback to identify the latest decoded Frame ID from the status vector (Frame 5 in this case)
 2. Checks if Frame 5 is still available in its reference buffer
-3. Since Frame 5 is available, encodes Frame 8 using only Frame 5 (or frames that reference only Frame 5 or earlier confirmed frames) as a reference
+3. Since Frame 5 is available, encodes Frame 8 using only Frame 5 as a reference
 4. Sends Frame 8 with a feedback request (FFR=10) for frames 5-8 to confirm the receiver can decode it
 
 The Media Receiver receives Frame 8 and can decode it successfully since it only references the confirmed Frame 5 (Frame 7 cannot be decoded since it references the missing Frame 6). The decoder is back in sync, and the receiver sends acknowledgement with R=0, Start Frame ID=5, Length=4, and status vector=1001 (frames 5 and 8 decoded, frames 6 and 7 not decoded).
@@ -452,8 +452,7 @@ Media Sender                              Media Receiver
     |    X<-- RTCP Feedback (Start=9, ---------|
     |  LOST   Len=2, Vector=11)                |
     |                                          |
-    |--- Frame 11 (no extension) ------------->|
-    |--- Frame 12 (FFR=10, ID=11, ------------>|
+    |--- Frame 11 (FFR=10, ID=11, ------------>|
     |    FbStart=9, FbLen=3)                   |
     |                                          |
     |<-- RTCP Feedback (R=0, Start=9, ---------|
@@ -461,7 +460,7 @@ Media Sender                              Media Receiver
     |                                          |
 ```
 
-The Media Sender detects that no feedback was received for its earlier request. After a timeout or when sending additional frames, it re-requests feedback for frames 9-11 by sending Frame 12 with FFR=10, Feedback Start=9, and Feedback Length=3.
+The Media Sender detects that no feedback was received for its earlier request. After a timeout when sending new frames, it re-requests feedback for frames 9 & 10 by sending Frame 11 with FFR=10, Feedback Start=9, and Feedback Length=3.
 
 The Media Receiver responds with updated feedback for the requested range, confirming all three frames (9, 10, 11) have been decoded. The sender now has the confirmation it needed despite the earlier feedback loss.
 
