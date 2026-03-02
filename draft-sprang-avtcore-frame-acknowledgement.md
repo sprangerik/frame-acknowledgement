@@ -386,16 +386,16 @@ The Media Receiver receives the frame with ID=5 and decodes it successfully, but
 Media Sender                              Media Receiver
     |                                          |
     |--- Frame TS=500 (FFR=10, ID=5, --------->|
-    |    FbStart=3, FbLen=3)                   |
+    |    FbStart=3, FbLen=3, refs ID=4)        |
     |                                          |
     |<-- RTCP Feedback (R=0, Start=3, ---------|
     |    Len=3, Vector=111)                    |
     |                                          |
     |--- Frame TS=600 (FFR=10, ID=6, -------X  |
-    |    FbStart=4, FbLen=3)          LOST     |
+    |    FbStart=4, FbLen=3, refs ID=5) LOST   |
     |                                          |
     |--- Frame TS=700 (FFR=10, ID=7, --------->|
-    |    FbStart=5, FbLen=3)                   |
+    |    FbStart=5, FbLen=3, refs ID=6)        |
     |                                          |
     |<-- RTCP Feedback (R=0, Start=5, ---------|
     |    Len=3, Vector=100)                    |
