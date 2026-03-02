@@ -362,25 +362,33 @@ Frames 4, 5, and 6 are sent without the Frame Acknowledgement extension since th
 On decoding frame 7 (ID=4), the decoder clears older long term reference frames and also updates its status vector with just one entry for Frame ID=4. It sends feedback with Start Frame ID=4, and implicitly signals that frames prior to 4 (frames 0-3) are no longer being tracked.
 
 
-## Partial Frame Loss Scenario
+## Frame Loss Scenario
 
-In this scenario, Frame 6 is lost in transit. The Media Receiver receives Frame 5 and decodes it successfully, but cannot decode Frame 7 because it references the missing Frame 6.
+In this scenario, Frame 6 is lost in transit. The Media Sender uses a pattern of requesting feedback for the last 2 frames plus the current frame on each feedback request.
+
+The Media Receiver receives Frame 5 and decodes it successfully, but Frame 6 is lost. Frame 7 is received but cannot be decoded because it references the missing Frame 6.
 
 ```
 Media Sender                              Media Receiver
     |                                          |
-    |--- Frame 5 (FFR=00, ID=5, refs 4) ------>|
-    |--- Frame 6 (FFR=00, ID=6, refs 5) ---X   |
-    |--- Frame 7 (FFR=01, ID=7, refs 6) ------>|
-    |--- Frame 8 (FFR=10, ID=8, -------------->|
-    |    FbStart=5, FbLen=4)                   |
+    |--- Frame 5 (FFR=10, ID=5, -------------->|
+    |    FbStart=3, FbLen=3)                   |
+    |                                          |
+    |<-- RTCP Feedback (R=0, Start=3, ---------|
+    |    Len=3, Vector=111)                    |
+    |                                          |
+    |--- Frame 6 (FFR=10, ID=6, ------------X  |
+    |    FbStart=4, FbLen=3)          LOST     |
+    |                                          |
+    |--- Frame 7 (FFR=10, ID=7, -------------->|
+    |    FbStart=5, FbLen=3)                   |
     |                                          |
     |<-- RTCP Feedback (R=0, Start=5, ---------|
-    |    Len=4, Vector=1001)                   |
+    |    Len=3, Vector=100)                    |
     |                                          |
 ```
 
-The Media Receiver sends feedback indicating that frames 5 and 8 were decoded (bits set to 1), while frames 6 and 7 were not decoded (bits set to 0). The status vector 1001 corresponds to frames 5, 6, 7, 8 respectively.
+The Media Receiver sends feedback indicating that Frame 5 was decoded (bit set to 1), while frames 6 and 7 were not decoded (bits set to 0). The feedback elicited by Frame 7 is sent when it is time to decode Frame 7 to meet its playout deadline, but it is found to have a missing reference.
 
 Upon receiving this feedback, the Media Sender can choose to either retransmit Frame 6 if still within the latency budget, or skip Frame 6 and encode future frames without referencing frames 6 or 7.
 
