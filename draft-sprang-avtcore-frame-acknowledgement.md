@@ -394,7 +394,7 @@ Upon receiving this feedback, the Media Sender can choose to either retransmit F
 
 ## Receiver-Triggered Resync Request
 
-Continuing from the frame loss scenario, suppose Frame 6 was partially received. When it is time to decode Frame 6 to meet its presentation deadline, the receiver discovers that Frame 6 is incomplete. Since retransmission is not viable within the latency budget and the Media Receiver's decoder is out of sync, the receiver can request a resynchronization frame.
+Continuing from the frame loss scenario, suppose Frame 6 was partially received. When it is time to decode Frame 6 to meet its presentation deadline, the receiver discovers that Frame 6 is incomplete and marks it as lost. Since retransmission is not viable within the latency budget and the Media Receiver's decoder is out of sync, the receiver immediately sends a resync request.
 
 The Media Receiver sends an RTCP Frame Acknowledgement Feedback message with the R flag set to 1, indicating a resync request. The Start Frame ID points to the latest successfully decoded frame (Frame 5), and the status vector shows the state of frames from that point up to the latest received Frame ID.
 
@@ -407,14 +407,14 @@ Media Sender                              Media Receiver
     |<-- RTCP Feedback (R=0, Start=3, ---------|
     |    Len=3, Vector=111)                    |
     |                                          |
-    |--- Frame 6 (FFR=10, ID=6, ------------X  |
-    |    FbStart=4, FbLen=3)          LOST     |
+    |--- Frame 6 (FFR=10, ID=6, -------------->|
+    |    FbStart=4, FbLen=3)     (partial)     |
+    |                                          |
+    |<-- RTCP Feedback (R=1, Start=5, ---------|
+    |    Len=2, Vector=10)                     |
     |                                          |
     |--- Frame 7 (FFR=10, ID=7, refs 6) ------>|
     |    FbStart=5, FbLen=3)                   |
-    |                                          |
-    |<-- RTCP Feedback (R=1, Start=5, ---------|
-    |    Len=3, Vector=100)                    |
     |                                          |
     |--- Frame 8 (FFR=10, ID=8, refs 5) ------>|
     |    FbStart=5, FbLen=4)                   |
@@ -426,7 +426,7 @@ Media Sender                              Media Receiver
 
 **How the sender generates the refresh frame:**
 
-Upon receiving the resync request (R=1) with status vector 100, the Media Sender:
+Upon receiving the resync request (R=1) with status vector 10, the Media Sender:
 
 1. Examines the feedback to identify the latest decoded Frame ID from the status vector (Frame 5 in this case)
 2. Checks if Frame 5 is still available in its reference buffer
