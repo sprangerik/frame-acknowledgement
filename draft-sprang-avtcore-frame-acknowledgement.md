@@ -342,7 +342,7 @@ The Media Receiver decodes all four frames, updates its status vector and stores
 
 The Media Sender now knows that frames 0-3 are confirmed as decoded and can safely be used as long-term references.
 
-For subsequent frames, the sender may choose not to mark some frames with Frame IDs if feedback is not needed. When quick confirmation is needed for a specific frame, the sender can use implicit feedback requests (FFR=01):
+For subsequent frames, the sender may choose not to mark some frames with Frame IDs if feedback is not needed. When confirmation is needed for a specific frame, the sender can use implicit feedback requests (FFR=01):
 
 ```
 Media Sender                              Media Receiver
@@ -407,33 +407,32 @@ Media Sender                              Media Receiver
     |<-- RTCP Feedback (R=0, Start=3, ---------|
     |    Len=3, Vector=111)                    |
     |                                          |
-    |--- Frame 6 (FFR=10, ID=6, -------------->|
-    |    FbStart=4, FbLen=3)     (partial)     |
+    |--- Frame 6 (no extension, refs 5) ------>|
+    |                (partial)                 |
     |                                          |
     |<-- RTCP Feedback (R=1, Start=5, ---------|
-    |    Len=2, Vector=10)                     |
+    |    Len=1, Vector=1)                      |
     |                                          |
-    |--- Frame 7 (FFR=10, ID=7, refs 6) ------>|
-    |    FbStart=5, FbLen=3)                   |
+    |--- Frame 7 (no extension, refs 6) ------>|
     |                                          |
-    |--- Frame 8 (FFR=10, ID=8, refs 5) ------>|
-    |    FbStart=5, FbLen=4)                   |
+    |--- Frame 8 (FFR=10, ID=6, refs 5) ------>|
+    |    FbStart=5, FbLen=2)                   |
     |                                          |
     |<-- RTCP Feedback (R=0, Start=5, ---------|
-    |    Len=4, Vector=1001)                   |
+    |    Len=2, Vector=11)                     |
     |                                          |
 ```
 
 **How the sender generates the refresh frame:**
 
-Upon receiving the resync request (R=1) with status vector 10, the Media Sender:
+Upon receiving the resync request (R=1) with status vector 1, the Media Sender:
 
 1. Examines the feedback to identify the latest decoded Frame ID from the status vector (Frame 5 in this case)
 2. Checks if Frame 5 is still available in its reference buffer
 3. Since Frame 5 is available, encodes Frame 8 using only Frame 5 as a reference
-4. Sends Frame 8 with a feedback request (FFR=10) for frames 5-8 to confirm the receiver can decode it
+4. Frame 8 is marked with Frame ID=6 (incrementing from the last assigned ID of 5) and uses FFR=10 to request feedback to confirm it was decoded
 
-The Media Receiver receives Frame 8 and can decode it successfully since it only references the confirmed Frame 5 (Frame 7 cannot be decoded since it references the missing Frame 6). The decoder is back in sync, and the receiver sends acknowledgement with R=0, Start Frame ID=5, Length=4, and status vector=1001 (frames 5 and 8 decoded, frames 6 and 7 not decoded).
+Frames 6 and 7 are sent without the Frame Acknowledgement extension since the sender does not need feedback for them. Frame 7 arrives but cannot be decoded since it references Frame 6. The Media Receiver receives Frame 8 (assigned Frame ID=6) and can decode it successfully since it only references the confirmed Frame 5. The decoder is back in sync, and the receiver sends acknowledgement with R=0, Start Frame ID=5, Length=2, and status vector=11 (frames 5 and 6 decoded).
 
 If the Media Sender no longer had Frame 5 available in its reference buffer, it would instead encode and send a keyframe (IDR frame) to allow the receiver to resynchronize.
 
