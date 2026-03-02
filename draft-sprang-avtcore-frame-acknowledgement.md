@@ -394,33 +394,46 @@ Upon receiving this feedback, the Media Sender can choose to either retransmit F
 
 ## Receiver-Triggered Resync Request
 
-Continuing from the partial loss scenario, if retransmission is not viable and the Media Receiver's decoder is out of sync, the receiver can request a resynchronization frame.
+Continuing from the frame loss scenario, suppose Frame 6 was partially received. When it is time to decode Frame 6 to meet its presentation deadline, the receiver discovers that Frame 6 is incomplete. Since retransmission is not viable within the latency budget and the Media Receiver's decoder is out of sync, the receiver can request a resynchronization frame.
 
-The Media Receiver sends an RTCP Frame Acknowledgement Feedback message with the R flag set to 1, indicating a resync request. The Start Frame ID points to the latest successfully decoded frame (Frame 5), and the status vector shows the state of frames up to the latest received Frame ID.
+The Media Receiver sends an RTCP Frame Acknowledgement Feedback message with the R flag set to 1, indicating a resync request. The Start Frame ID points to the latest successfully decoded frame (Frame 5), and the status vector shows the state of frames from that point up to the latest received Frame ID.
 
 ```
 Media Sender                              Media Receiver
     |                                          |
+    |--- Frame 5 (FFR=10, ID=5, -------------->|
+    |    FbStart=3, FbLen=3)                   |
+    |                                          |
+    |<-- RTCP Feedback (R=0, Start=3, ---------|
+    |    Len=3, Vector=111)                    |
+    |                                          |
+    |--- Frame 6 (FFR=10, ID=6, ------------X  |
+    |    FbStart=4, FbLen=3)          LOST     |
+    |                                          |
+    |--- Frame 7 (FFR=10, ID=7, refs 6) ------>|
+    |    FbStart=5, FbLen=3)                   |
+    |                                          |
     |<-- RTCP Feedback (R=1, Start=5, ---------|
+    |    Len=3, Vector=100)                    |
+    |                                          |
+    |--- Frame 8 (FFR=10, ID=8, refs 5) ------>|
+    |    FbStart=5, FbLen=4)                   |
+    |                                          |
+    |<-- RTCP Feedback (R=0, Start=5, ---------|
     |    Len=4, Vector=1001)                   |
-    |                                          |
-    |--- Frame 9 (FFR=01, ID=9, refs 5) ------>|
-    |                                          |
-    |<-- RTCP Feedback (R=0, Start=9, ---------|
-    |    Len=1, Vector=1)                      |
     |                                          |
 ```
 
 **How the sender generates the refresh frame:**
 
-Upon receiving the resync request (R=1), the Media Sender:
+Upon receiving the resync request (R=1) with status vector 100, the Media Sender:
 
 1. Examines the feedback to identify the latest decoded Frame ID from the status vector (Frame 5 in this case)
 2. Checks if Frame 5 is still available in its reference buffer
-3. Since Frame 5 is available, encodes Frame 9 using only Frame 5 (or frames that reference only Frame 5 or earlier confirmed frames) as a reference
-4. Sends Frame 9 with an implicit feedback request (FFR=01) to confirm the receiver can decode it
+3. Since Frame 5 is available, encodes Frame 8 using only Frame 5 (or frames that reference only Frame 5 or earlier confirmed frames) as a reference
+4. Sends Frame 8 with a feedback request (FFR=10) for frames 5-8 to confirm the receiver can decode it
 
-The Media Receiver can now decode Frame 9 successfully since it only references the confirmed Frame 5. The decoder is back in sync, and the receiver sends acknowledgement with R=0 and status vector=1.
+The Media Receiver receives Frame 8 and can decode it successfully since it only references the confirmed Frame 5 (Frame 7 cannot be decoded since it references the missing Frame 6). The decoder is back in sync, and the receiver sends acknowledgement with R=0, Start Frame ID=5, Length=4, and status vector=1001 (frames 5 and 8 decoded, frames 6 and 7 not decoded).
 
 If the Media Sender no longer had Frame 5 available in its reference buffer, it would instead encode and send a keyframe (IDR frame) to allow the receiver to resynchronize.
 
