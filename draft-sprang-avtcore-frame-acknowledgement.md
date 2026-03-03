@@ -309,29 +309,29 @@ This section defines how to signal the Frame Acknowledgement RTP header extensio
 
 The Frame Acknowledgement extension is declared in SDP using the "extmap" attribute. The extension does not use any extension attributes.
 
-The URI for declaring this header extension in an extmap attribute is "urn:ietf:params:rtp-hdrext:frame-ack".
+The URI for declaring this header extension in an extmap attribute is "urn:ietf:params:rtp-hdrext:frame-acknowledgement".
 
 Example attribute line in SDP:
 
 ~~~
-   a=extmap:4 urn:ietf:params:rtp-hdrext:frame-ack
+   a=extmap:4 urn:ietf:params:rtp-hdrext:frame-acknowledgement
 ~~~
 
 The extension identifier (4 in the example) is chosen per {{?RFC8285}} and MUST be unique within the media description.
 
 ## RTCP Feedback
 
-Support for the Frame Acknowledgement Feedback RTCP message is signaled using the "rtcp-fb" attribute as defined in {{?RFC4585}}. The feedback type "frame-ack" indicates that the endpoint supports sending and/or receiving the Frame Acknowledgement Feedback message (PT=RTPFB, FMT as assigned by IANA for this feedback type).
+Support for the Frame Acknowledgement Feedback RTCP message is signaled using the "rtcp-fb" attribute as defined in {{?RFC4585}}. The feedback type "frame-acknowledgement" indicates that the endpoint supports sending and/or receiving the Frame Acknowledgement Feedback message (PT=RTPFB, FMT as assigned by IANA for this feedback type).
 
 The "rtcp-fb" attribute is specified with a payload type value that identifies the RTP payload format for which Frame Acknowledgement Feedback is supported.
 
 Example attribute line in SDP:
 
 ~~~
-   a=rtcp-fb:96 frame-ack
+   a=rtcp-fb:96 frame-acknowledgement
 ~~~
 
-When used in an offer/answer context, inclusion of "a=rtcp-fb:96 frame-ack" (with the appropriate payload type for the media) in the SDP indicates that the sender of the SDP is capable of receiving Frame Acknowledgement Feedback messages for the indicated payload type, and that the receiver of the SDP may send Frame Acknowledgement Feedback messages when the RTP header extension is also negotiated for the same media.
+When used in an offer/answer context, inclusion of "a=rtcp-fb:96 frame-acknowledgement" (with the appropriate payload type for the media) in the SDP indicates that the sender of the SDP is capable of receiving Frame Acknowledgement Feedback messages for the indicated payload type, and that the receiver of the SDP may send Frame Acknowledgement Feedback messages when the RTP header extension is also negotiated for the same media.
 
 ## Receiver-Triggered Resync
 
@@ -342,7 +342,7 @@ The "resync-timeout" parameter specifies the time in milliseconds that the recei
 Syntax:
 
 ~~~
-   a=rtcp-fb:<payload type> frame-ack;resync-timeout=<timeout-ms>
+   a=rtcp-fb:<payload type> frame-acknowledgement;resync-timeout=<timeout-ms>
 ~~~
 
 The value "timeout-ms" is an integer in the range 1-65535, representing the timeout in milliseconds. If "resync-timeout" is omitted, the receiver MAY still send resync requests at its discretion (e.g., on unrecoverable loss) but need not use a timeout-based trigger. Inclusion of "resync-timeout" indicates that the receiver supports and may use timeout-based resync when decode starves for at least the given duration.
@@ -350,8 +350,8 @@ The value "timeout-ms" is an integer in the range 1-65535, representing the time
 Example attribute lines in SDP:
 
 ~~~
-   a=rtcp-fb:96 frame-ack
-   a=rtcp-fb:96 frame-ack;resync-timeout=500
+   a=rtcp-fb:96 frame-acknowledgement
+   a=rtcp-fb:96 frame-acknowledgement;resync-timeout=500
 ~~~
 
 The first line signals support for Frame Acknowledgement Feedback only. The second line additionally signals that the receiver may trigger resync after 500 ms of decode starvation. The receiver of the SDP (the media sender) can use this to understand that the peer may send resync requests after sustained decode starvation.
