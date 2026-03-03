@@ -6,7 +6,7 @@ category: info
 docname: draft-sprang-avtcore-frame-acknowledgement-02
 submissiontype: IETF
 number:
-date: 2025-10-10
+date: 2026-03-03
 consensus: true
 v: 3
 area: AREA
@@ -33,9 +33,11 @@ author:
  -
     fullname: Gurtej Singh Chandok
     organization: Apple
+    email: gchandok.ietf@gmail.com
  -
     fullname: Shridhar Majali
     organization: Nvidia
+    email: smajali@nvidia.com
 
 normative:
   DD:
