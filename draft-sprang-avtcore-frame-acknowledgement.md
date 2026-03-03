@@ -335,7 +335,7 @@ When used in an offer/answer context, inclusion of "a=rtcp-fb:96 frame-acknowled
 
 ## Receiver-Triggered Resync
 
-A receiver that supports sending resync requests (R=1 in the Frame Acknowledgement Feedback message) MAY indicate that it will trigger resync based on decode starvation, and MAY configure the timeout for doing so, using an optional parameter on the "frame-ack" rtcp-fb attribute.
+A receiver that supports sending resync requests (R=1 in the Frame Acknowledgement Feedback message) MAY indicate that it will trigger resync based on decode starvation, and MAY configure the timeout for doing so, using an optional parameter on the "frame-acknowledgement" rtcp-fb attribute.
 
 The "resync-timeout" parameter specifies the time in milliseconds that the receiver will wait for decoding to make progress before sending a resync request. Decode starvation occurs when the receiver cannot advance decoding (e.g., it is blocked waiting for a frame or data that cannot be recovered). If decoding does not make progress for the specified duration, the receiver MAY send a Frame Acknowledgement Feedback message with the R flag set and a Resync Frame ID referencing the last successfully decoded frame.
 
@@ -368,7 +368,7 @@ The RTP header extension needs to have a URI identifier assigned by IANA. See {{
 
 The RTCP message uses PT = 205 (RTPFB, Generic RTP Feedback). As of writing, the next available FMT value is 12. A dedicated FMT value needs to be assigned by IANA for the Frame Acknowledgement Feedback message. See {{IANARTCP}}.
 
-This document registers the "frame-ack" feedback type in the "rtcp-fb" attribute registry (defined in {{?RFC4585}}) for use with the Frame Acknowledgement Feedback RTCP message. The "frame-ack" feedback type supports an optional "resync-timeout" parameter (value in milliseconds, range 1-65535) for signaling receiver-triggered resync timeout as defined in {{sdp_signaling}}.
+This document registers the "frame-acknowledgement" feedback type in the "rtcp-fb" attribute registry (defined in {{?RFC4585}}) for use with the Frame Acknowledgement Feedback RTCP message. The "frame-acknowledgement" feedback type supports an optional "resync-timeout" parameter (value in milliseconds, range 1-65535) for signaling receiver-triggered resync timeout as defined in {{sdp_signaling}}.
 
 --- back
 
