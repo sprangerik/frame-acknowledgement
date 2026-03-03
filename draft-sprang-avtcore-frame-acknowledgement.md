@@ -326,7 +326,7 @@ The sequence diagrams in this appendix use the following notation:
 - **TS**: Timestamp - the RTP timestamp of the video frame
 - **FFR**: FrameID / Feedback Request field in the Frame Acknowledgement extension
 - **ID**: Frame ID - unique identifier assigned to frames marked for acknowledgement
-- **refs**: References - indicates which frame(s) this frame uses as a reference for decoding
+- **refs**: References - indicates which frame(s) this frame uses as a reference for decoding. This information is contained in the encoded bitstream.
 - **FbStart**: Feedback Start - the first Frame ID being requested in feedback
 - **FbLen**: Feedback Length - the number of consecutive Frame IDs being requested
 - **R**: Resync Request flag in RTCP feedback (R=0: normal feedback, R=1: resync request)
@@ -354,7 +354,7 @@ Media Sender                              Media Receiver
     |                                          |
 ```
 
-The Media Receiver decodes all four frames, updates its status vector and stores them as long term reference frames. On decoding the fourth frame it responds with an RTCP Frame Acknowledgement Feedback message with R=0 (not a resync request), Start Frame ID=0, Length=4, and a status vector of 1111 indicating all four frames were successfully decoded.
+The Media Receiver decodes all four frames and updates its status vector. On decoding the fourth frame it responds with an RTCP Frame Acknowledgement Feedback message with R=0 (not a resync request), Start Frame ID=0, Length=4, and a status vector of 1111 indicating all four frames were successfully decoded.
 
 The Media Sender now knows that Frame IDs 0-3 are confirmed as decoded and can safely be used as long-term references.
 
@@ -375,7 +375,7 @@ Media Sender                              Media Receiver
 
 Frames at timestamps 400, 500, and 600 are sent without the Frame Acknowledgement extension since the sender does not need feedback for them. The frame at timestamp 700 is marked with Frame ID=4 (incrementing from the last assigned ID) and uses FFR=01 for an implicit feedback request.
 
-On decoding the frame with ID=4, the decoder clears older long term reference frames and also updates its status vector with just one entry for Frame ID=4. It sends feedback with Start Frame ID=4, and implicitly signals that frames prior to ID=4 (Frame IDs 0-3) are no longer being tracked.
+On decoding the frame with ID=4 updates its status vector with just one entry for Frame ID=4. It sends feedback with Start Frame ID=4, and implicitly signals that frames prior to ID=4 (Frame IDs 0-3) are no longer being tracked.
 
 
 ## Sender-side Recovery From Frame Loss
