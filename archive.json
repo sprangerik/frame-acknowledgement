@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-02-26T01:50:44.654945+00:00",
+  "timestamp": "2026-03-03T01:54:16.619683+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -249,12 +249,12 @@
       "url": "https://github.com/sprangerik/frame-acknowledgement/issues/7",
       "state": "OPEN",
       "author": "shrim27",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Does the draft need to explain how acknowledgment request on recovered packet be addressed. Ex: Nack or FEC recovered packet might have frame acknowledgement request, does receiver need to handle them same way as original request or neglect them.\nI think considering them as original probably is better way, not sure you have any considerations.",
       "createdAt": "2025-04-14T06:33:51Z",
-      "updatedAt": "2025-04-15T11:51:01Z",
+      "updatedAt": "2026-03-02T16:10:40Z",
       "closedAt": null,
       "comments": [
         {
@@ -263,6 +263,13 @@
           "body": "Good point, this should be clearly specified.\n\nI think a reasonable action would be to treat them as original - unless a later feedback request has already been processed, in which case it should be ignored. The same point should hold for any case where there is packet reordering.",
           "createdAt": "2025-04-15T11:51:00Z",
           "updatedAt": "2025-04-15T11:51:00Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "I'll create a PR for this.",
+          "createdAt": "2026-03-02T16:10:39Z",
+          "updatedAt": "2026-03-02T16:10:39Z"
         }
       ]
     },
@@ -537,15 +544,15 @@
       "id": "I_kwDOOIDm-M7StYHN",
       "title": "Need an explicit signal from the receiver that and codec resync is required",
       "url": "https://github.com/sprangerik/frame-acknowledgement/issues/19",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "gchandok",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "We need an explicit signal from the receiver back to sender indicating that decoder has gone out of sync with the encoder and that it requires a frame encoded with a reference that has been previously acknowledged by the receiver. This is required to cover the case where the receiver has received a partial frame which could not be recovered using FEC or RTX and its playout time has passed and the receiver would like to move on to a more recent frame but would need it to be encoded using a acknowledged reference frame.",
       "createdAt": "2025-10-21T06:35:03Z",
-      "updatedAt": "2026-01-28T05:48:15Z",
-      "closedAt": null,
+      "updatedAt": "2026-03-02T21:48:02Z",
+      "closedAt": "2026-03-02T21:48:02Z",
       "comments": [
         {
           "author": "shrim27",
@@ -560,6 +567,20 @@
           "body": "@sprangerik @gchandok Please help review.",
           "createdAt": "2026-01-28T05:48:15Z",
           "updatedAt": "2026-01-28T05:48:15Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "I just merged that PR. Can we close this issue then?\nI think the only real outstanding task is to add an example use case, but we already have a separate bug ticket for that.",
+          "createdAt": "2026-03-02T16:16:42Z",
+          "updatedAt": "2026-03-02T16:16:42Z"
+        },
+        {
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "body": "Yes let's close this. thanks",
+          "createdAt": "2026-03-02T21:48:02Z",
+          "updatedAt": "2026-03-02T21:48:02Z"
         }
       ]
     },
@@ -1532,24 +1553,26 @@
       "id": "PR_kwDOOIDm-M6-z2AY",
       "title": "Update the draft with receiver triggered feedback",
       "url": "https://github.com/sprangerik/frame-acknowledgement/pull/24",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "shrim27",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Decoder resynchronization during partial or full frame loss without using key-frame.",
       "createdAt": "2026-01-22T23:03:50Z",
-      "updatedAt": "2026-02-24T22:05:15Z",
+      "updatedAt": "2026-03-02T16:15:39Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "2f838d8c8860b47a6ab38a2170f228b1287022a7",
       "headRepository": "shrim27/frame-acknowledgement",
       "headRefName": "receiverRsync",
       "headRefOid": "924eeedf0ea6943d88061e932ba1b8bb0399fde7",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-03-02T16:09:21Z",
+      "mergedAt": "2026-03-02T16:09:21Z",
+      "mergedBy": "sprangerik",
+      "mergeCommit": {
+        "oid": "99b3fbc1ea9a8390c2c2003825c30b36a3c4989b"
+      },
       "comments": [],
       "reviews": [
         {
@@ -1891,8 +1914,124 @@
               "updatedAt": "2026-02-24T22:05:15Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7nGRzw",
+          "commit": {
+            "abbreviatedOid": "924eeed"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-02T16:15:39Z",
+          "updatedAt": "2026-03-02T16:15:39Z",
+          "comments": [
+            {
+              "originalPosition": 44,
+              "body": "When using scalability, it's not necessarily all 0s. There can be 1s for other decode targets. But yes, in the most common case it will likely only be a 1 and then a 0. I don't think it's worth the complexity of having a separate representation for it though.",
+              "createdAt": "2026-03-02T16:15:39Z",
+              "updatedAt": "2026-03-02T16:15:39Z"
+            }
+          ]
         }
       ]
+    },
+    {
+      "number": 26,
+      "id": "PR_kwDOOIDm-M7HYMwH",
+      "title": "Add text describing handling of out-of-order packets",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/pull/26",
+      "state": "OPEN",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "This addresses how to handle reordering due to for instance retransmissions or FEC recovery.\r\n\r\nFixes #7",
+      "createdAt": "2026-03-02T16:37:06Z",
+      "updatedAt": "2026-03-02T18:55:45Z",
+      "baseRepository": "sprangerik/frame-acknowledgement",
+      "baseRefName": "main",
+      "baseRefOid": "99b3fbc1ea9a8390c2c2003825c30b36a3c4989b",
+      "headRepository": "sprangerik/frame-acknowledgement",
+      "headRefName": "out_of_order",
+      "headRefOid": "bbe960c175c257c27aefb018ce362943cffa811f",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "shrim27",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "LGTM",
+          "createdAt": "2026-03-02T18:55:45Z",
+          "updatedAt": "2026-03-02T18:55:45Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 27,
+      "id": "PR_kwDOOIDm-M7HZg7L",
+      "title": "Bump version to 02",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/pull/27",
+      "state": "MERGED",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-03-02T17:58:29Z",
+      "updatedAt": "2026-03-02T17:58:47Z",
+      "baseRepository": "sprangerik/frame-acknowledgement",
+      "baseRefName": "main",
+      "baseRefOid": "99b3fbc1ea9a8390c2c2003825c30b36a3c4989b",
+      "headRepository": "sprangerik/frame-acknowledgement",
+      "headRefName": "version2",
+      "headRefOid": "bcf9b306a2b3ec4af56243ead9481d9662867592",
+      "closedAt": "2026-03-02T17:58:47Z",
+      "mergedAt": "2026-03-02T17:58:47Z",
+      "mergedBy": "sprangerik",
+      "mergeCommit": {
+        "oid": "4949f103b797951000b6542c057a65d154369967"
+      },
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 28,
+      "id": "PR_kwDOOIDm-M7HcXNH",
+      "title": "Add examples in appendix",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/pull/28",
+      "state": "OPEN",
+      "author": "gchandok",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Add some examples in appendix. Covered 3 scenarios: regular operation, frame loss (sender recovery), receiver resync request\r\n\r\nFixes issue:[#25](https://github.com/sprangerik/frame-acknowledgement/issues/25)",
+      "createdAt": "2026-03-02T21:37:46Z",
+      "updatedAt": "2026-03-02T21:47:17Z",
+      "baseRepository": "sprangerik/frame-acknowledgement",
+      "baseRefName": "main",
+      "baseRefOid": "4949f103b797951000b6542c057a65d154369967",
+      "headRepository": "gchandok/frame-acknowledgement",
+      "headRefName": "gchandok/Issue25Example",
+      "headRefOid": "331e41c1c7c02b22301690ab0e0edcd09b39185a",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "body": "@shrim27 @sprangerik Please review. Any other examples we want to cover? ",
+          "createdAt": "2026-03-02T21:47:17Z",
+          "updatedAt": "2026-03-02T21:47:17Z"
+        }
+      ],
+      "reviews": []
     }
   ]
 }
