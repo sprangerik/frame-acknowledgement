@@ -383,61 +383,61 @@ On decoding the frame with ID=4 updates its status vector with just one entry fo
 
 In this scenario, a frame is lost in transit. The Media Sender uses a pattern of requesting feedback for the last 2 frames plus the current frame on each feedback request.
 
-The Media Receiver receives the frame with ID=5 and decodes it successfully, but the frame with ID=6 is lost. The frame with ID=7 is received but cannot be decoded because it references the missing frame at timestamp 600.
+The Media Receiver receives the frame with ID=10 and decodes it successfully, but the frame with ID=11 is lost. The frame with ID=12 is received but cannot be decoded because it references the missing frame at timestamp 1100.
 
 ```
 Media Sender                              Media Receiver
     |                                          |
-    |--- Frame TS=500 (FFR=10, ID=5, --------->|
-    |    FbStart=3, FbLen=3, refs TS=400)      |
+    |--- Frame TS=1000 (FFR=10, ID=10, ------->|
+    |    FbStart=8, FbLen=3, refs TS=900)      |
     |                                          |
-    |<-- RTCP Feedback (R=0, Start=3, ---------|
+    |<-- RTCP Feedback (R=0, Start=8, ---------|
     |    Len=3, Vector=111)                    |
     |                                          |
-    |--- Frame TS=600 (FFR=10, ID=6, -------X  |
-    |    FbStart=4, FbLen=3, refs TS=500) LOST |
+    |--- Frame TS=1100 (FFR=10, ID=11, ------X |
+    |    FbStart=9, FbLen=3, refs TS=1000) LOST|
     |                                          |
-    |--- Frame TS=700 (FFR=10, ID=7, --------->|
-    |    FbStart=5, FbLen=3, refs TS=600)      |
+    |--- Frame TS=1200 (FFR=10, ID=12, ------->|
+    |    FbStart=10, FbLen=3, refs TS=1100)    |
     |                                          |
-    |<-- RTCP Feedback (R=0, Start=5, ---------|
+    |<-- RTCP Feedback (R=0, Start=10, --------|
     |    Len=3, Vector=100)                    |
     |                                          |
 ```
 
-The Media Receiver sends feedback indicating that Frame ID 5 was decoded (bit set to 1), while Frame IDs 6 and 7 were not decoded (bits set to 0). The feedback is sent when it is time to decode the frame with ID=7 to meet its playout deadline, but it is found to have a missing reference (the frame at timestamp 600).
+The Media Receiver sends feedback indicating that Frame ID 10 was decoded (bit set to 1), while Frame IDs 11 and 12 were not decoded (bits set to 0). The feedback is sent when it is time to decode the frame with ID=12 to meet its playout deadline, but it is found to have a missing reference (the frame at timestamp 1100).
 
-Upon receiving this feedback, the Media Sender updates its state: Frame ID 5 confirmed decoded, Frame IDs 6 and 7 are marked as not decoded. The sender can choose to encode future frames without referencing the frames at timestamps 600 or 700.
+Upon receiving this feedback, the Media Sender updates its state: Frame ID 10 confirmed decoded, Frame IDs 11 and 12 are marked as not decoded. The sender can choose to encode future frames without referencing the frames at timestamps 1100 or 1200.
 
 ## Receiver-Triggered Resync Request
 {:numbered="false"}
 
-Continuing from the frame loss scenario, suppose a frame at timestamp 600 was partially received. When it is time to decode this frame to meet its presentation deadline, the receiver discovers that it is incomplete and marks it as lost. Since retransmission is not viable within the latency budget and the Media Receiver's decoder is out of sync, the receiver immediately sends a resync request.
+Continuing from the frame loss scenario, suppose a frame at timestamp 2100 was partially received. When it is time to decode this frame to meet its presentation deadline, the receiver discovers that it is incomplete and marks it as lost. Since retransmission is not viable within the latency budget and the Media Receiver's decoder is out of sync, the receiver immediately sends a resync request.
 
-The Media Receiver sends an RTCP Frame Acknowledgement Feedback message with the R flag set to 1, indicating a resync request. The Start Frame ID points to the latest successfully decoded frame (Frame ID 5), and the status vector shows the state of frames from that point up to the latest received Frame ID.
+The Media Receiver sends an RTCP Frame Acknowledgement Feedback message with the R flag set to 1, indicating a resync request. The Start Frame ID points to the latest successfully decoded frame (Frame ID 20), and the status vector shows the state of frames from that point up to the latest received Frame ID.
 
 ```
 Media Sender                              Media Receiver
     |                                          |
-    |--- Frame TS=500 (FFR=10, ID=5, --------->|
-    |    FbStart=3, FbLen=3)                   |
+    |--- Frame TS=2000 (FFR=10, ID=20, ------->|
+    |    FbStart=18, FbLen=3)                  |
     |                                          |
-    |<-- RTCP Feedback (R=0, Start=3, ---------|
+    |<-- RTCP Feedback (R=0, Start=18, --------|
     |    Len=3, Vector=111)                    |
     |                                          |
-    |--- Frame TS=600 (no extension, --------->|
-    |    refs TS=500)          (partial)       |
+    |--- Frame TS=2100 (no extension, -------->|
+    |    refs TS=2000)         (partial)       |
     |                                          |
-    |<-- RTCP Feedback (R=1, Start=5, ---------|
+    |<-- RTCP Feedback (R=1, Start=20, --------|
     |    Len=1, Vector=1)                      |
     |                                          |
-    |--- Frame TS=700 (no extension, --------->|
-    |    refs TS=600)                          |
+    |--- Frame TS=2200 (no extension, -------->|
+    |    refs TS=2100)                         |
     |                                          |
-    |--- Frame TS=800 (FFR=10, ID=6, --------->|
-    |    FbStart=5, FbLen=2, refs TS=500)      |
+    |--- Frame TS=2300 (FFR=10, ID=21, ------->|
+    |    FbStart=20, FbLen=2, refs TS=2000)    |
     |                                          |
-    |<-- RTCP Feedback (R=0, Start=5, ---------|
+    |<-- RTCP Feedback (R=0, Start=20, --------|
     |    Len=2, Vector=11)                     |
     |                                          |
 ```
@@ -446,14 +446,14 @@ Media Sender                              Media Receiver
 
 Upon receiving the resync request (R=1) with status vector 1, the Media Sender:
 
-1. Examines the feedback to identify the latest decoded Frame ID from the status vector (Frame ID 5 in this case)
-2. Checks if the frame at timestamp 500 (Frame ID 5) is still available in its reference buffer
-3. Since the frame at timestamp 500 is available, encodes the frame at timestamp 800 using only the frame at timestamp 500 as a reference
-4. The frame at timestamp 800 is marked with Frame ID=6 (incrementing from the last assigned ID of 5) and uses FFR=10 to request feedback to confirm it was decoded
+1. Examines the feedback to identify the latest decoded Frame ID from the status vector (Frame ID 20 in this case)
+2. Checks if the frame at timestamp 2000 (Frame ID 20) is still available in its reference buffer
+3. Since the frame at timestamp 2000 is available, encodes the frame at timestamp 2300 using only the frame at timestamp 2000 as a reference
+4. The frame at timestamp 2300 is marked with Frame ID=21 (incrementing from the last assigned ID of 20) and uses FFR=10 to request feedback to confirm it was decoded
 
-Frames at timestamps 600 and 700 are sent without the Frame Acknowledgement extension since the sender does not need feedback for them. The frame at timestamp 700 arrives but cannot be decoded since it references the frame at timestamp 600. The Media Receiver receives the frame at timestamp 800 (assigned Frame ID=6) and can decode it successfully since it only references the frame at timestamp 500 (Frame ID 5). The decoder is back in sync, and the receiver sends acknowledgement with R=0, Start Frame ID=5, Length=2, and status vector=11 (Frame IDs 5 and 6 decoded).
+Frames at timestamps 2100 and 2200 are sent without the Frame Acknowledgement extension since the sender does not need feedback for them. The frame at timestamp 2200 arrives but cannot be decoded since it references the frame at timestamp 2100. The Media Receiver receives the frame at timestamp 2300 (assigned Frame ID=21) and can decode it successfully since it only references the frame at timestamp 2000 (Frame ID 20). The decoder is back in sync, and the receiver sends acknowledgement with R=0, Start Frame ID=20, Length=2, and status vector=11 (Frame IDs 20 and 21 decoded).
 
-If the Media Sender no longer had the frame at timestamp 500 available in its reference buffer, it would instead encode and send a keyframe (IDR frame) to allow the receiver to resynchronize.
+If the Media Sender no longer had the frame at timestamp 2000 available in its reference buffer, it would instead encode and send a keyframe (IDR frame) to allow the receiver to resynchronize.
 
 ## Feedback Loss and Recovery
 {:numbered="false"}
