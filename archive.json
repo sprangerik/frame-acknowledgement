@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-03-03T01:54:16.619683+00:00",
+  "timestamp": "2026-03-05T01:51:39.323322+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -225,12 +225,12 @@
       "url": "https://github.com/sprangerik/frame-acknowledgement/issues/6",
       "state": "OPEN",
       "author": "shrim27",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "Should RFC include SDP syntax for defining SDP extension header ID. Probably RFC URL can be used to define extension type.",
       "createdAt": "2025-04-14T06:30:30Z",
-      "updatedAt": "2025-04-15T11:53:06Z",
+      "updatedAt": "2026-03-03T06:26:25Z",
       "closedAt": null,
       "comments": [
         {
@@ -239,6 +239,13 @@
           "body": "Yes, that's a good point. We should also add SDP considerations for the RTCP message.",
           "createdAt": "2025-04-15T11:53:04Z",
           "updatedAt": "2025-04-15T11:53:04Z"
+        },
+        {
+          "author": "shrim27",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "Added SDP format https://github.com/sprangerik/frame-acknowledgement/pull/29\n@sprangerik @gchandok please take a look",
+          "createdAt": "2026-03-03T06:26:25Z",
+          "updatedAt": "2026-03-03T06:26:25Z"
         }
       ]
     },
@@ -2004,24 +2011,26 @@
       "id": "PR_kwDOOIDm-M7HcXNH",
       "title": "Add examples in appendix",
       "url": "https://github.com/sprangerik/frame-acknowledgement/pull/28",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "gchandok",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Add some examples in appendix. Covered 3 scenarios: regular operation, frame loss (sender recovery), receiver resync request\r\n\r\nFixes issue:[#25](https://github.com/sprangerik/frame-acknowledgement/issues/25)",
       "createdAt": "2026-03-02T21:37:46Z",
-      "updatedAt": "2026-03-02T21:47:17Z",
+      "updatedAt": "2026-03-04T09:22:22Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4949f103b797951000b6542c057a65d154369967",
       "headRepository": "gchandok/frame-acknowledgement",
       "headRefName": "gchandok/Issue25Example",
-      "headRefOid": "331e41c1c7c02b22301690ab0e0edcd09b39185a",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "a71a77f1665ca9ddb350b043b0745f9e3efad5a3",
+      "closedAt": "2026-03-04T09:22:22Z",
+      "mergedAt": "2026-03-04T09:22:22Z",
+      "mergedBy": "sprangerik",
+      "mergeCommit": {
+        "oid": "2cf7a2104180bf90fcd1d03c6242abe4b41c0fd3"
+      },
       "comments": [
         {
           "author": "gchandok",
@@ -2029,8 +2038,263 @@
           "body": "@shrim27 @sprangerik Please review. Any other examples we want to cover? ",
           "createdAt": "2026-03-02T21:47:17Z",
           "updatedAt": "2026-03-02T21:47:17Z"
+        },
+        {
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "body": "@sprangerik @shrim27 Please take another look. thanks",
+          "createdAt": "2026-03-03T19:54:35Z",
+          "updatedAt": "2026-03-03T19:54:35Z"
+        },
+        {
+          "author": "shrim27",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "LGTM.",
+          "createdAt": "2026-03-03T21:47:31Z",
+          "updatedAt": "2026-03-03T21:47:31Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "Lgtm, thanks for fixing!",
+          "createdAt": "2026-03-04T09:22:14Z",
+          "updatedAt": "2026-03-04T09:22:14Z"
         }
       ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOIDm-M7nQk6r",
+          "commit": {
+            "abbreviatedOid": "331e41c"
+          },
+          "author": "shrim27",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-03T02:47:27Z",
+          "updatedAt": "2026-03-03T03:10:38Z",
+          "comments": [
+            {
+              "originalPosition": 52,
+              "body": "`updates its status vector and stores them as long term reference frames.`\nShouldnt this be just `updates its status vector`? They need not be long term reference frames.",
+              "createdAt": "2026-03-03T02:47:27Z",
+              "updatedAt": "2026-03-03T03:10:38Z"
+            },
+            {
+              "originalPosition": 73,
+              "body": "I believe we want frame ID tracker to be updated and not decoder internal buffers. That should be done by slice headers. Not sure here decoder means frame status tracker and not DPB.",
+              "createdAt": "2026-03-03T02:55:58Z",
+              "updatedAt": "2026-03-03T03:10:38Z"
+            },
+            {
+              "originalPosition": 87,
+              "body": "`FbStart=3`, once FrameID=4 is ACKed, sender shouldnt request FrameID=3, even if it does that cant be ACKed as its no longer in tracker.",
+              "createdAt": "2026-03-03T03:01:35Z",
+              "updatedAt": "2026-03-03T03:10:38Z"
+            },
+            {
+              "originalPosition": 87,
+              "body": "Is this continuation of above Or this is fresh example where ID=0 to ID=4 have not been ACKed. \nIf it is fresh, please use ID= 105 or similar to make it clear. ",
+              "createdAt": "2026-03-03T03:07:27Z",
+              "updatedAt": "2026-03-03T03:10:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7nZ3Cg",
+          "commit": {
+            "abbreviatedOid": "331e41c"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "CHANGES_REQUESTED",
+          "body": "These examples as great, I think it really helps the readability of the doc!",
+          "createdAt": "2026-03-03T12:41:37Z",
+          "updatedAt": "2026-03-03T12:49:28Z",
+          "comments": [
+            {
+              "originalPosition": 73,
+              "body": "Indeed, let's just not mention what the decoder does and remove \"the decoder clears older long term reference frames\". Different codec types handle this differently.",
+              "createdAt": "2026-03-03T12:41:37Z",
+              "updatedAt": "2026-03-03T12:49:28Z"
+            },
+            {
+              "originalPosition": 24,
+              "body": "Perhaps clarify that this is data contained in the encoded bitsream, not in the header extension or rtcp message discussed here. I see that this is sometimes specified with frame id and sometimes with timestamp. Perhaps it would be clearer if we always used timestamps instead?",
+              "createdAt": "2026-03-03T12:46:52Z",
+              "updatedAt": "2026-03-03T12:49:28Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7nioJi",
+          "commit": {
+            "abbreviatedOid": "331e41c"
+          },
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-03T19:26:36Z",
+          "updatedAt": "2026-03-03T19:26:36Z",
+          "comments": [
+            {
+              "originalPosition": 87,
+              "body": "This is actually a fresh example. will change it",
+              "createdAt": "2026-03-03T19:26:36Z",
+              "updatedAt": "2026-03-03T19:26:36Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7niqSI",
+          "commit": {
+            "abbreviatedOid": "331e41c"
+          },
+          "author": "gchandok",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-03T19:28:49Z",
+          "updatedAt": "2026-03-03T19:28:49Z",
+          "comments": [
+            {
+              "originalPosition": 24,
+              "body": "Mentioned this info is contained in encoded bitstream\r\n\r\nOk will use timestamp consistently. ",
+              "createdAt": "2026-03-03T19:28:49Z",
+              "updatedAt": "2026-03-03T19:28:50Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 29,
+      "id": "PR_kwDOOIDm-M7HhSat",
+      "title": "Define SDP format for extension header and RTCP feedback",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/pull/29",
+      "state": "OPEN",
+      "author": "shrim27",
+      "authorAssociation": "CONTRIBUTOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-03-03T06:24:52Z",
+      "updatedAt": "2026-03-04T09:23:34Z",
+      "baseRepository": "sprangerik/frame-acknowledgement",
+      "baseRefName": "main",
+      "baseRefOid": "4949f103b797951000b6542c057a65d154369967",
+      "headRepository": "shrim27/frame-acknowledgement",
+      "headRefName": "sdp",
+      "headRefOid": "651c47a060d4dddf83e09145fac731137b8eb142",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "Thanks, lgtm!",
+          "createdAt": "2026-03-04T09:23:33Z",
+          "updatedAt": "2026-03-04T09:23:33Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOIDm-M7nYXDD",
+          "commit": {
+            "abbreviatedOid": "e59d175"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "CHANGES_REQUESTED",
+          "body": "Overall looks good to me!",
+          "createdAt": "2026-03-03T11:18:40Z",
+          "updatedAt": "2026-03-03T11:20:50Z",
+          "comments": [
+            {
+              "originalPosition": 67,
+              "body": "In the section above it's specified as \"urn:ietf:params:rtp-hdrext:frame-ack\", they should be consistent.\nPersonally I think I prefer the longer \"frame-acknowledgement\", but I have no strong opinion on that.",
+              "createdAt": "2026-03-03T11:18:40Z",
+              "updatedAt": "2026-03-03T11:20:50Z"
+            },
+            {
+              "originalPosition": 72,
+              "body": "I guess we should also be consistent in the name between header extension and rtcp (re ack vs acknowledgement)",
+              "createdAt": "2026-03-03T11:20:14Z",
+              "updatedAt": "2026-03-03T11:20:50Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7nfJvp",
+          "commit": {
+            "abbreviatedOid": "e59d175"
+          },
+          "author": "shrim27",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-03T16:26:25Z",
+          "updatedAt": "2026-03-03T16:26:25Z",
+          "comments": [
+            {
+              "originalPosition": 67,
+              "body": "Updated to urn:ietf:params:rtp-hdrext:frame-acknowledgement",
+              "createdAt": "2026-03-03T16:26:25Z",
+              "updatedAt": "2026-03-03T16:26:25Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7nfKzT",
+          "commit": {
+            "abbreviatedOid": "e59d175"
+          },
+          "author": "shrim27",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-03T16:27:14Z",
+          "updatedAt": "2026-03-03T16:27:14Z",
+          "comments": [
+            {
+              "originalPosition": 72,
+              "body": "Sure, made it frame-acknowledgement for consistency.",
+              "createdAt": "2026-03-03T16:27:14Z",
+              "updatedAt": "2026-03-03T16:27:14Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 30,
+      "id": "PR_kwDOOIDm-M7HkLGz",
+      "title": "Update date and author email addresses",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/pull/30",
+      "state": "MERGED",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-03-03T10:15:15Z",
+      "updatedAt": "2026-03-03T10:15:43Z",
+      "baseRepository": "sprangerik/frame-acknowledgement",
+      "baseRefName": "main",
+      "baseRefOid": "4949f103b797951000b6542c057a65d154369967",
+      "headRepository": "sprangerik/frame-acknowledgement",
+      "headRefName": "author_emails",
+      "headRefOid": "ca8f2cec1e305811f38d628ef3edd425467c380e",
+      "closedAt": "2026-03-03T10:15:42Z",
+      "mergedAt": "2026-03-03T10:15:42Z",
+      "mergedBy": "sprangerik",
+      "mergeCommit": {
+        "oid": "d03641bb7f203e480f5d9a397ad5e3f11896b62e"
+      },
+      "comments": [],
       "reviews": []
     }
   ]
