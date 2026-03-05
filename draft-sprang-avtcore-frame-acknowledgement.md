@@ -221,12 +221,12 @@ An unsigned integer that uniquely identifies a frame. It MUST be incremented by 
 
 ### Feedback Start (16 bits)
 
-Present if FFR is 10 or 11.
+Present if FFR is 10.
 An unsigned integer that corresponds to the first Frame ID (inclusive) the sender is requesting feedback for. It wraps around to 0 on overflow.
 
 ### Feedback Length (8 bits)
 
-Present if FFR is 10 or 11.
+Present if FFR is 10.
 An unsigned integer that indicates the number of consecutive frames the sender is requesting feedback for, starting from Feedback Start. A value of 0 means no frames are being requested. A value of 1 means only the frame identified by Feedback Start is requested. The range is Feedback Start to Feedback Start + Feedback Length - 1, inclusive, with wrap-around logic applied to Frame IDs.
 
 Note that since the Frame ID and Feedback Start are 16-bit fields that wrap, care must be taken when calculating ranges. For example, a request with Feedback Start = 65534 and Feedback Length = 3 indicates the sender is requesting feedback for frames with Frame IDs 65534, 65535, and 0.
