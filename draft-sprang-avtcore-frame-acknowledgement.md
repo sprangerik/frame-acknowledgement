@@ -288,7 +288,7 @@ The status vector MUST be padded with 0 to align to the next 32-bit boundary if 
 As stated above, the sender MUST increment the Frame ID by one for each new frame with the Frame Acknowledgement header extension present, in sending order. More than that, it must make sure that no wrap-around ambiguity can occur.
 Since feedback is only really necessary for frames which the codec stores in a reference buffer pending future use, the number of outstanding frames is in practice limited by the number of available reference buffers. E.g. for AV1, the upper limit will be 8. Although the optimal behavior will be application dependent, it is often advisable to spread reference buffer usage out across an RTT and to cull earlier buffer usage once later frames have been acknowledged.
 
-## Resync Request Handling
+## Resync Request Handling {#resync_request_handling}
 
 When a receiver detects that its decoder state has become out of sync with the encoder (for example, due to an unrecoverable partial frame loss), it MAY send a Frame Acknowledgement Feedback message with the R flag (bit 0) set to 1 and specify status vector from latest decoded FrameID upto latest received FrameID.
 
@@ -303,6 +303,62 @@ This mechanism allows for efficient recovery from decoder desynchronization with
 
 When considering a multi-way application with an SFU/SFM-type relay in the middle, the middlebox may need to do translations/rewriting of Frame IDs such that the outgoing FrameIDs from a middlebox to a receiver still fulfill the requirement that the FrameIDs are incremented by one for each new frame that is marked for feedback. This must be true even if independent video streams for different senders are multiplexed onto the same SSRC. Further the middlebox should typically not acknowledge a frame to a sender unless all active receivers have acknowledged that frame.
 
+# SDP Signaling {#sdp_signaling}
+
+This section defines how to signal the Frame Acknowledgement RTP header extension and the Frame Acknowledgement Feedback RTCP message using the Session Description Protocol (SDP).
+
+## RTP Header Extension
+
+The Frame Acknowledgement extension is declared in SDP using the "extmap" attribute. The extension does not use any extension attributes.
+
+The URI for declaring this header extension in an extmap attribute is "urn:ietf:params:rtp-hdrext:frame-acknowledgement".
+
+Example attribute line in SDP:
+
+~~~
+   a=extmap:4 urn:ietf:params:rtp-hdrext:frame-acknowledgement
+~~~
+
+The extension identifier (4 in the example) is chosen per {{?RFC8285}} and MUST be unique within the media description.
+
+## RTCP Feedback
+
+Support for the Frame Acknowledgement Feedback RTCP message is signaled using the "rtcp-fb" attribute as defined in {{?RFC4585}}. The feedback type "frame-acknowledgement" indicates that the endpoint supports sending and/or receiving the Frame Acknowledgement Feedback message (PT=RTPFB, FMT as assigned by IANA for this feedback type).
+
+The "rtcp-fb" attribute is specified with a payload type value that identifies the RTP payload format for which Frame Acknowledgement Feedback is supported.
+
+Syntax:
+
+~~~
+   a=rtcp-fb:<payload type> frame-acknowledgement
+~~~
+
+When used in an offer/answer context, inclusion of "a=rtcp-fb:96 frame-acknowledgement" (with the appropriate payload type for the media) in the SDP indicates that the sender of the SDP is capable of receiving Frame Acknowledgement Feedback messages for the indicated payload type, and that the receiver of the SDP may send Frame Acknowledgement Feedback messages when the RTP header extension is also negotiated for the same media.
+
+## Receiver-Triggered Resync
+
+A receiver that supports sending resync requests (R=1 in the Frame Acknowledgement Feedback message) MAY indicate that it will trigger resync based on decode starvation, and MAY configure the timeout for doing so, using an optional parameter on the "frame-acknowledgement" rtcp-fb attribute.
+
+The "resync-timeout" parameter specifies the time in milliseconds that the receiver will wait for decoding to make progress before sending a resync request. Decode starvation occurs when the receiver cannot advance decoding (e.g., it is blocked waiting for a frame or data that cannot be recovered). If decoding does not make progress for the specified duration, the receiver MAY send a Frame Acknowledgement Feedback message with the R flag set and a Resync Frame ID referencing the last successfully decoded frame.
+
+Syntax:
+
+~~~
+   a=rtcp-fb:<payload type> frame-acknowledgement;resync-timeout=<timeout-ms>
+~~~
+
+The value "timeout-ms" is an integer in the range 1-65535, representing the timeout in milliseconds. If "resync-timeout" is omitted, the receiver MAY still send resync requests at its discretion (e.g., on unrecoverable loss) but need not use a timeout-based trigger. Inclusion of "resync-timeout" indicates that the receiver supports and may use timeout-based resync when decode starves for at least the given duration.
+
+Example attribute lines in SDP (Only one of the format must be present per payload type):
+
+~~~
+   a=rtcp-fb:96 frame-acknowledgement
+   Or
+   a=rtcp-fb:96 frame-acknowledgement;resync-timeout=500
+~~~
+
+The first format signals support only for Frame Acknowledgement Feedback. The second format additionally signals that the receiver may trigger resync after 500 ms of decode starvation. On receiving an SDP with resync-timeout specified, the media sender understands that the media receiver may send resync requests after sustained decode starvation. Media sender can use resync requests to send recovery frames explained in {{resync_request_handling}}
+
 # Security Considerations
 
 The messages in this proposal may expose a small amount of data, namely the number of frames that have been sent, and potentially in an indirect way which frames the sender sees as important for recovery.
@@ -311,9 +367,11 @@ This data should however not pose any significant privacy or security risks.
 
 # IANA Considerations
 
-The RTP header extension needs to have a URI identifier assigned by IANA. See {{IANAEXT}}.
+The RTP header extension needs to have a URI identifier assigned by IANA. See {{IANAEXT}}. This document registers the URI "urn:ietf:params:rtp-hdrext:frame-acknowledgement" for the Frame Acknowledgement RTP header extension.
 
-The RTCP message uses PT = 205 (RTPFB, Generic RTP Feedback). As of writing, the next available FMT value is 12. A dedicated ID needs to be assigned by IANA. See {{IANARTCP}}.
+The RTCP message uses PT = 205 (RTPFB, Generic RTP Feedback). As of writing, the next available FMT value is 12. A dedicated FMT value needs to be assigned by IANA for the Frame Acknowledgement Feedback message. See {{IANARTCP}}.
+
+This document registers the "frame-acknowledgement" feedback type in the "rtcp-fb" attribute registry (defined in {{?RFC4585}}) for use with the Frame Acknowledgement Feedback RTCP message. The "frame-acknowledgement" feedback type supports an optional "resync-timeout" parameter (value in milliseconds, range 1-65535) for signaling receiver-triggered resync timeout as defined in {{sdp_signaling}}.
 
 --- back
 
