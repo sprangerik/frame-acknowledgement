@@ -371,15 +371,15 @@ Table of Contents
 
 6.3.3.  Feedback Start (16 bits)
 
-   Present if FFR is 10 or 11.  An unsigned integer that corresponds to
-   the first Frame ID (inclusive) the sender is requesting feedback for.
-   It wraps around to 0 on overflow.
+   Present if FFR is 10.  An unsigned integer that corresponds to the
+   first Frame ID (inclusive) the sender is requesting feedback for.  It
+   wraps around to 0 on overflow.
 
 6.3.4.  Feedback Length (8 bits)
 
-   Present if FFR is 10 or 11.  An unsigned integer that indicates the
-   number of consecutive frames the sender is requesting feedback for,
-   starting from Feedback Start.  A value of 0 means no frames are being
+   Present if FFR is 10.  An unsigned integer that indicates the number
+   of consecutive frames the sender is requesting feedback for, starting
+   from Feedback Start.  A value of 0 means no frames are being
    requested.  A value of 1 means only the frame identified by Feedback
    Start is requested.  The range is Feedback Start to Feedback Start +
    Feedback Length - 1, inclusive, with wrap-around logic applied to
