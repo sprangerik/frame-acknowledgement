@@ -286,7 +286,7 @@ The status vector MUST be padded with 0 to align to the next 32-bit boundary if 
 As stated above, the sender MUST increment the Frame ID by one for each new frame with the Frame Acknowledgement header extension present, in sending order. More than that, it must make sure that no wrap-around ambiguity can occur.
 Since feedback is only really necessary for frames which the codec stores in a reference buffer pending future use, the number of outstanding frames is in practice limited by the number of available reference buffers. E.g. for AV1, the upper limit will be 8. Although the optimal behavior will be application dependent, it is often advisable to spread reference buffer usage out across an RTT and to cull earlier buffer usage once later frames have been acknowledged.
 
-## Resync Request Handling
+## Resync Request Handling {#resync_request_handling}
 
 When a receiver detects that its decoder state has become out of sync with the encoder (for example, due to an unrecoverable partial frame loss), it MAY send a Frame Acknowledgement Feedback message with the R flag (bit 0) set to 1 and specify status vector from latest decoded FrameID upto latest received FrameID.
 
@@ -325,10 +325,10 @@ Support for the Frame Acknowledgement Feedback RTCP message is signaled using th
 
 The "rtcp-fb" attribute is specified with a payload type value that identifies the RTP payload format for which Frame Acknowledgement Feedback is supported.
 
-Example attribute line in SDP:
+Syntax:
 
 ~~~
-   a=rtcp-fb:96 frame-acknowledgement
+   a=rtcp-fb:<payload type> frame-acknowledgement
 ~~~
 
 When used in an offer/answer context, inclusion of "a=rtcp-fb:96 frame-acknowledgement" (with the appropriate payload type for the media) in the SDP indicates that the sender of the SDP is capable of receiving Frame Acknowledgement Feedback messages for the indicated payload type, and that the receiver of the SDP may send Frame Acknowledgement Feedback messages when the RTP header extension is also negotiated for the same media.
@@ -347,14 +347,15 @@ Syntax:
 
 The value "timeout-ms" is an integer in the range 1-65535, representing the timeout in milliseconds. If "resync-timeout" is omitted, the receiver MAY still send resync requests at its discretion (e.g., on unrecoverable loss) but need not use a timeout-based trigger. Inclusion of "resync-timeout" indicates that the receiver supports and may use timeout-based resync when decode starves for at least the given duration.
 
-Example attribute lines in SDP:
+Example attribute lines in SDP (Only one of the format must be present per payload type):
 
 ~~~
    a=rtcp-fb:96 frame-acknowledgement
+   Or
    a=rtcp-fb:96 frame-acknowledgement;resync-timeout=500
 ~~~
 
-The first line signals support for Frame Acknowledgement Feedback only. The second line additionally signals that the receiver may trigger resync after 500 ms of decode starvation. The receiver of the SDP (the media sender) can use this to understand that the peer may send resync requests after sustained decode starvation.
+The first format signals support only for Frame Acknowledgement Feedback. The second format additionally signals that the receiver may trigger resync after 500 ms of decode starvation. On receiving an SDP with resync-timeout specified, the media sender understands that the media receiver may send resync requests after sustained decode starvation. Media sender can use resync requests to send recovery frames explained in {{resync_request_handling}}
 
 # Security Considerations
 
