@@ -303,6 +303,15 @@ This mechanism allows for efficient recovery from decoder desynchronization with
 
 When considering a multi-way application with an SFU/SFM-type relay in the middle, the middlebox may need to do translations/rewriting of Frame IDs such that the outgoing FrameIDs from a middlebox to a receiver still fulfill the requirement that the FrameIDs are incremented by one for each new frame that is marked for feedback. This must be true even if independent video streams for different senders are multiplexed onto the same SSRC. Further the middlebox should typically not acknowledge a frame to a sender unless all active receivers have acknowledged that frame.
 
+## Using acknowledgement ranges
+
+The feedback request menchanism has the ability to respond with the status of a range of Frame IDs, not just the last decoded Frame ID. If video is encoded as a single dependency chain, the only the last decoded Frame ID would likely be sufficient. However, when spatial scalability such as "simulcast" is employed the situation gets more complex.
+
+For instance, imaging the following scenario where two independent layers are sent (with the numbers indicating frame timestamps and FID being the Frame IDs):
+S1: 100 -> 101 (FID = 1) -> 102 -> 103
+S0: 100 -> 101 -> 102 (FID = 2) -> 103
+Here, if the feedback for Frame ID 1 is lost, it is not enough to know that some receiver has been able to decode Frame ID 2. It is for this reason the sender can request feedback starting at Frame ID 1, with a length of two. The receiver should never remote state information about frames prior to the earliest Frame ID it has received a feedback request for. This guatantees that the sender is always able to aquire feedback for all frames it has sent.
+
 ## Out-of-order Message Handling
 
 Though rare, it is possible that Frame Acknowledgement Request header extensions are received out of order. This can happen due to e.g., network reordering, but more likely due to retransmissions or recovery of packets using FEC. Regardless of the cause, if a Frame ID is present, the receiver must store it and the state associated with the frame in this packet. If a feedback request is contained in the header extension, and no feedback request has been processed with a Frame ID larger than contained in the requested range, the receiver must process the request. Otherwise, the request must be ignored.
