@@ -1239,6 +1239,9 @@ svg :is([fill="white"], [fill^="#fff"]) {
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.2">
                 <p id="section-toc.1-1.8.2.2.1"><a href="#section-8.2" class="auto internal xref">8.2</a>.  <a href="#name-point-to-multi-point" class="internal xref">Point-to-Multi-Point</a></p>
 </li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8.2.3">
+                <p id="section-toc.1-1.8.2.3.1"><a href="#section-8.3" class="auto internal xref">8.3</a>.  <a href="#name-out-of-order-message-handli" class="internal xref">Out-of-order Message Handling</a></p>
+</li>
             </ul>
 </li>
           <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
@@ -1609,6 +1612,14 @@ Since feedback is only really necessary for frames which the codec stores in a r
 <a href="#section-8.2" class="section-number selfRef">8.2. </a><a href="#name-point-to-multi-point" class="section-name selfRef">Point-to-Multi-Point</a>
         </h3>
 <p id="section-8.2-1">When considering a multi-way application with an SFU/SFM-type relay in the middle, the middlebox may need to do translations/rewriting of Frame IDs such that the outgoing FrameIDs from a middlebox to a receiver still fulfill the requirement that the FrameIDs are incremented by one for each new frame that is marked for feedback. This must be true even if independent video streams for different senders are multiplexed onto the same SSRC. Further the middlebox should typically not acknowledge a frame to a sender unless all active receivers have acknowledged that frame.<a href="#section-8.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="out-of-order-message-handling">
+<section id="section-8.3">
+        <h3 id="name-out-of-order-message-handli">
+<a href="#section-8.3" class="section-number selfRef">8.3. </a><a href="#name-out-of-order-message-handli" class="section-name selfRef">Out-of-order Message Handling</a>
+        </h3>
+<p id="section-8.3-1">Though rare, it is possible that Frame Acknowledgement Request header extensions are received out of order. This can happen due to e.g., network reordering, but more likely due to retransmissions or recovery of packets using FEC. Regardless of the cause, if a Frame ID is present, the receiver must store it and the state associated with the frame in this packet. If a feedback request is contained in the header extension, and no feedback request has been processed with a Frame ID larger than contained in the requested range, the receiver must process the request. Otherwise, the request must be ignored.<a href="#section-8.3-1" class="pilcrow">¶</a></p>
 </section>
 </div>
 </section>

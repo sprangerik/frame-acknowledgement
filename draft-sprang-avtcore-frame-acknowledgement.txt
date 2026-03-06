@@ -103,6 +103,7 @@ Table of Contents
    8.  Frame ID considerations
      8.1.  Resync Request Handling
      8.2.  Point-to-Multi-Point
+     8.3.  Out-of-order Message Handling
    9.  Security Considerations
    10. IANA Considerations
    11. References
@@ -516,6 +517,18 @@ Table of Contents
    senders are multiplexed onto the same SSRC.  Further the middlebox
    should typically not acknowledge a frame to a sender unless all
    active receivers have acknowledged that frame.
+
+8.3.  Out-of-order Message Handling
+
+   Though rare, it is possible that Frame Acknowledgement Request header
+   extensions are received out of order.  This can happen due to e.g.,
+   network reordering, but more likely due to retransmissions or
+   recovery of packets using FEC.  Regardless of the cause, if a Frame
+   ID is present, the receiver must store it and the state associated
+   with the frame in this packet.  If a feedback request is contained in
+   the header extension, and no feedback request has been processed with
+   a Frame ID larger than contained in the requested range, the receiver
+   must process the request.  Otherwise, the request must be ignored.
 
 9.  Security Considerations
 
