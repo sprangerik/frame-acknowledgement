@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-03-05T01:51:39.323322+00:00",
+  "timestamp": "2026-03-08T01:52:36.405632+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -254,15 +254,15 @@
       "id": "I_kwDOOIDm-M6yVs1C",
       "title": "Frame acknowledgment request on recovered packets",
       "url": "https://github.com/sprangerik/frame-acknowledgement/issues/7",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "shrim27",
-      "authorAssociation": "CONTRIBUTOR",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Does the draft need to explain how acknowledgment request on recovered packet be addressed. Ex: Nack or FEC recovered packet might have frame acknowledgement request, does receiver need to handle them same way as original request or neglect them.\nI think considering them as original probably is better way, not sure you have any considerations.",
       "createdAt": "2025-04-14T06:33:51Z",
-      "updatedAt": "2026-03-02T16:10:40Z",
-      "closedAt": null,
+      "updatedAt": "2026-03-06T09:22:12Z",
+      "closedAt": "2026-03-06T09:22:12Z",
       "comments": [
         {
           "author": "sprangerik",
@@ -650,14 +650,82 @@
       "id": "I_kwDOOIDm-M7tTFFX",
       "title": "Include an example flow in the appendix",
       "url": "https://github.com/sprangerik/frame-acknowledgement/issues/25",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "gchandok",
-      "authorAssociation": "NONE",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "We should include an example flow in the appendix that describes the sender and receiver roles; how feedback is requested , how state is maintained on receiver, how feedback is provided from receiver, how receiver can request a resync and how the sender generates the refresh frame",
       "createdAt": "2026-02-24T02:53:17Z",
-      "updatedAt": "2026-02-24T02:53:17Z",
+      "updatedAt": "2026-03-05T23:50:41Z",
+      "closedAt": "2026-03-05T23:50:41Z",
+      "comments": [
+        {
+          "author": "gchandok",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Fix #28 has been merged. closing",
+          "createdAt": "2026-03-05T23:50:41Z",
+          "updatedAt": "2026-03-05T23:50:41Z"
+        }
+      ]
+    },
+    {
+      "number": 31,
+      "id": "I_kwDOOIDm-M7wSJoJ",
+      "title": "Remove mentions of FFR 11",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/31",
+      "state": "CLOSED",
+      "author": "gchandok",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Remove mentions of FFR 11\n\nFeedback Start (16 bits)\n\nPresent if FFR is 10 **or 11**. An unsigned integer that corresponds to the first Frame ID (inclusive) the sender is requesting feedback for. It wraps around to 0 on overflow.\n\nFeedback Length (8 bits)\n\nPresent if FFR is 10 **or 11**.\n\n",
+      "createdAt": "2026-03-05T23:44:48Z",
+      "updatedAt": "2026-03-06T17:49:32Z",
+      "closedAt": "2026-03-06T17:49:32Z",
+      "comments": [
+        {
+          "author": "gchandok",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Closing. Fixed in #32 ",
+          "createdAt": "2026-03-06T17:49:32Z",
+          "updatedAt": "2026-03-06T17:49:32Z"
+        }
+      ]
+    },
+    {
+      "number": 33,
+      "id": "I_kwDOOIDm-M7waFP2",
+      "title": "Clarify Frame ID starting point and keyframe behavior",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/33",
+      "state": "OPEN",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "sprangerik"
+      ],
+      "labels": [],
+      "body": "The current spec states that [Frame ID] \"MUST be incremented by one for each new frame (in sending order) that needs to be identified. It wraps around to 0 on overflow.\"\n\nIt does however not state a starting value. It seems common in related RFCs to say that the start value is arbitrary, so suggest doing that here as well.\n\nWe also don't explicitly mention that the Frame ID sequence is unique per sender/receiver SSRC pair. It's a natural assumption, but probably good to mention anyway.\n\nFurther - after a keyframe, it's unclear if there is value in signaling the received state of the preceding delta frames. Just to keep the spec simple and to not make assumptions about application preferences, I don't think keyframes should be handled differently to other frames.\n\nOne possibility I've considered is the option to update the Frame ID on a keyframes, since in a sense you're starting a new stream - but I think that leaves as open to more risks and possible edge cases than any benefits I can see.\n\nThe text should be updated to clarify this behavior.",
+      "createdAt": "2026-03-06T10:10:50Z",
+      "updatedAt": "2026-03-06T15:44:40Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 35,
+      "id": "I_kwDOOIDm-M7waRdV",
+      "title": "Sequence charts in example section not rendered correctly",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/35",
+      "state": "OPEN",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [
+        "gchandok"
+      ],
+      "labels": [],
+      "body": "At least when HTML-ized the flow charts don't seem to be rendered correctly. See for instance https://sprangerik.github.io/frame-acknowledgement/draft-sprang-avtcore-frame-acknowledgement.html#name-normal-operation-flow",
+      "createdAt": "2026-03-06T10:22:22Z",
+      "updatedAt": "2026-03-06T17:50:55Z",
       "closedAt": null,
       "comments": []
     }
@@ -1949,34 +2017,50 @@
       "id": "PR_kwDOOIDm-M7HYMwH",
       "title": "Add text describing handling of out-of-order packets",
       "url": "https://github.com/sprangerik/frame-acknowledgement/pull/26",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "sprangerik",
       "authorAssociation": "OWNER",
       "assignees": [],
       "labels": [],
       "body": "This addresses how to handle reordering due to for instance retransmissions or FEC recovery.\r\n\r\nFixes #7",
       "createdAt": "2026-03-02T16:37:06Z",
-      "updatedAt": "2026-03-02T18:55:45Z",
+      "updatedAt": "2026-03-06T09:22:11Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "99b3fbc1ea9a8390c2c2003825c30b36a3c4989b",
       "headRepository": "sprangerik/frame-acknowledgement",
       "headRefName": "out_of_order",
       "headRefOid": "bbe960c175c257c27aefb018ce362943cffa811f",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-03-06T09:22:11Z",
+      "mergedAt": "2026-03-06T09:22:11Z",
+      "mergedBy": "sprangerik",
+      "mergeCommit": {
+        "oid": "268e82f9147d5ee40f00d6d8c3c419bd3292dd05"
+      },
       "comments": [
         {
           "author": "shrim27",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "body": "LGTM",
           "createdAt": "2026-03-02T18:55:45Z",
           "updatedAt": "2026-03-02T18:55:45Z"
         }
       ],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOOIDm-M7oej-5",
+          "commit": {
+            "abbreviatedOid": "bbe960c"
+          },
+          "author": "gchandok",
+          "authorAssociation": "COLLABORATOR",
+          "state": "APPROVED",
+          "body": "LGTM",
+          "createdAt": "2026-03-05T23:41:46Z",
+          "updatedAt": "2026-03-05T23:41:46Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 27,
@@ -2175,18 +2259,18 @@
       "url": "https://github.com/sprangerik/frame-acknowledgement/pull/29",
       "state": "OPEN",
       "author": "shrim27",
-      "authorAssociation": "CONTRIBUTOR",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2026-03-03T06:24:52Z",
-      "updatedAt": "2026-03-04T09:23:34Z",
+      "updatedAt": "2026-03-06T04:31:36Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4949f103b797951000b6542c057a65d154369967",
       "headRepository": "shrim27/frame-acknowledgement",
       "headRefName": "sdp",
-      "headRefOid": "651c47a060d4dddf83e09145fac731137b8eb142",
+      "headRefOid": "c0e2782f8b4cc76275f05823be8d7afa2c17ac67",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -2233,7 +2317,7 @@
             "abbreviatedOid": "e59d175"
           },
           "author": "shrim27",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2026-03-03T16:26:25Z",
@@ -2253,7 +2337,7 @@
             "abbreviatedOid": "e59d175"
           },
           "author": "shrim27",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2026-03-03T16:27:14Z",
@@ -2264,6 +2348,84 @@
               "body": "Sure, made it frame-acknowledgement for consistency.",
               "createdAt": "2026-03-03T16:27:14Z",
               "updatedAt": "2026-03-03T16:27:14Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7oea38",
+          "commit": {
+            "abbreviatedOid": "651c47a"
+          },
+          "author": "gchandok",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "Looks good. A few edits may be helpful",
+          "createdAt": "2026-03-05T23:27:07Z",
+          "updatedAt": "2026-03-05T23:33:41Z",
+          "comments": [
+            {
+              "originalPosition": 31,
+              "body": "```suggestion\n   a=rtcp-fb:<payload type> frame-acknowledgement\n```\n\ndo be consistent with receiver triggered resync",
+              "createdAt": "2026-03-05T23:27:07Z",
+              "updatedAt": "2026-03-05T23:33:41Z"
+            },
+            {
+              "originalPosition": 55,
+              "body": "Perhaps we should clarify that above two lines are either / or and not both",
+              "createdAt": "2026-03-05T23:29:12Z",
+              "updatedAt": "2026-03-05T23:33:41Z"
+            },
+            {
+              "originalPosition": 57,
+              "body": "Can we add some text on what the media sender may use this information for? ",
+              "createdAt": "2026-03-05T23:31:00Z",
+              "updatedAt": "2026-03-05T23:33:41Z"
+            },
+            {
+              "originalPosition": 57,
+              "body": "\"The receiver of the SDP\" this term is a bit ambiguous which is why you added (the media sender). I feel it would be cleaner to just say,  \"The media sender on receiving an SDP with resync-timeout specified ....\"",
+              "createdAt": "2026-03-05T23:32:36Z",
+              "updatedAt": "2026-03-05T23:33:41Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7ofdM7",
+          "commit": {
+            "abbreviatedOid": "651c47a"
+          },
+          "author": "shrim27",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-06T01:00:47Z",
+          "updatedAt": "2026-03-06T01:00:47Z",
+          "comments": [
+            {
+              "originalPosition": 57,
+              "body": "Provided link where its described",
+              "createdAt": "2026-03-06T01:00:47Z",
+              "updatedAt": "2026-03-06T01:00:47Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7oh--t",
+          "commit": {
+            "abbreviatedOid": "651c47a"
+          },
+          "author": "gchandok",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-06T04:31:36Z",
+          "updatedAt": "2026-03-06T04:31:36Z",
+          "comments": [
+            {
+              "originalPosition": 57,
+              "body": "Actually I was asking what would sender do with the resync timeout value. Can you give an example of that?",
+              "createdAt": "2026-03-06T04:31:36Z",
+              "updatedAt": "2026-03-06T04:31:37Z"
             }
           ]
         }
@@ -2295,6 +2457,222 @@
         "oid": "d03641bb7f203e480f5d9a397ad5e3f11896b62e"
       },
       "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 32,
+      "id": "PR_kwDOOIDm-M7IWr_D",
+      "title": "Remove mentions of FFR 11",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/pull/32",
+      "state": "MERGED",
+      "author": "gchandok",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes issue #31 ",
+      "createdAt": "2026-03-05T23:48:43Z",
+      "updatedAt": "2026-03-06T09:23:49Z",
+      "baseRepository": "sprangerik/frame-acknowledgement",
+      "baseRefName": "main",
+      "baseRefOid": "2cf7a2104180bf90fcd1d03c6242abe4b41c0fd3",
+      "headRepository": "gchandok/frame-acknowledgement",
+      "headRefName": "gchandok/removeFFR11",
+      "headRefOid": "edfb843cb58ef655da56c1f614c49d4183be9661",
+      "closedAt": "2026-03-06T09:23:49Z",
+      "mergedAt": "2026-03-06T09:23:49Z",
+      "mergedBy": "sprangerik",
+      "mergeCommit": {
+        "oid": "55ff4f000288ba5559e54763aced5950a951573c"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOIDm-M7ofcj_",
+          "commit": {
+            "abbreviatedOid": "edfb843"
+          },
+          "author": "shrim27",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-06T00:59:52Z",
+          "updatedAt": "2026-03-06T00:59:52Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "Thanks for fixing it. I observed it and wanted to make the follow up change",
+              "createdAt": "2026-03-06T00:59:52Z",
+              "updatedAt": "2026-03-06T00:59:52Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7onAeq",
+          "commit": {
+            "abbreviatedOid": "edfb843"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "Nice catch!",
+          "createdAt": "2026-03-06T09:23:36Z",
+          "updatedAt": "2026-03-06T09:23:36Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 34,
+      "id": "PR_kwDOOIDm-M7IdZJk",
+      "title": "Add clarification about frame id starting point and uniqueness",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/pull/34",
+      "state": "OPEN",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes #33 ",
+      "createdAt": "2026-03-06T10:15:15Z",
+      "updatedAt": "2026-03-06T17:45:21Z",
+      "baseRepository": "sprangerik/frame-acknowledgement",
+      "baseRefName": "main",
+      "baseRefOid": "55ff4f000288ba5559e54763aced5950a951573c",
+      "headRepository": "sprangerik/frame-acknowledgement",
+      "headRefName": "frame_id_clarification",
+      "headRefOid": "6e9be8bd0e67247e88040e527dd10307fbe8c15b",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOIDm-M7owyZl",
+          "commit": {
+            "abbreviatedOid": "6e9be8b"
+          },
+          "author": "gchandok",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "",
+          "createdAt": "2026-03-06T17:44:41Z",
+          "updatedAt": "2026-03-06T17:45:21Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "Unlike RTP sequence number where it must be random for security reasons, there is no reason for this one to be. Either way I think we should use MAY, SHOULD, MUST terminology. To me it feels more like MAY on senders. \"Senders MAY start at 0 or arbitrary values, receiver MUST not make any assumptions.\"",
+              "createdAt": "2026-03-06T17:44:41Z",
+              "updatedAt": "2026-03-06T17:45:21Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 36,
+      "id": "PR_kwDOOIDm-M7IiShD",
+      "title": "Add section about feedback ranges",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/pull/36",
+      "state": "OPEN",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Not sure if this should really go here, or if this would be more suitable as another example in the appendix.\r\n\r\nPtal!",
+      "createdAt": "2026-03-06T15:44:04Z",
+      "updatedAt": "2026-03-06T17:40:14Z",
+      "baseRepository": "sprangerik/frame-acknowledgement",
+      "baseRefName": "main",
+      "baseRefOid": "55ff4f000288ba5559e54763aced5950a951573c",
+      "headRepository": "sprangerik/frame-acknowledgement",
+      "headRefName": "simulcast",
+      "headRefOid": "c125f963742ac3097bd37442d4ee472938dbe395",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOOIDm-M7ownJQ",
+          "commit": {
+            "abbreviatedOid": "c125f96"
+          },
+          "author": "gchandok",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "",
+          "createdAt": "2026-03-06T17:33:28Z",
+          "updatedAt": "2026-03-06T17:35:38Z",
+          "comments": [
+            {
+              "originalPosition": 11,
+              "body": "```suggestion\nHere, if the feedback for Frame ID 1 is lost, it is not enough to know that some receiver has been able to decode Frame ID 2. It is for this reason the sender can request feedback starting at Frame ID 1, with a length of two. The receiver should never remove state information about frames prior to the earliest Frame ID it has received a feedback request for. This guarantees that the sender is always able to acquire feedback for all frames it has sent.\n```",
+              "createdAt": "2026-03-06T17:33:28Z",
+              "updatedAt": "2026-03-06T17:35:38Z"
+            },
+            {
+              "originalPosition": 8,
+              "body": "I just use ID in my examples and not FID. Perhaps we should be consisting with this abbreviation throughout the draft",
+              "createdAt": "2026-03-06T17:34:50Z",
+              "updatedAt": "2026-03-06T17:35:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7owtiE",
+          "commit": {
+            "abbreviatedOid": "c125f96"
+          },
+          "author": "gchandok",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "",
+          "createdAt": "2026-03-06T17:39:55Z",
+          "updatedAt": "2026-03-06T17:40:14Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "I feel some form of this needs to be earlier on in the draft since this is the motivation for why we have ranges. Does not need to be the full section but even a statement like \"SVC schemes involve frames with dependencies on more than one frame. Hence just knowing that one frame has been decoded may not be sufficient. The feedback request and acknowledgement can carry a range of frame IDs to support this case\"",
+              "createdAt": "2026-03-06T17:39:55Z",
+              "updatedAt": "2026-03-06T17:40:14Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 37,
+      "id": "PR_kwDOOIDm-M7IkQwd",
+      "title": "Fix example formatting",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/pull/37",
+      "state": "OPEN",
+      "author": "gchandok",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "Fixes issue #35 ",
+      "createdAt": "2026-03-06T18:08:35Z",
+      "updatedAt": "2026-03-06T18:10:26Z",
+      "baseRepository": "sprangerik/frame-acknowledgement",
+      "baseRefName": "main",
+      "baseRefOid": "55ff4f000288ba5559e54763aced5950a951573c",
+      "headRepository": "sprangerik/frame-acknowledgement",
+      "headRefName": "gchandok/exampleFormatting",
+      "headRefOid": "f4d0b6747621ba553e00683dd6699cd45c2ce8de",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "gchandok",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Here is the preview with fix: https://sprangerik.github.io/frame-acknowledgement/gchandok/exampleFormatting/draft-sprang-avtcore-frame-acknowledgement.html",
+          "createdAt": "2026-03-06T18:10:25Z",
+          "updatedAt": "2026-03-06T18:10:25Z"
+        }
+      ],
       "reviews": []
     }
   ]
