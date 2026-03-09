@@ -346,7 +346,7 @@ In this scenario, the Media Sender transmits several frames and then requests fe
 
 The Media Sender begins by sending frames with Frame IDs but without requesting feedback (FFR=00). On the fourth frame, the sender requests feedback for all frames sent so far using FFR=10 with Feedback Start=0 and Feedback Length=4.
 
-```
+~~~
 Media Sender                              Media Receiver
     |                                          |
     |--- Frame TS=0 (FFR=00, ID=0) ----------->|
@@ -358,7 +358,7 @@ Media Sender                              Media Receiver
     |<-- RTCP Feedback (R=0, Start=0, ---------|
     |    Len=4, Vector=1111)                   |
     |                                          |
-```
+~~~
 
 The Media Receiver decodes all four frames and updates its status vector. On decoding the fourth frame it responds with an RTCP Frame Acknowledgement Feedback message with R=0 (not a resync request), Start Frame ID=0, Length=4, and a status vector of 1111 indicating all four frames were successfully decoded.
 
@@ -366,7 +366,7 @@ The Media Sender now knows that Frame IDs 0-3 are confirmed as decoded and can s
 
 For subsequent frames, the sender may choose not to mark some frames with Frame IDs if feedback is not needed. When confirmation is needed for a specific frame, the sender can use implicit feedback requests (FFR=01):
 
-```
+~~~
 Media Sender                              Media Receiver
     |                                          |
     |--- Frame TS=400 (no extension) --------->|
@@ -377,7 +377,7 @@ Media Sender                              Media Receiver
     |<-- RTCP Feedback (R=0, Start=4, ---------|
     |    Len=1, Vector=1)                      |
     |                                          |
-```
+~~~
 
 Frames at timestamps 400, 500, and 600 are sent without the Frame Acknowledgement extension since the sender does not need feedback for them. The frame at timestamp 700 is marked with Frame ID=4 (incrementing from the last assigned ID) and uses FFR=01 for an implicit feedback request.
 
@@ -391,7 +391,7 @@ In this scenario, a frame is lost in transit. The Media Sender uses a pattern of
 
 The Media Receiver receives the frame with ID=10 and decodes it successfully, but the frame with ID=11 is lost. The frame with ID=12 is received but cannot be decoded because it references the missing frame at timestamp 1100.
 
-```
+~~~
 Media Sender                              Media Receiver
     |                                          |
     |--- Frame TS=1000 (FFR=10, ID=10, ------->|
@@ -409,7 +409,7 @@ Media Sender                              Media Receiver
     |<-- RTCP Feedback (R=0, Start=10, --------|
     |    Len=3, Vector=100)                    |
     |                                          |
-```
+~~~
 
 The Media Receiver sends feedback indicating that Frame ID 10 was decoded (bit set to 1), while Frame IDs 11 and 12 were not decoded (bits set to 0). The feedback is sent when it is time to decode the frame with ID=12 to meet its playout deadline, but it is found to have a missing reference (the frame at timestamp 1100).
 
@@ -422,7 +422,7 @@ Continuing from the frame loss scenario, suppose a frame at timestamp 2100 was p
 
 The Media Receiver sends an RTCP Frame Acknowledgement Feedback message with the R flag set to 1, indicating a resync request. The Start Frame ID points to the latest successfully decoded frame (Frame ID 20), and the status vector shows the state of frames from that point up to the latest received Frame ID.
 
-```
+~~~
 Media Sender                              Media Receiver
     |                                          |
     |--- Frame TS=2000 (FFR=10, ID=20, ------->|
@@ -446,7 +446,7 @@ Media Sender                              Media Receiver
     |<-- RTCP Feedback (R=0, Start=20, --------|
     |    Len=2, Vector=11)                     |
     |                                          |
-```
+~~~
 
 **How the sender generates the refresh frame:**
 
@@ -468,7 +468,7 @@ The Frame Acknowledgement mechanism provides resilience against lost feedback me
 
 In this scenario, the Media Sender requests feedback for frames with IDs 10-11, but the RTCP feedback message from the receiver is lost in transit.
 
-```
+~~~
 Media Sender                              Media Receiver
     |                                          |
     |--- Frame TS=1000 (FFR=10, ID=10, ------->|
@@ -483,7 +483,7 @@ Media Sender                              Media Receiver
     |<-- RTCP Feedback (R=0, Start=9, ---------|
     |    Len=3, Vector=111)                    |
     |                                          |
-```
+~~~
 
 The Media Sender detects that no feedback was received for its earlier request. After a timeout when sending new frames, it re-requests feedback for Frame IDs 9-11 by sending the frame with ID=11 using FFR=10, Feedback Start=9, and Feedback Length=3.
 
