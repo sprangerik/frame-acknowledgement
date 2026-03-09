@@ -1768,7 +1768,8 @@ Since feedback is only really necessary for frames which the codec stores in a r
         </h3>
 <p id="appendix-A.2-1">In this scenario, the Media Sender transmits several frames and then requests feedback to confirm which frames have been decoded by the Media Receiver.<a href="#appendix-A.2-1" class="pilcrow">¶</a></p>
 <p id="appendix-A.2-2">The Media Sender begins by sending frames with Frame IDs but without requesting feedback (FFR=00). On the fourth frame, the sender requests feedback for all frames sent so far using FFR=10 with Feedback Start=0 and Feedback Length=4.<a href="#appendix-A.2-2" class="pilcrow">¶</a></p>
-<p id="appendix-A.2-3"><code>
+<div class="alignLeft art-text artwork" id="appendix-A.2-3">
+<pre>
 Media Sender                              Media Receiver
     |                                          |
     |--- Frame TS=0 (FFR=00, ID=0) -----------&gt;|
@@ -1780,11 +1781,13 @@ Media Sender                              Media Receiver
     |&lt;-- RTCP Feedback (R=0, Start=0, ---------|
     |    Len=4, Vector=1111)                   |
     |                                          |
-</code><a href="#appendix-A.2-3" class="pilcrow">¶</a></p>
+</pre><a href="#appendix-A.2-3" class="pilcrow">¶</a>
+</div>
 <p id="appendix-A.2-4">The Media Receiver decodes all four frames and updates its status vector. On decoding the fourth frame it responds with an RTCP Frame Acknowledgement Feedback message with R=0 (not a resync request), Start Frame ID=0, Length=4, and a status vector of 1111 indicating all four frames were successfully decoded.<a href="#appendix-A.2-4" class="pilcrow">¶</a></p>
 <p id="appendix-A.2-5">The Media Sender now knows that Frame IDs 0-3 are confirmed as decoded and can safely be used as long-term references.<a href="#appendix-A.2-5" class="pilcrow">¶</a></p>
 <p id="appendix-A.2-6">For subsequent frames, the sender may choose not to mark some frames with Frame IDs if feedback is not needed. When confirmation is needed for a specific frame, the sender can use implicit feedback requests (FFR=01):<a href="#appendix-A.2-6" class="pilcrow">¶</a></p>
-<p id="appendix-A.2-7"><code>
+<div class="alignLeft art-text artwork" id="appendix-A.2-7">
+<pre>
 Media Sender                              Media Receiver
     |                                          |
     |--- Frame TS=400 (no extension) ---------&gt;|
@@ -1795,7 +1798,8 @@ Media Sender                              Media Receiver
     |&lt;-- RTCP Feedback (R=0, Start=4, ---------|
     |    Len=1, Vector=1)                      |
     |                                          |
-</code><a href="#appendix-A.2-7" class="pilcrow">¶</a></p>
+</pre><a href="#appendix-A.2-7" class="pilcrow">¶</a>
+</div>
 <p id="appendix-A.2-8">Frames at timestamps 400, 500, and 600 are sent without the Frame Acknowledgement extension since the sender does not need feedback for them. The frame at timestamp 700 is marked with Frame ID=4 (incrementing from the last assigned ID) and uses FFR=01 for an implicit feedback request.<a href="#appendix-A.2-8" class="pilcrow">¶</a></p>
 <p id="appendix-A.2-9">On decoding the frame with ID=4 updates its status vector with just one entry for Frame ID=4. It sends feedback with Start Frame ID=4, and implicitly signals that frames prior to ID=4 (Frame IDs 0-3) are no longer being tracked.<a href="#appendix-A.2-9" class="pilcrow">¶</a></p>
 </section>
@@ -1807,7 +1811,8 @@ Media Sender                              Media Receiver
         </h3>
 <p id="appendix-A.3-1">In this scenario, a frame is lost in transit. The Media Sender uses a pattern of requesting feedback for the last 2 frames plus the current frame on each feedback request.<a href="#appendix-A.3-1" class="pilcrow">¶</a></p>
 <p id="appendix-A.3-2">The Media Receiver receives the frame with ID=10 and decodes it successfully, but the frame with ID=11 is lost. The frame with ID=12 is received but cannot be decoded because it references the missing frame at timestamp 1100.<a href="#appendix-A.3-2" class="pilcrow">¶</a></p>
-<p id="appendix-A.3-3"><code>
+<div class="alignLeft art-text artwork" id="appendix-A.3-3">
+<pre>
 Media Sender                              Media Receiver
     |                                          |
     |--- Frame TS=1000 (FFR=10, ID=10, -------&gt;|
@@ -1825,7 +1830,8 @@ Media Sender                              Media Receiver
     |&lt;-- RTCP Feedback (R=0, Start=10, --------|
     |    Len=3, Vector=100)                    |
     |                                          |
-</code><a href="#appendix-A.3-3" class="pilcrow">¶</a></p>
+</pre><a href="#appendix-A.3-3" class="pilcrow">¶</a>
+</div>
 <p id="appendix-A.3-4">The Media Receiver sends feedback indicating that Frame ID 10 was decoded (bit set to 1), while Frame IDs 11 and 12 were not decoded (bits set to 0). The feedback is sent when it is time to decode the frame with ID=12 to meet its playout deadline, but it is found to have a missing reference (the frame at timestamp 1100).<a href="#appendix-A.3-4" class="pilcrow">¶</a></p>
 <p id="appendix-A.3-5">Upon receiving this feedback, the Media Sender updates its state: Frame ID 10 confirmed decoded, Frame IDs 11 and 12 are marked as not decoded. The sender can choose to encode future frames without referencing the frames at timestamps 1100 or 1200.<a href="#appendix-A.3-5" class="pilcrow">¶</a></p>
 </section>
@@ -1837,7 +1843,8 @@ Media Sender                              Media Receiver
         </h3>
 <p id="appendix-A.4-1">Continuing from the frame loss scenario, suppose a frame at timestamp 2100 was partially received. When it is time to decode this frame to meet its presentation deadline, the receiver discovers that it is incomplete and marks it as lost. Since retransmission is not viable within the latency budget and the Media Receiver's decoder is out of sync, the receiver immediately sends a resync request.<a href="#appendix-A.4-1" class="pilcrow">¶</a></p>
 <p id="appendix-A.4-2">The Media Receiver sends an RTCP Frame Acknowledgement Feedback message with the R flag set to 1, indicating a resync request. The Start Frame ID points to the latest successfully decoded frame (Frame ID 20), and the status vector shows the state of frames from that point up to the latest received Frame ID.<a href="#appendix-A.4-2" class="pilcrow">¶</a></p>
-<p id="appendix-A.4-3"><code>
+<div class="alignLeft art-text artwork" id="appendix-A.4-3">
+<pre>
 Media Sender                              Media Receiver
     |                                          |
     |--- Frame TS=2000 (FFR=10, ID=20, -------&gt;|
@@ -1861,7 +1868,8 @@ Media Sender                              Media Receiver
     |&lt;-- RTCP Feedback (R=0, Start=20, --------|
     |    Len=2, Vector=11)                     |
     |                                          |
-</code><a href="#appendix-A.4-3" class="pilcrow">¶</a></p>
+</pre><a href="#appendix-A.4-3" class="pilcrow">¶</a>
+</div>
 <p id="appendix-A.4-4"><strong>How the sender generates the refresh frame:</strong><a href="#appendix-A.4-4" class="pilcrow">¶</a></p>
 <p id="appendix-A.4-5">Upon receiving the resync request (R=1) with status vector 1, the Media Sender:<a href="#appendix-A.4-5" class="pilcrow">¶</a></p>
 <ol start="1" type="1" class="normal type-1" id="appendix-A.4-6">
@@ -1889,7 +1897,8 @@ Media Sender                              Media Receiver
         </h3>
 <p id="appendix-A.5-1">The Frame Acknowledgement mechanism provides resilience against lost feedback messages through re-requests.<a href="#appendix-A.5-1" class="pilcrow">¶</a></p>
 <p id="appendix-A.5-2">In this scenario, the Media Sender requests feedback for frames with IDs 10-11, but the RTCP feedback message from the receiver is lost in transit.<a href="#appendix-A.5-2" class="pilcrow">¶</a></p>
-<p id="appendix-A.5-3"><code>
+<div class="alignLeft art-text artwork" id="appendix-A.5-3">
+<pre>
 Media Sender                              Media Receiver
     |                                          |
     |--- Frame TS=1000 (FFR=10, ID=10, -------&gt;|
@@ -1904,7 +1913,8 @@ Media Sender                              Media Receiver
     |&lt;-- RTCP Feedback (R=0, Start=9, ---------|
     |    Len=3, Vector=111)                    |
     |                                          |
-</code><a href="#appendix-A.5-3" class="pilcrow">¶</a></p>
+</pre><a href="#appendix-A.5-3" class="pilcrow">¶</a>
+</div>
 <p id="appendix-A.5-4">The Media Sender detects that no feedback was received for its earlier request. After a timeout when sending new frames, it re-requests feedback for Frame IDs 9-11 by sending the frame with ID=11 using FFR=10, Feedback Start=9, and Feedback Length=3.<a href="#appendix-A.5-4" class="pilcrow">¶</a></p>
 <p id="appendix-A.5-5">The Media Receiver responds with updated feedback for the requested range, confirming all three Frame IDs (9, 10, 11) have been decoded. The sender now has the confirmation it needed despite the earlier feedback loss.<a href="#appendix-A.5-5" class="pilcrow">¶</a></p>
 <p id="appendix-A.5-6">This mechanism allows the sender to control feedback reliability by re-requesting as needed, providing resilience against both media packet loss and feedback packet loss.<a href="#appendix-A.5-6" class="pilcrow">¶</a></p>
