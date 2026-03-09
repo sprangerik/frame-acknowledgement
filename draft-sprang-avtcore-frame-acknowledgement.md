@@ -337,7 +337,7 @@ When used in an offer/answer context, inclusion of "a=rtcp-fb:96 frame-acknowled
 
 A receiver that supports sending resync requests (R=1 in the Frame Acknowledgement Feedback message) MAY indicate that it will trigger resync based on decode starvation, and MAY configure the timeout for doing so, using an optional parameter on the "frame-acknowledgement" rtcp-fb attribute.
 
-The "resync-timeout" parameter specifies the time in milliseconds that the receiver will wait for decoding to make progress before sending a resync request. Decode starvation occurs when the receiver cannot advance decoding (e.g., it is blocked waiting for a frame or data that cannot be recovered). If decoding does not make progress for the specified duration, the receiver MAY send a Frame Acknowledgement Feedback message with the R flag set and a Resync Frame ID referencing the last successfully decoded frame.
+The "resync-timeout" parameter specifies the time in milliseconds that the receiver will wait for decoding to make progress before sending a resync request. Decode starvation occurs when the receiver cannot advance decoding (e.g., it is blocked waiting for a frame or data that cannot be recovered). If decoding does not make progress for the specified duration, the receiver should send a Frame Acknowledgement Feedback message with the R flag set and a Resync Frame ID referencing the last successfully decoded frame.
 
 Syntax:
 
@@ -345,7 +345,7 @@ Syntax:
    a=rtcp-fb:<payload type> frame-acknowledgement;resync-timeout=<timeout-ms>
 ~~~
 
-The value "timeout-ms" is an integer in the range 1-65535, representing the timeout in milliseconds. If "resync-timeout" is omitted, the receiver MAY still send resync requests at its discretion (e.g., on unrecoverable loss) but need not use a timeout-based trigger. Inclusion of "resync-timeout" indicates that the receiver supports and may use timeout-based resync when decode starves for at least the given duration.
+The value "timeout-ms" is an integer in the range 1-65535, representing the timeout in milliseconds. If "resync-timeout" is omitted, the receiver MAY still send resync requests at its discretion (e.g., on unrecoverable loss) but need not use a timeout-based trigger. Inclusion of "resync-timeout" indicates that the receiver supports and shall use timeout-based resync when decode starves for at least the given duration.
 
 Example attribute lines in SDP (Only one of the format must be present per payload type):
 
@@ -355,7 +355,7 @@ Example attribute lines in SDP (Only one of the format must be present per paylo
    a=rtcp-fb:96 frame-acknowledgement;resync-timeout=500
 ~~~
 
-The first format signals support only for Frame Acknowledgement Feedback. The second format additionally signals that the receiver may trigger resync after 500 ms of decode starvation. On receiving an SDP with resync-timeout specified, the media sender understands that the media receiver may send resync requests after sustained decode starvation. Media sender can use resync requests to send recovery frames explained in {{resync_request_handling}}
+The first format signals support only for Frame Acknowledgement Feedback. The second format additionally signals that the receiver shall trigger resync after 500 ms of decode starvation. "resync-timeout" helps use-cases to choose how long receiver need to wait before triggering resync request. For latency sensitive application, this helps recover faster. As it is a negotiated value, application can choose right configuration for its use-case.
 
 # Security Considerations
 
