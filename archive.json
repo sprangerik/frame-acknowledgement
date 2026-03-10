@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-03-08T01:52:36.405632+00:00",
+  "timestamp": "2026-03-10T01:46:34.805938+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -2264,13 +2264,13 @@
       "labels": [],
       "body": "",
       "createdAt": "2026-03-03T06:24:52Z",
-      "updatedAt": "2026-03-06T04:31:36Z",
+      "updatedAt": "2026-03-09T21:22:35Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4949f103b797951000b6542c057a65d154369967",
       "headRepository": "shrim27/frame-acknowledgement",
       "headRefName": "sdp",
-      "headRefOid": "c0e2782f8b4cc76275f05823be8d7afa2c17ac67",
+      "headRefOid": "a60343294dc0eb66a648a91aa0df446decba61ed",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -2426,6 +2426,26 @@
               "body": "Actually I was asking what would sender do with the resync timeout value. Can you give an example of that?",
               "createdAt": "2026-03-06T04:31:36Z",
               "updatedAt": "2026-03-06T04:31:37Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7pjIIK",
+          "commit": {
+            "abbreviatedOid": "651c47a"
+          },
+          "author": "shrim27",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-09T21:22:34Z",
+          "updatedAt": "2026-03-09T21:22:35Z",
+          "comments": [
+            {
+              "originalPosition": 57,
+              "body": "Updated to provide more clarity, sender doesnt have much role with timeout value. Its more to do with use-case and application selecting it based on need. Hope new text clarifies, please let me know.",
+              "createdAt": "2026-03-09T21:22:34Z",
+              "updatedAt": "2026-03-09T21:22:35Z"
             }
           ]
         }
@@ -2646,24 +2666,26 @@
       "id": "PR_kwDOOIDm-M7IkQwd",
       "title": "Fix example formatting",
       "url": "https://github.com/sprangerik/frame-acknowledgement/pull/37",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "gchandok",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Fixes issue #35 ",
       "createdAt": "2026-03-06T18:08:35Z",
-      "updatedAt": "2026-03-06T18:10:26Z",
+      "updatedAt": "2026-03-09T08:42:11Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "55ff4f000288ba5559e54763aced5950a951573c",
       "headRepository": "sprangerik/frame-acknowledgement",
       "headRefName": "gchandok/exampleFormatting",
       "headRefOid": "f4d0b6747621ba553e00683dd6699cd45c2ce8de",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-03-09T08:42:11Z",
+      "mergedAt": "2026-03-09T08:42:11Z",
+      "mergedBy": "sprangerik",
+      "mergeCommit": {
+        "oid": "e21ccbc0cf1ca0f22894a6955585c840d95810f0"
+      },
       "comments": [
         {
           "author": "gchandok",
@@ -2671,6 +2693,13 @@
           "body": "Here is the preview with fix: https://sprangerik.github.io/frame-acknowledgement/gchandok/exampleFormatting/draft-sprang-avtcore-frame-acknowledgement.html",
           "createdAt": "2026-03-06T18:10:25Z",
           "updatedAt": "2026-03-06T18:10:25Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "> Here is the preview with fix: https://sprangerik.github.io/frame-acknowledgement/gchandok/exampleFormatting/draft-sprang-avtcore-frame-acknowledgement.html\r\n\r\nThanks for fixing!",
+          "createdAt": "2026-03-09T08:42:04Z",
+          "updatedAt": "2026-03-09T08:42:04Z"
         }
       ],
       "reviews": []
