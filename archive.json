@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-03-10T01:46:34.805938+00:00",
+  "timestamp": "2026-03-12T01:49:38.041600+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -716,7 +716,7 @@
       "id": "I_kwDOOIDm-M7waRdV",
       "title": "Sequence charts in example section not rendered correctly",
       "url": "https://github.com/sprangerik/frame-acknowledgement/issues/35",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "sprangerik",
       "authorAssociation": "OWNER",
       "assignees": [
@@ -725,8 +725,8 @@
       "labels": [],
       "body": "At least when HTML-ized the flow charts don't seem to be rendered correctly. See for instance https://sprangerik.github.io/frame-acknowledgement/draft-sprang-avtcore-frame-acknowledgement.html#name-normal-operation-flow",
       "createdAt": "2026-03-06T10:22:22Z",
-      "updatedAt": "2026-03-06T17:50:55Z",
-      "closedAt": null,
+      "updatedAt": "2026-03-10T15:49:08Z",
+      "closedAt": "2026-03-10T15:49:08Z",
       "comments": []
     }
   ],
@@ -2264,7 +2264,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2026-03-03T06:24:52Z",
-      "updatedAt": "2026-03-09T21:22:35Z",
+      "updatedAt": "2026-03-11T16:40:26Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4949f103b797951000b6542c057a65d154369967",
@@ -2446,6 +2446,152 @@
               "body": "Updated to provide more clarity, sender doesnt have much role with timeout value. Its more to do with use-case and application selecting it based on need. Hope new text clarifies, please let me know.",
               "createdAt": "2026-03-09T21:22:34Z",
               "updatedAt": "2026-03-09T21:22:35Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7pomXD",
+          "commit": {
+            "abbreviatedOid": "a603432"
+          },
+          "author": "gchandok",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-10T04:55:04Z",
+          "updatedAt": "2026-03-10T04:55:04Z",
+          "comments": [
+            {
+              "originalPosition": 67,
+              "body": "```suggestion\nThe first format signals support only for Frame Acknowledgement Feedback. The second format additionally signals that the receiver shall trigger resync after 500 ms of decode starvation. \"resync-timeout\" helps use-cases to choose how long receiver needs to wait before triggering resync request. Smaller values can help latency sensitive applications recover faster. As it is a negotiated value, application can choose right configuration for its use-case.\n```",
+              "createdAt": "2026-03-10T04:55:04Z",
+              "updatedAt": "2026-03-10T04:55:04Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7pooRN",
+          "commit": {
+            "abbreviatedOid": "a603432"
+          },
+          "author": "gchandok",
+          "authorAssociation": "COLLABORATOR",
+          "state": "CHANGES_REQUESTED",
+          "body": "",
+          "createdAt": "2026-03-10T04:57:41Z",
+          "updatedAt": "2026-03-10T04:58:08Z",
+          "comments": [
+            {
+              "originalPosition": 67,
+              "body": "Actually I still don\u2019t follow why the timeout needs to be a negotiated value. That is needed when sender and receiver need to agree on something. Here you are just saying the timeout needs to be configurable by an application. That is an API consideration and not a negotiation one. Unless you want the media sender to be able to influence the media receiver\u2019s timeout value. ",
+              "createdAt": "2026-03-10T04:57:41Z",
+              "updatedAt": "2026-03-10T04:58:08Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7ppCvF",
+          "commit": {
+            "abbreviatedOid": "a603432"
+          },
+          "author": "shrim27",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-10T05:26:54Z",
+          "updatedAt": "2026-03-10T05:26:54Z",
+          "comments": [
+            {
+              "originalPosition": 67,
+              "body": "The timeout-value is not tied to sender or receiver generating it. It would be usecase specific.\r\nLet me give example: timeout influences when resync feedback is sent, it affects how early or late the recovery mechanism gets triggered.\r\nThis consideration can be different for different use-cases. For a video conferencing, 30fps streaming 250ms would work. For a interactive use-case like gaming recovery timeout need to be much smaller say 100ms.\r\nIts more use-case driven and not sender or receiver originating.\r\n\r\nSome references for similar params \r\nhttps://datatracker.ietf.org/doc/html/rfc4588#section-8.1\r\nrtx-time=<rtx-time-val>\r\n\r\nI believe having just this text should be enough, rather than confuse the reader.\r\n\"The first format signals support only for Frame Acknowledgement Feedback. The second format additionally signals that the receiver shall trigger resync after 500 ms of decode starvation.\"",
+              "createdAt": "2026-03-10T05:26:54Z",
+              "updatedAt": "2026-03-10T05:26:54Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7qFBFL",
+          "commit": {
+            "abbreviatedOid": "a603432"
+          },
+          "author": "gchandok",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-11T06:09:07Z",
+          "updatedAt": "2026-03-11T06:09:07Z",
+          "comments": [
+            {
+              "originalPosition": 67,
+              "body": "The purpose of putting something in the SDP is so that sender and receiver can agree upon the value. The example you provided of rtx-time is a good one. The sender adds it to its SDP to indicate that is how long the it will hold packets in its buffers for retransmission. This allows the receiver to plan whether it should send NACK or not based on the RTT. What will be an equivalent use for resync-timeout?\r\n\r\n@sprangerik it would be helpful if you could share your thoughts on this too. thanks",
+              "createdAt": "2026-03-11T06:09:07Z",
+              "updatedAt": "2026-03-11T06:09:07Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7qFMi8",
+          "commit": {
+            "abbreviatedOid": "a603432"
+          },
+          "author": "shrim27",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-11T06:24:15Z",
+          "updatedAt": "2026-03-11T06:24:15Z",
+          "comments": [
+            {
+              "originalPosition": 67,
+              "body": "I do not see much deviation here as compared to rtx-time. \r\nFor sender generated SDP offer: Sender provides resync-timeout value, receiver can reject it in case it doesnt support it. If it supports that option, answer with same value sent by sender. \r\nFor receiver generated SDP: Receiver can add it as part of offer and sender can either echo back or remove it if it wants disable the resync feedback.\r\n",
+              "createdAt": "2026-03-11T06:24:15Z",
+              "updatedAt": "2026-03-11T06:26:06Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7qRMEM",
+          "commit": {
+            "abbreviatedOid": "a603432"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-11T15:13:54Z",
+          "updatedAt": "2026-03-11T15:15:15Z",
+          "comments": [
+            {
+              "originalPosition": 67,
+              "body": "I don't think that needs to be mutually exclusive.\n\nMy mental model of it is that this is an agreement between sender and receiver. If the sender relies on receive-side triggered feedback, it needs to know the upper bound latency on when it will receive those signals (which would be an RTT plus this interval) so that it can distribute its reference buffer usage optimally over time.\n\nSo while the behavior might be an application preference, I think the flow should be that the application creates the sender with some latency requirement in mind,  and then in turn the sender negotiates appropriate values to be able to fulfill those requirements.",
+              "createdAt": "2026-03-11T15:13:54Z",
+              "updatedAt": "2026-03-11T15:15:15Z"
+            },
+            {
+              "originalPosition": 67,
+              "body": "And it's a good point that if one side removes the timeout value, it's clear that active feedback requests must be used.",
+              "createdAt": "2026-03-11T15:15:08Z",
+              "updatedAt": "2026-03-11T15:15:15Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7qTdKX",
+          "commit": {
+            "abbreviatedOid": "a603432"
+          },
+          "author": "shrim27",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-11T16:40:26Z",
+          "updatedAt": "2026-03-11T16:40:26Z",
+          "comments": [
+            {
+              "originalPosition": 67,
+              "body": "My only difference in understanding is \"which would be an RTT plus this interval\"\r\nI would remove RTT from it, tie mainly to decode starvation thats most visible issue for user. Give sender ability to take appropriate action if RTT need to be considered. One more point, for receive only use-case RTT computation doesnt happen on receiver unless RTCP-XR packets are sent.",
+              "createdAt": "2026-03-11T16:40:26Z",
+              "updatedAt": "2026-03-11T16:40:26Z"
             }
           ]
         }
