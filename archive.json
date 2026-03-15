@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-03-12T01:49:38.041600+00:00",
+  "timestamp": "2026-03-15T02:04:27.495548+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -727,6 +727,22 @@
       "createdAt": "2026-03-06T10:22:22Z",
       "updatedAt": "2026-03-10T15:49:08Z",
       "closedAt": "2026-03-10T15:49:08Z",
+      "comments": []
+    },
+    {
+      "number": 38,
+      "id": "I_kwDOOIDm-M7yxd_8",
+      "title": "Protect receiver against unbounded frame state growth",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/38",
+      "state": "OPEN",
+      "author": "gchandok",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "The draft as it stands allows a misbehaving sender to keep tagging frames with IDs without ever sending a feedback request. As a result the receiver state will keep growing unbounded. I think we need to have something in the draft to protect the receiver. \n\nHere is a proposal:\n\nWe should have text which says that once the status vector stored on the receiver exceeds max length that the feedback can carry i.e. 256 (8 bits) the receiver can drop the older status. If the sender requests an older status once it has been discarded the receiver can respond with a different (newer) start frame ID than what was present in the request. \n\nIf we want to limit this max state to be less than 256 we can have the sender and receiver negotiate maxFeebackStatusVectorLength. Offerer can offer a value less than equal to 256 and answer must respond with that value or something smaller. That way the sender knows the max state receiver will maintain.",
+      "createdAt": "2026-03-13T19:41:17Z",
+      "updatedAt": "2026-03-13T19:41:17Z",
+      "closedAt": null,
       "comments": []
     }
   ],
@@ -2264,7 +2280,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2026-03-03T06:24:52Z",
-      "updatedAt": "2026-03-11T16:40:26Z",
+      "updatedAt": "2026-03-14T19:22:24Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "4949f103b797951000b6542c057a65d154369967",
@@ -2592,6 +2608,66 @@
               "body": "My only difference in understanding is \"which would be an RTT plus this interval\"\r\nI would remove RTT from it, tie mainly to decode starvation thats most visible issue for user. Give sender ability to take appropriate action if RTT need to be considered. One more point, for receive only use-case RTT computation doesnt happen on receiver unless RTCP-XR packets are sent.",
               "createdAt": "2026-03-11T16:40:26Z",
               "updatedAt": "2026-03-11T16:40:26Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7rM6ny",
+          "commit": {
+            "abbreviatedOid": "a603432"
+          },
+          "author": "gchandok",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-13T18:02:32Z",
+          "updatedAt": "2026-03-13T18:02:32Z",
+          "comments": [
+            {
+              "originalPosition": 67,
+              "body": "The justification to put this in SDP seems to be that receive will use this to decide how quickly it will send resync requests AND sender will use it to plan its reference buffer usage over time taking into account the timeout + RTT. That seems reasonable to me and if we can mention this in the draft the use will become clear. \r\n\r\n> I would remove RTT from it, tie mainly to decode starvation thats most visible issue for user.\r\n\r\nThis is how the value will be picked for the use case, right. The question was how would the sender use the value\r\n\r\n> Give sender ability to take appropriate action if RTT need to be considered. \r\n\r\nWe should only put this in SDP if it is useful to the sender in some way. So would be good to clarify that in the draft. If this needs more discussion perhaps we can break this PR into 2. Just land the base SDP changes and do this resync timeout in a separate PR. \r\n",
+              "createdAt": "2026-03-13T18:02:32Z",
+              "updatedAt": "2026-03-13T18:02:54Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7rN-TG",
+          "commit": {
+            "abbreviatedOid": "a603432"
+          },
+          "author": "shrim27",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-13T18:55:11Z",
+          "updatedAt": "2026-03-13T18:55:11Z",
+          "comments": [
+            {
+              "originalPosition": 67,
+              "body": "Sender can use this information to decide feedback request interval, if receiver triggered resync feedbacks are present sender can choose to relax feedback request intervals. I think this information is good to add to draft.\r\n\r\nAbout RTT: ok to mention as one of the consideration, but not mandate sender how it should behave.\r\nAnd will remove \"application\" term, keep use-case specific.\r\n\r\nSounds good?",
+              "createdAt": "2026-03-13T18:55:11Z",
+              "updatedAt": "2026-03-13T18:55:11Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7rZA_X",
+          "commit": {
+            "abbreviatedOid": "a603432"
+          },
+          "author": "gchandok",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-14T19:22:24Z",
+          "updatedAt": "2026-03-14T19:22:24Z",
+          "comments": [
+            {
+              "originalPosition": 67,
+              "body": "Ok. Thank you ",
+              "createdAt": "2026-03-14T19:22:24Z",
+              "updatedAt": "2026-03-14T19:22:25Z"
             }
           ]
         }
