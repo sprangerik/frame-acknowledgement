@@ -6,7 +6,7 @@ category: info
 docname: draft-sprang-avtcore-frame-acknowledgement-02
 submissiontype: IETF
 number:
-date: 2026-03-03
+date: 2026-03-13
 consensus: true
 v: 3
 area: AREA
