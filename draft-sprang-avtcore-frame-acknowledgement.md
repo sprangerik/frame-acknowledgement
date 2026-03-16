@@ -217,7 +217,7 @@ The remaining 6 bits of the FFR/Reserved byte are reserved and SHOULD be set to 
 ### Frame ID (16 bits)
 
 Present if FFR is 00, 01, or 10.
-An unsigned integer that uniquely identifies a frame. It MUST be incremented by one for each new frame (in sending order) that needs to be identified. It wraps around to 0 on overflow. The starting point is arbitrary.
+An unsigned integer that uniquely identifies a frame. It MUST be incremented by one for each new frame (in sending order) that needs to be identified. It wraps around to 0 on overflow. The sender MAY start at 0, but receivers MUST accept any arbitrary starting point value.
 
 ### Feedback Start (16 bits)
 
