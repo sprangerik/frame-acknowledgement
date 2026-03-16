@@ -105,11 +105,15 @@ Table of Contents
      8.2.  Point-to-Multi-Point
      8.3.  Using acknowledgement ranges
      8.4.  Out-of-order Message Handling
-   9.  Security Considerations
-   10. IANA Considerations
-   11. References
-     11.1.  Normative References
-     11.2.  Informative References
+   9.  SDP Signaling
+     9.1.  RTP Header Extension
+     9.2.  RTCP Feedback
+     9.3.  Receiver-Triggered Resync
+   10. Security Considerations
+   11. IANA Considerations
+   12. References
+     12.1.  Normative References
+     12.2.  Informative References
    Appendix A: Example Flows
      Notation Legend
      Normal Operation Flow
@@ -286,9 +290,9 @@ Table of Contents
    acknowledgement header extension that is also used for frame
    identification.  The feedback request comprises a Start Frame ID and
    Length field.  Specifying the range explicitly has several
-   advantages, including enabling reliable delivery of the feedback
-   since the sender can effectively make retransmission requests of the
-   feedback.
+   advantages, including reliable delivery of the feedback and the
+   ability to signal state relating to multiple independent streams
+   interleaved within a single SSRC.
 
    If a new Frame Acknowledgement Request is sent with an incremented
    Feedback Start, all status values prior to that Frame ID are
@@ -529,10 +533,10 @@ Table of Contents
    complex.
 
    For instance, imaging the following scenario where two independent
-   layers are sent (with the numbers indicating frame timestamps and FID
-   being the Frame IDs): S1: 100 -> 101 (FID = 1) -> 102 -> 103 S0: 100
-   -> 101 -> 102 (FID = 2) -> 103 Here, if the feedback for Frame ID 1
-   is lost, it is not enough to know that some receiver has been able to
+   layers are sent (with the numbers indicating frame timestamps and ID
+   being the Frame IDs): S1: 100 -> 101 (ID = 1) -> 102 -> 103 S0: 100
+   -> 101 -> 102 (ID = 2) -> 103 Here, if the feedback for Frame ID 1 is
+   lost, it is not enough to know that some receiver has been able to
    decode Frame ID 2.  It is for this reason the sender can request
    feedback starting at Frame ID 1, with a length of two.  The receiver
    should never remove state information about frames prior to the
@@ -552,7 +556,100 @@ Table of Contents
    a Frame ID larger than contained in the requested range, the receiver
    must process the request.  Otherwise, the request must be ignored.
 
-9.  Security Considerations
+9.  SDP Signaling
+
+   This section defines how to signal the Frame Acknowledgement RTP
+   header extension and the Frame Acknowledgement Feedback RTCP message
+   using the Session Description Protocol (SDP).
+
+9.1.  RTP Header Extension
+
+   The Frame Acknowledgement extension is declared in SDP using the
+   "extmap" attribute.  The extension does not use any extension
+   attributes.
+
+   The URI for declaring this header extension in an extmap attribute is
+   "urn:ietf:params:rtp-hdrext:frame-acknowledgement".
+
+   Example attribute line in SDP:
+
+      a=extmap:4 urn:ietf:params:rtp-hdrext:frame-acknowledgement
+
+   The extension identifier (4 in the example) is chosen per [RFC8285]
+   and MUST be unique within the media description.
+
+9.2.  RTCP Feedback
+
+   Support for the Frame Acknowledgement Feedback RTCP message is
+   signaled using the "rtcp-fb" attribute as defined in [RFC4585].  The
+   feedback type "frame-acknowledgement" indicates that the endpoint
+   supports sending and/or receiving the Frame Acknowledgement Feedback
+   message (PT=RTPFB, FMT as assigned by IANA for this feedback type).
+
+   The "rtcp-fb" attribute is specified with a payload type value that
+   identifies the RTP payload format for which Frame Acknowledgement
+   Feedback is supported.
+
+   Syntax:
+
+      a=rtcp-fb:<payload type> frame-acknowledgement
+
+   When used in an offer/answer context, inclusion of "a=rtcp-fb:96
+   frame-acknowledgement" (with the appropriate payload type for the
+   media) in the SDP indicates that the sender of the SDP is capable of
+   receiving Frame Acknowledgement Feedback messages for the indicated
+   payload type, and that the receiver of the SDP may send Frame
+   Acknowledgement Feedback messages when the RTP header extension is
+   also negotiated for the same media.
+
+9.3.  Receiver-Triggered Resync
+
+   A receiver that supports sending resync requests (R=1 in the Frame
+   Acknowledgement Feedback message) MAY indicate that it will trigger
+   resync based on decode starvation, and MAY configure the timeout for
+   doing so, using an optional parameter on the "frame-acknowledgement"
+   rtcp-fb attribute.
+
+   The "resync-timeout" parameter specifies the time in milliseconds
+   that the receiver will wait for decoding to make progress before
+   sending a resync request.  Decode starvation occurs when the receiver
+   cannot advance decoding (e.g., it is blocked waiting for a frame or
+   data that cannot be recovered).  If decoding does not make progress
+   for the specified duration, the receiver should send a Frame
+   Acknowledgement Feedback message with the R flag set and a Resync
+   Frame ID referencing the last successfully decoded frame.
+
+   Syntax:
+
+   a=rtcp-fb:<payload type> frame-acknowledgement;resync-timeout=<timeout-ms>
+
+   The value "timeout-ms" is an integer in the range 1-65535,
+   representing the timeout in milliseconds.  If "resync-timeout" is
+   omitted, the receiver MAY still send resync requests at its
+   discretion (e.g., on unrecoverable loss) but need not use a timeout-
+   based trigger.  Inclusion of "resync-timeout" indicates that the
+   receiver supports and shall use timeout-based resync when decode
+   starves for at least the given duration.
+
+   Example attribute lines in SDP (Only one of the format must be
+   present per payload type):
+
+      a=rtcp-fb:96 frame-acknowledgement
+      Or
+      a=rtcp-fb:96 frame-acknowledgement;resync-timeout=500
+
+   The first format signals support only for Frame Acknowledgement
+   Feedback.  The second format additionally signals that the receiver
+   shall trigger resync after 500 ms of decode starvation. "resync-
+   timeout" helps use-cases to choose how long receiver need to wait
+   before triggering resync request.  Media sender can adjust its
+   interval to request frame acknowledgement feedback if "resync-
+   timeout" based resync feedback is supported by receiver.  Media
+   sender can avoid sending frequent frame acknowledgement requests
+   depending on the use-case.  Additionally sender could consider RTT
+   during handling of resync feedbacks.
+
+10.  Security Considerations
 
    The messages in this proposal may expose a small amount of data,
    namely the number of frames that have been sent, and potentially in
@@ -562,7 +659,7 @@ Table of Contents
    This data should however not pose any significant privacy or security
    risks.
 
-10.  IANA Considerations
+11.  IANA Considerations
 
    The RTP header extension needs to have a URI identifier assigned by
    IANA.  See [IANAEXT].
@@ -571,9 +668,9 @@ Table of Contents
    writing, the next available FMT value is 12.  A dedicated ID needs to
    be assigned by IANA.  See [IANARTCP].
 
-11.  References
+12.  References
 
-11.1.  Normative References
+12.1.  Normative References
 
    [DD]       AOM, "Dependency Descriptor RTP Header Extension", n.d.,
               <https://aomediacodec.github.io/av1-rtp-spec/#dependency-
@@ -596,7 +693,7 @@ Table of Contents
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
 
-11.2.  Informative References
+12.2.  Informative References
 
    [LNTF]     "RTCP feedback Message for Loss Notification", n.d.,
               <https://www.ietf.org/archive/id/draft-majali-avtcore-
@@ -615,6 +712,11 @@ Table of Contents
    [RFC7667]  Westerlund, M. and S. Wenger, "RTP Topologies", RFC 7667,
               DOI 10.17487/RFC7667, November 2015,
               <https://www.rfc-editor.org/rfc/rfc7667>.
+
+   [RFC8285]  Singer, D., Desineni, H., and R. Even, Ed., "A General
+              Mechanism for RTP Header Extensions", RFC 8285,
+              DOI 10.17487/RFC8285, October 2017,
+              <https://www.rfc-editor.org/rfc/rfc8285>.
 
    [RFC8888]  Sarker, Z., Perkins, C., Singh, V., and M. Ramalho, "RTP
               Control Protocol (RTCP) Feedback for Congestion Control",
@@ -676,11 +778,17 @@ Normal Operation Flow
    requests feedback for all frames sent so far using FFR=10 with
    Feedback Start=0 and Feedback Length=4.
 
-   Media Sender Media Receiver | | |--- Frame TS=0 (FFR=00, ID=0)
-   ----------->| |--- Frame TS=100 (FFR=00, ID=1) --------->| |--- Frame
-   TS=200 (FFR=00, ID=2) --------->| |--- Frame TS=300 (FFR=10, ID=3,
-   --------->| | FbStart=0, FbLen=4) | | | |<-- RTCP Feedback (R=0,
-   Start=0, ---------| | Len=4, Vector=1111) | | |
+   Media Sender                              Media Receiver
+       |                                          |
+       |--- Frame TS=0 (FFR=00, ID=0) ----------->|
+       |--- Frame TS=100 (FFR=00, ID=1) --------->|
+       |--- Frame TS=200 (FFR=00, ID=2) --------->|
+       |--- Frame TS=300 (FFR=10, ID=3, --------->|
+       |    FbStart=0, FbLen=4)                   |
+       |                                          |
+       |<-- RTCP Feedback (R=0, Start=0, ---------|
+       |    Len=4, Vector=1111)                   |
+       |                                          |
 
    The Media Receiver decodes all four frames and updates its status
    vector.  On decoding the fourth frame it responds with an RTCP Frame
@@ -696,11 +804,16 @@ Normal Operation Flow
    needed for a specific frame, the sender can use implicit feedback
    requests (FFR=01):
 
-   Media Sender Media Receiver | | |--- Frame TS=400 (no extension)
-   --------->| |--- Frame TS=500 (no extension) --------->| |--- Frame
-   TS=600 (no extension) --------->| |--- Frame TS=700 (FFR=01, ID=4)
-   --------->| | | |<-- RTCP Feedback (R=0, Start=4, ---------| | Len=1,
-   Vector=1) | | |
+   Media Sender                              Media Receiver
+       |                                          |
+       |--- Frame TS=400 (no extension) --------->|
+       |--- Frame TS=500 (no extension) --------->|
+       |--- Frame TS=600 (no extension) --------->|
+       |--- Frame TS=700 (FFR=01, ID=4) --------->|
+       |                                          |
+       |<-- RTCP Feedback (R=0, Start=4, ---------|
+       |    Len=1, Vector=1)                      |
+       |                                          |
 
    Frames at timestamps 400, 500, and 600 are sent without the Frame
    Acknowledgement extension since the sender does not need feedback for
@@ -724,13 +837,23 @@ Sender-side Recovery From Frame Loss
    is received but cannot be decoded because it references the missing
    frame at timestamp 1100.
 
-   Media Sender Media Receiver | | |--- Frame TS=1000 (FFR=10, ID=10,
-   ------->| | FbStart=8, FbLen=3, refs TS=900) | | | |<-- RTCP Feedback
-   (R=0, Start=8, ---------| | Len=3, Vector=111) | | | |--- Frame
-   TS=1100 (FFR=10, ID=11, ------X | | FbStart=9, FbLen=3, refs TS=1000)
-   LOST| | | |--- Frame TS=1200 (FFR=10, ID=12, ------->| | FbStart=10,
-   FbLen=3, refs TS=1100) | | | |<-- RTCP Feedback (R=0, Start=10,
-   --------| | Len=3, Vector=100) | | |
+   Media Sender                              Media Receiver
+       |                                          |
+       |--- Frame TS=1000 (FFR=10, ID=10, ------->|
+       |    FbStart=8, FbLen=3, refs TS=900)      |
+       |                                          |
+       |<-- RTCP Feedback (R=0, Start=8, ---------|
+       |    Len=3, Vector=111)                    |
+       |                                          |
+       |--- Frame TS=1100 (FFR=10, ID=11, ------X |
+       |    FbStart=9, FbLen=3, refs TS=1000) LOST|
+       |                                          |
+       |--- Frame TS=1200 (FFR=10, ID=12, ------->|
+       |    FbStart=10, FbLen=3, refs TS=1100)    |
+       |                                          |
+       |<-- RTCP Feedback (R=0, Start=10, --------|
+       |    Len=3, Vector=100)                    |
+       |                                          |
 
    The Media Receiver sends feedback indicating that Frame ID 10 was
    decoded (bit set to 1), while Frame IDs 11 and 12 were not decoded
@@ -758,15 +881,29 @@ Receiver-Triggered Resync Request
    ID 20), and the status vector shows the state of frames from that
    point up to the latest received Frame ID.
 
-   Media Sender Media Receiver | | |--- Frame TS=2000 (FFR=10, ID=20,
-   ------->| | FbStart=18, FbLen=3) | | | |<-- RTCP Feedback (R=0,
-   Start=18, --------| | Len=3, Vector=111) | | | |--- Frame TS=2100 (no
-   extension, -------->| | refs TS=2000) (partial) | | | |<-- RTCP
-   Feedback (R=1, Start=20, --------| | Len=1, Vector=1) | | | |---
-   Frame TS=2200 (no extension, -------->| | refs TS=2100) | | | |---
-   Frame TS=2300 (FFR=10, ID=21, ------->| | FbStart=20, FbLen=2, refs
-   TS=2000) | | | |<-- RTCP Feedback (R=0, Start=20, --------| | Len=2,
-   Vector=11) | | |
+   Media Sender                              Media Receiver
+       |                                          |
+       |--- Frame TS=2000 (FFR=10, ID=20, ------->|
+       |    FbStart=18, FbLen=3)                  |
+       |                                          |
+       |<-- RTCP Feedback (R=0, Start=18, --------|
+       |    Len=3, Vector=111)                    |
+       |                                          |
+       |--- Frame TS=2100 (no extension, -------->|
+       |    refs TS=2000)         (partial)       |
+       |                                          |
+       |<-- RTCP Feedback (R=1, Start=20, --------|
+       |    Len=1, Vector=1)                      |
+       |                                          |
+       |--- Frame TS=2200 (no extension, -------->|
+       |    refs TS=2100)                         |
+       |                                          |
+       |--- Frame TS=2300 (FFR=10, ID=21, ------->|
+       |    FbStart=20, FbLen=2, refs TS=2000)    |
+       |                                          |
+       |<-- RTCP Feedback (R=0, Start=20, --------|
+       |    Len=2, Vector=11)                     |
+       |                                          |
 
    *How the sender generates the refresh frame:*
 
@@ -810,11 +947,20 @@ Feedback Loss and Recovery
    IDs 10-11, but the RTCP feedback message from the receiver is lost in
    transit.
 
-   Media Sender Media Receiver | | |--- Frame TS=1000 (FFR=10, ID=10,
-   ------->| | FbStart=9, FbLen=2) | | | | X<-- RTCP Feedback (Start=9,
-   ---------| | LOST Len=2, Vector=11) | | | |--- Frame TS=1100 (FFR=10,
-   ID=11, ------->| | FbStart=9, FbLen=3) | | | |<-- RTCP Feedback (R=0,
-   Start=9, ---------| | Len=3, Vector=111) | | |
+   Media Sender                              Media Receiver
+       |                                          |
+       |--- Frame TS=1000 (FFR=10, ID=10, ------->|
+       |    FbStart=9, FbLen=2)                   |
+       |                                          |
+       |    X<-- RTCP Feedback (Start=9, ---------|
+       |  LOST   Len=2, Vector=11)                |
+       |                                          |
+       |--- Frame TS=1100 (FFR=10, ID=11, ------->|
+       |    FbStart=9, FbLen=3)                   |
+       |                                          |
+       |<-- RTCP Feedback (R=0, Start=9, ---------|
+       |    Len=3, Vector=111)                    |
+       |                                          |
 
    The Media Sender detects that no feedback was received for its
    earlier request.  After a timeout when sending new frames, it re-
