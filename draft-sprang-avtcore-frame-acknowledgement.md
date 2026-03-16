@@ -217,7 +217,7 @@ The remaining 6 bits of the FFR/Reserved byte are reserved and SHOULD be set to 
 ### Frame ID (16 bits)
 
 Present if FFR is 00, 01, or 10.
-An unsigned integer that uniquely identifies a frame. It MUST be incremented by one for each new frame (in sending order) that needs to be identified. It wraps around to 0 on overflow.
+An unsigned integer that uniquely identifies a frame. It MUST be incremented by one for each new frame (in sending order) that needs to be identified. It wraps around to 0 on overflow. The sender MAY start at 0, but receivers MUST accept any arbitrary starting point value.
 
 ### Feedback Start (16 bits)
 
@@ -286,7 +286,12 @@ The status vector MUST be padded with 0 to align to the next 32-bit boundary if 
 # Frame ID considerations {#frame_id_considerations}
 
 As stated above, the sender MUST increment the Frame ID by one for each new frame with the Frame Acknowledgement header extension present, in sending order. More than that, it must make sure that no wrap-around ambiguity can occur.
+
 Since feedback is only really necessary for frames which the codec stores in a reference buffer pending future use, the number of outstanding frames is in practice limited by the number of available reference buffers. E.g. for AV1, the upper limit will be 8. Although the optimal behavior will be application dependent, it is often advisable to spread reference buffer usage out across an RTT and to cull earlier buffer usage once later frames have been acknowledged.
+
+Also note that no exceptions are made for keyframes. I.e. keyframes may or may not be assigned a Frame ID, and any frames preceding a keyframe must still be inlcuded in the feedback if requested by the media sender - despite the keyframe being a new recovery point.
+
+The Frame ID sequence (and consequently the feedback messages corresponding to it) is unique per sender/receiver SSRC pair. Thus if a sender or receiver SSRC is changed, a new Frame ID sequence is started and all previous state is discarded. Otherwise no gaps or resets in the Frame ID sequence are allowed.
 
 ## Resync Request Handling
 
