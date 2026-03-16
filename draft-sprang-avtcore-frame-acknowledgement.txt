@@ -104,11 +104,15 @@ Table of Contents
      8.1.  Resync Request Handling
      8.2.  Point-to-Multi-Point
      8.3.  Out-of-order Message Handling
-   9.  Security Considerations
-   10. IANA Considerations
-   11. References
-     11.1.  Normative References
-     11.2.  Informative References
+   9.  SDP Signaling
+     9.1.  RTP Header Extension
+     9.2.  RTCP Feedback
+     9.3.  Receiver-Triggered Resync
+   10. Security Considerations
+   11. IANA Considerations
+   12. References
+     12.1.  Normative References
+     12.2.  Informative References
    Appendix A: Example Flows
      Notation Legend
      Normal Operation Flow
@@ -530,7 +534,100 @@ Table of Contents
    a Frame ID larger than contained in the requested range, the receiver
    must process the request.  Otherwise, the request must be ignored.
 
-9.  Security Considerations
+9.  SDP Signaling
+
+   This section defines how to signal the Frame Acknowledgement RTP
+   header extension and the Frame Acknowledgement Feedback RTCP message
+   using the Session Description Protocol (SDP).
+
+9.1.  RTP Header Extension
+
+   The Frame Acknowledgement extension is declared in SDP using the
+   "extmap" attribute.  The extension does not use any extension
+   attributes.
+
+   The URI for declaring this header extension in an extmap attribute is
+   "urn:ietf:params:rtp-hdrext:frame-acknowledgement".
+
+   Example attribute line in SDP:
+
+      a=extmap:4 urn:ietf:params:rtp-hdrext:frame-acknowledgement
+
+   The extension identifier (4 in the example) is chosen per [RFC8285]
+   and MUST be unique within the media description.
+
+9.2.  RTCP Feedback
+
+   Support for the Frame Acknowledgement Feedback RTCP message is
+   signaled using the "rtcp-fb" attribute as defined in [RFC4585].  The
+   feedback type "frame-acknowledgement" indicates that the endpoint
+   supports sending and/or receiving the Frame Acknowledgement Feedback
+   message (PT=RTPFB, FMT as assigned by IANA for this feedback type).
+
+   The "rtcp-fb" attribute is specified with a payload type value that
+   identifies the RTP payload format for which Frame Acknowledgement
+   Feedback is supported.
+
+   Syntax:
+
+      a=rtcp-fb:<payload type> frame-acknowledgement
+
+   When used in an offer/answer context, inclusion of "a=rtcp-fb:96
+   frame-acknowledgement" (with the appropriate payload type for the
+   media) in the SDP indicates that the sender of the SDP is capable of
+   receiving Frame Acknowledgement Feedback messages for the indicated
+   payload type, and that the receiver of the SDP may send Frame
+   Acknowledgement Feedback messages when the RTP header extension is
+   also negotiated for the same media.
+
+9.3.  Receiver-Triggered Resync
+
+   A receiver that supports sending resync requests (R=1 in the Frame
+   Acknowledgement Feedback message) MAY indicate that it will trigger
+   resync based on decode starvation, and MAY configure the timeout for
+   doing so, using an optional parameter on the "frame-acknowledgement"
+   rtcp-fb attribute.
+
+   The "resync-timeout" parameter specifies the time in milliseconds
+   that the receiver will wait for decoding to make progress before
+   sending a resync request.  Decode starvation occurs when the receiver
+   cannot advance decoding (e.g., it is blocked waiting for a frame or
+   data that cannot be recovered).  If decoding does not make progress
+   for the specified duration, the receiver should send a Frame
+   Acknowledgement Feedback message with the R flag set and a Resync
+   Frame ID referencing the last successfully decoded frame.
+
+   Syntax:
+
+   a=rtcp-fb:<payload type> frame-acknowledgement;resync-timeout=<timeout-ms>
+
+   The value "timeout-ms" is an integer in the range 1-65535,
+   representing the timeout in milliseconds.  If "resync-timeout" is
+   omitted, the receiver MAY still send resync requests at its
+   discretion (e.g., on unrecoverable loss) but need not use a timeout-
+   based trigger.  Inclusion of "resync-timeout" indicates that the
+   receiver supports and shall use timeout-based resync when decode
+   starves for at least the given duration.
+
+   Example attribute lines in SDP (Only one of the format must be
+   present per payload type):
+
+      a=rtcp-fb:96 frame-acknowledgement
+      Or
+      a=rtcp-fb:96 frame-acknowledgement;resync-timeout=500
+
+   The first format signals support only for Frame Acknowledgement
+   Feedback.  The second format additionally signals that the receiver
+   shall trigger resync after 500 ms of decode starvation. "resync-
+   timeout" helps use-cases to choose how long receiver need to wait
+   before triggering resync request.  Media sender can adjust its
+   interval to request frame acknowledgement feedback if "resync-
+   timeout" based resync feedback is supported by receiver.  Media
+   sender can avoid sending frequent frame acknowledgement requests
+   depending on the use-case.  Additionally sender could consider RTT
+   during handling of resync feedbacks.
+
+10.  Security Considerations
 
    The messages in this proposal may expose a small amount of data,
    namely the number of frames that have been sent, and potentially in
@@ -540,7 +637,7 @@ Table of Contents
    This data should however not pose any significant privacy or security
    risks.
 
-10.  IANA Considerations
+11.  IANA Considerations
 
    The RTP header extension needs to have a URI identifier assigned by
    IANA.  See [IANAEXT].
@@ -549,9 +646,9 @@ Table of Contents
    writing, the next available FMT value is 12.  A dedicated ID needs to
    be assigned by IANA.  See [IANARTCP].
 
-11.  References
+12.  References
 
-11.1.  Normative References
+12.1.  Normative References
 
    [DD]       AOM, "Dependency Descriptor RTP Header Extension", n.d.,
               <https://aomediacodec.github.io/av1-rtp-spec/#dependency-
@@ -574,7 +671,7 @@ Table of Contents
               2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
               May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
 
-11.2.  Informative References
+12.2.  Informative References
 
    [LNTF]     "RTCP feedback Message for Loss Notification", n.d.,
               <https://www.ietf.org/archive/id/draft-majali-avtcore-
@@ -593,6 +690,11 @@ Table of Contents
    [RFC7667]  Westerlund, M. and S. Wenger, "RTP Topologies", RFC 7667,
               DOI 10.17487/RFC7667, November 2015,
               <https://www.rfc-editor.org/rfc/rfc7667>.
+
+   [RFC8285]  Singer, D., Desineni, H., and R. Even, Ed., "A General
+              Mechanism for RTP Header Extensions", RFC 8285,
+              DOI 10.17487/RFC8285, October 2017,
+              <https://www.rfc-editor.org/rfc/rfc8285>.
 
    [RFC8888]  Sarker, Z., Perkins, C., Singh, V., and M. Ramalho, "RTP
               Control Protocol (RTCP) Feedback for Congestion Control",
