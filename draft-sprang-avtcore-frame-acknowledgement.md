@@ -310,7 +310,7 @@ The feedback request menchanism has the ability to respond with the status of a 
 For instance, imaging the following scenario where two independent layers are sent (with the numbers indicating frame timestamps and FID being the Frame IDs):
 S1: 100 -> 101 (FID = 1) -> 102 -> 103
 S0: 100 -> 101 -> 102 (FID = 2) -> 103
-Here, if the feedback for Frame ID 1 is lost, it is not enough to know that some receiver has been able to decode Frame ID 2. It is for this reason the sender can request feedback starting at Frame ID 1, with a length of two. The receiver should never remote state information about frames prior to the earliest Frame ID it has received a feedback request for. This guatantees that the sender is always able to aquire feedback for all frames it has sent.
+Here, if the feedback for Frame ID 1 is lost, it is not enough to know that some receiver has been able to decode Frame ID 2. It is for this reason the sender can request feedback starting at Frame ID 1, with a length of two. The receiver should never remove state information about frames prior to the earliest Frame ID it has received a feedback request for. This guarantees that the sender is always able to acquire feedback for all frames it has sent.
 
 ## Out-of-order Message Handling
 
