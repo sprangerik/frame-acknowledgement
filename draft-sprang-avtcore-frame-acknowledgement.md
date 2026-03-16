@@ -307,6 +307,62 @@ When considering a multi-way application with an SFU/SFM-type relay in the middl
 
 Though rare, it is possible that Frame Acknowledgement Request header extensions are received out of order. This can happen due to e.g., network reordering, but more likely due to retransmissions or recovery of packets using FEC. Regardless of the cause, if a Frame ID is present, the receiver must store it and the state associated with the frame in this packet. If a feedback request is contained in the header extension, and no feedback request has been processed with a Frame ID larger than contained in the requested range, the receiver must process the request. Otherwise, the request must be ignored.
 
+# SDP Signaling {#sdp_signaling}
+
+This section defines how to signal the Frame Acknowledgement RTP header extension and the Frame Acknowledgement Feedback RTCP message using the Session Description Protocol (SDP).
+
+## RTP Header Extension
+
+The Frame Acknowledgement extension is declared in SDP using the "extmap" attribute. The extension does not use any extension attributes.
+
+The URI for declaring this header extension in an extmap attribute is "urn:ietf:params:rtp-hdrext:frame-acknowledgement".
+
+Example attribute line in SDP:
+
+~~~
+   a=extmap:4 urn:ietf:params:rtp-hdrext:frame-acknowledgement
+~~~
+
+The extension identifier (4 in the example) is chosen per {{?RFC8285}} and MUST be unique within the media description.
+
+## RTCP Feedback
+
+Support for the Frame Acknowledgement Feedback RTCP message is signaled using the "rtcp-fb" attribute as defined in {{?RFC4585}}. The feedback type "frame-acknowledgement" indicates that the endpoint supports sending and/or receiving the Frame Acknowledgement Feedback message (PT=RTPFB, FMT as assigned by IANA for this feedback type).
+
+The "rtcp-fb" attribute is specified with a payload type value that identifies the RTP payload format for which Frame Acknowledgement Feedback is supported.
+
+Syntax:
+
+~~~
+   a=rtcp-fb:<payload type> frame-acknowledgement
+~~~
+
+When used in an offer/answer context, inclusion of "a=rtcp-fb:96 frame-acknowledgement" (with the appropriate payload type for the media) in the SDP indicates that the sender of the SDP is capable of receiving Frame Acknowledgement Feedback messages for the indicated payload type, and that the receiver of the SDP may send Frame Acknowledgement Feedback messages when the RTP header extension is also negotiated for the same media.
+
+## Receiver-Triggered Resync
+
+A receiver that supports sending resync requests (R=1 in the Frame Acknowledgement Feedback message) MAY indicate that it will trigger resync based on decode starvation, and MAY configure the timeout for doing so, using an optional parameter on the "frame-acknowledgement" rtcp-fb attribute.
+
+The "resync-timeout" parameter specifies the time in milliseconds that the receiver will wait for decoding to make progress before sending a resync request. Decode starvation occurs when the receiver cannot advance decoding (e.g., it is blocked waiting for a frame or data that cannot be recovered). If decoding does not make progress for the specified duration, the receiver should send a Frame Acknowledgement Feedback message with the R flag set and a Resync Frame ID referencing the last successfully decoded frame.
+
+Syntax:
+
+~~~
+   a=rtcp-fb:<payload type> frame-acknowledgement;resync-timeout=<timeout-ms>
+~~~
+
+The value "timeout-ms" is an integer in the range 1-65535, representing the timeout in milliseconds. If "resync-timeout" is omitted, the receiver MAY still send resync requests at its discretion (e.g., on unrecoverable loss) but need not use a timeout-based trigger. Inclusion of "resync-timeout" indicates that the receiver supports and shall use timeout-based resync when decode starves for at least the given duration.
+
+Example attribute lines in SDP (Only one of the format must be present per payload type):
+
+~~~
+   a=rtcp-fb:96 frame-acknowledgement
+   Or
+   a=rtcp-fb:96 frame-acknowledgement;resync-timeout=500
+~~~
+
+The first format signals support only for Frame Acknowledgement Feedback. The second format additionally signals that the receiver shall trigger resync after 500 ms of decode starvation. "resync-timeout" helps use-cases to choose how long receiver need to wait before triggering resync request. Media sender can adjust its interval to request frame acknowledgement feedback if "resync-timeout" based resync feedback is supported by receiver. Media sender can avoid sending frequent frame acknowledgement requests depending on the use-case. Additionally sender could consider RTT during handling of resync feedbacks.
+
 # Security Considerations
 
 The messages in this proposal may expose a small amount of data, namely the number of frames that have been sent, and potentially in an indirect way which frames the sender sees as important for recovery.
