@@ -12,7 +12,7 @@
        This document describes a mechanism for signaling which video frames have been received and decoded by a remote peer. It comprises an RTCP feedback message and an RTP header extension used to request said feedback. 
        One of the main use cases for this data is to implement various forms of Long Term Reference (LTR) reference structures. Additionally, the mechanism provides a way for receivers to request resynchronization frames that reference acknowledged frames, enabling efficient recovery from partial or full frame loss without requiring a full keyframe. 
     " name="description">
-<meta content="xml2rfc 3.31.0" name="generator">
+<meta content="xml2rfc 3.32.0" name="generator">
 <meta content="RTP" name="keyword">
 <meta content="RTCP" name="keyword">
 <meta content="Header Extension" name="keyword">
@@ -20,18 +20,18 @@
 <meta content="LTR" name="keyword">
 <meta content="draft-sprang-avtcore-frame-acknowledgement-02" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.31.0
+  xml2rfc 3.32.0
     Python 3.12.12
     ConfigArgParse 1.7
     google-i18n-address 3.1.1
     intervaltree 3.2.1
     Jinja2 3.1.6
     lxml 6.0.2
-    platformdirs 4.5.1
+    platformdirs 4.9.4
     pycountry 24.6.1
     PyYAML 6.0.3
     requests 2.32.5
-    wcwidth 0.3.0
+    wcwidth 0.6.0
 -->
 <link href="draft-sprang-avtcore-frame-acknowledgement.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -1626,7 +1626,7 @@ Since feedback is only really necessary for frames which the codec stores in a r
 <p id="section-8.3-2">For instance, imaging the following scenario where two independent layers are sent (with the numbers indicating frame timestamps and FID being the Frame IDs):
 S1: 100 -&gt; 101 (FID = 1) -&gt; 102 -&gt; 103
 S0: 100 -&gt; 101 -&gt; 102 (FID = 2) -&gt; 103
-Here, if the feedback for Frame ID 1 is lost, it is not enough to know that some receiver has been able to decode Frame ID 2. It is for this reason the sender can request feedback starting at Frame ID 1, with a length of two. The receiver should never remote state information about frames prior to the earliest Frame ID it has received a feedback request for. This guatantees that the sender is always able to aquire feedback for all frames it has sent.<a href="#section-8.3-2" class="pilcrow">¶</a></p>
+Here, if the feedback for Frame ID 1 is lost, it is not enough to know that some receiver has been able to decode Frame ID 2. It is for this reason the sender can request feedback starting at Frame ID 1, with a length of two. The receiver should never remove state information about frames prior to the earliest Frame ID it has received a feedback request for. This guarantees that the sender is always able to acquire feedback for all frames it has sent.<a href="#section-8.3-2" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="out-of-order-message-handling">
