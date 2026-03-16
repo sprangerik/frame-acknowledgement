@@ -367,7 +367,8 @@ Table of Contents
    Present if FFR is 00, 01, or 10.  An unsigned integer that uniquely
    identifies a frame.  It MUST be incremented by one for each new frame
    (in sending order) that needs to be identified.  It wraps around to 0
-   on overflow.  The starting point is arbitrary.
+   on overflow.  The sender MAY start at 0, but receivers MUST accept
+   any arbitrary starting point value.
 
 6.3.3.  Feedback Start (16 bits)
 
