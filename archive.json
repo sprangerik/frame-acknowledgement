@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-03-15T02:04:27.495548+00:00",
+  "timestamp": "2026-03-17T01:52:54.448347+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -741,7 +741,38 @@
       "labels": [],
       "body": "The draft as it stands allows a misbehaving sender to keep tagging frames with IDs without ever sending a feedback request. As a result the receiver state will keep growing unbounded. I think we need to have something in the draft to protect the receiver. \n\nHere is a proposal:\n\nWe should have text which says that once the status vector stored on the receiver exceeds max length that the feedback can carry i.e. 256 (8 bits) the receiver can drop the older status. If the sender requests an older status once it has been discarded the receiver can respond with a different (newer) start frame ID than what was present in the request. \n\nIf we want to limit this max state to be less than 256 we can have the sender and receiver negotiate maxFeebackStatusVectorLength. Offerer can offer a value less than equal to 256 and answer must respond with that value or something smaller. That way the sender knows the max state receiver will maintain.",
       "createdAt": "2026-03-13T19:41:17Z",
-      "updatedAt": "2026-03-13T19:41:17Z",
+      "updatedAt": "2026-03-16T14:22:38Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "shrim27",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I like the idea of negotiating if required but default to 256.\nDont want to restrict 256 as only option because frame_ID is 16 bit and request can come for older than 256 frames and length doesnt really matter in that case.\n",
+          "createdAt": "2026-03-16T06:48:40Z",
+          "updatedAt": "2026-03-16T06:48:40Z"
+        },
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "Good point. I think technically we can simply reply with multiple RTCP messages to support > 256 entries, but if so we need to clarify that in the text.\n\nRather than negotiating a value X such that \"if the frame id is X older than the last seen value, it can be silently forgotten\" I think it make sense to add stronger wording saying that the sender SHOULD regularly indicate which frame ids it is no longer interested in.\n\nI attempted to do so using e.g. \nhttps://github.com/sprangerik/frame-acknowledgement/blob/main/draft-sprang-avtcore-frame-acknowledgement.md?plain=1#L234\nand\nhttps://github.com/sprangerik/frame-acknowledgement/blob/main/draft-sprang-avtcore-frame-acknowledgement.md?plain=1#L289\nbut I think it could be further clarified.\n\nDo we think 2^16 long feedback sequences could be a vector for DOS-like attacks? If so then even if we negotiate a large value that will still be the case. Perhaps it should even be mentioned in the security considerations.\n",
+          "createdAt": "2026-03-16T14:22:38Z",
+          "updatedAt": "2026-03-16T14:22:38Z"
+        }
+      ]
+    },
+    {
+      "number": 40,
+      "id": "I_kwDOOIDm-M7zWu3L",
+      "title": "Clarify Timing Rules",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/40",
+      "state": "OPEN",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "The frame acknowledgement feedback messages are sent using RTCP.\n\nMy understanding is that this feedback should always be treated as immediate, and e.g. not delayed until the next RTCP sending interval. If so we should clarify better than this is the case and motivate well why it's beneficial to do it that way.\n\nSee https://datatracker.ietf.org/doc/html/rfc4585#section-3 for background on that topic.",
+      "createdAt": "2026-03-16T14:26:30Z",
+      "updatedAt": "2026-03-16T14:26:30Z",
       "closedAt": null,
       "comments": []
     }
@@ -2273,21 +2304,21 @@
       "id": "PR_kwDOOIDm-M7HhSat",
       "title": "Define SDP format for extension header and RTCP feedback",
       "url": "https://github.com/sprangerik/frame-acknowledgement/pull/29",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "shrim27",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2026-03-03T06:24:52Z",
-      "updatedAt": "2026-03-14T19:22:24Z",
+      "updatedAt": "2026-03-16T06:44:15Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
-      "baseRefOid": "4949f103b797951000b6542c057a65d154369967",
+      "baseRefOid": "e21ccbc0cf1ca0f22894a6955585c840d95810f0",
       "headRepository": "shrim27/frame-acknowledgement",
       "headRefName": "sdp",
-      "headRefOid": "a60343294dc0eb66a648a91aa0df446decba61ed",
-      "closedAt": null,
+      "headRefOid": "e21ccbc0cf1ca0f22894a6955585c840d95810f0",
+      "closedAt": "2026-03-16T06:21:03Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -2670,6 +2701,26 @@
               "updatedAt": "2026-03-14T19:22:25Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7rivXX",
+          "commit": {
+            "abbreviatedOid": "a603432"
+          },
+          "author": "shrim27",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-16T06:44:15Z",
+          "updatedAt": "2026-03-16T06:44:15Z",
+          "comments": [
+            {
+              "originalPosition": 67,
+              "body": "Ok updated https://github.com/sprangerik/frame-acknowledgement/pull/39\r\nSorry I closed this PR by mistake.",
+              "createdAt": "2026-03-16T06:44:15Z",
+              "updatedAt": "2026-03-16T06:44:15Z"
+            }
+          ]
         }
       ]
     },
@@ -2775,13 +2826,13 @@
       "labels": [],
       "body": "Fixes #33 ",
       "createdAt": "2026-03-06T10:15:15Z",
-      "updatedAt": "2026-03-06T17:45:21Z",
+      "updatedAt": "2026-03-16T13:45:29Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
       "baseRefOid": "55ff4f000288ba5559e54763aced5950a951573c",
       "headRepository": "sprangerik/frame-acknowledgement",
       "headRefName": "frame_id_clarification",
-      "headRefOid": "6e9be8bd0e67247e88040e527dd10307fbe8c15b",
+      "headRefOid": "2cce1466f76bca165c70a983f0858a490301e4e7",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -2807,6 +2858,26 @@
               "updatedAt": "2026-03-06T17:45:21Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7rrQES",
+          "commit": {
+            "abbreviatedOid": "2cce146"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-16T13:45:29Z",
+          "updatedAt": "2026-03-16T13:45:29Z",
+          "comments": [
+            {
+              "originalPosition": 5,
+              "body": "Done.",
+              "createdAt": "2026-03-16T13:45:29Z",
+              "updatedAt": "2026-03-16T13:45:30Z"
+            }
+          ]
         }
       ]
     },
@@ -2822,13 +2893,13 @@
       "labels": [],
       "body": "Not sure if this should really go here, or if this would be more suitable as another example in the appendix.\r\n\r\nPtal!",
       "createdAt": "2026-03-06T15:44:04Z",
-      "updatedAt": "2026-03-06T17:40:14Z",
+      "updatedAt": "2026-03-16T13:59:58Z",
       "baseRepository": "sprangerik/frame-acknowledgement",
       "baseRefName": "main",
-      "baseRefOid": "55ff4f000288ba5559e54763aced5950a951573c",
+      "baseRefOid": "0a51ee2348698f640eda72e2923985699e9a8fa9",
       "headRepository": "sprangerik/frame-acknowledgement",
       "headRefName": "simulcast",
-      "headRefOid": "c125f963742ac3097bd37442d4ee472938dbe395",
+      "headRefOid": "8c19151c3346d44734c74f74c7c58437e99d1abf",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
@@ -2880,6 +2951,26 @@
               "updatedAt": "2026-03-06T17:40:14Z"
             }
           ]
+        },
+        {
+          "id": "PRR_kwDOOIDm-M7rrmkx",
+          "commit": {
+            "abbreviatedOid": "8c19151"
+          },
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-03-16T13:59:57Z",
+          "updatedAt": "2026-03-16T13:59:58Z",
+          "comments": [
+            {
+              "originalPosition": 4,
+              "body": "I reworded the ## Frame Acknowledgment Request intro a little bit.",
+              "createdAt": "2026-03-16T13:59:57Z",
+              "updatedAt": "2026-03-16T13:59:58Z"
+            }
+          ]
         }
       ]
     },
@@ -2924,6 +3015,70 @@
           "updatedAt": "2026-03-09T08:42:04Z"
         }
       ],
+      "reviews": []
+    },
+    {
+      "number": 39,
+      "id": "PR_kwDOOIDm-M7K0wTs",
+      "title": "Adding SDP format and example",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/pull/39",
+      "state": "MERGED",
+      "author": "shrim27",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-03-16T06:42:49Z",
+      "updatedAt": "2026-03-16T13:37:39Z",
+      "baseRepository": "sprangerik/frame-acknowledgement",
+      "baseRefName": "main",
+      "baseRefOid": "e21ccbc0cf1ca0f22894a6955585c840d95810f0",
+      "headRepository": "shrim27/frame-acknowledgement",
+      "headRefName": "sdp",
+      "headRefOid": "77df926eeece06ead54fa4b798d82890ed3887c6",
+      "closedAt": "2026-03-16T13:37:38Z",
+      "mergedAt": "2026-03-16T13:37:38Z",
+      "mergedBy": "sprangerik",
+      "mergeCommit": {
+        "oid": "0a51ee2348698f640eda72e2923985699e9a8fa9"
+      },
+      "comments": [
+        {
+          "author": "sprangerik",
+          "authorAssociation": "OWNER",
+          "body": "I'll merge this PR. I think we're basically aligned apart from minor phrasing which can iterate on if needed.",
+          "createdAt": "2026-03-16T13:37:33Z",
+          "updatedAt": "2026-03-16T13:37:33Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 41,
+      "id": "PR_kwDOOIDm-M7K8Ms1",
+      "title": "Update date to March 13th 2026.",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/pull/41",
+      "state": "MERGED",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-03-16T14:29:06Z",
+      "updatedAt": "2026-03-16T14:29:29Z",
+      "baseRepository": "sprangerik/frame-acknowledgement",
+      "baseRefName": "main",
+      "baseRefOid": "0a51ee2348698f640eda72e2923985699e9a8fa9",
+      "headRepository": "sprangerik/frame-acknowledgement",
+      "headRefName": "new_date",
+      "headRefOid": "06142c495c7460e2224a7990e2c77b3758ad1f26",
+      "closedAt": "2026-03-16T14:29:29Z",
+      "mergedAt": "2026-03-16T14:29:29Z",
+      "mergedBy": "sprangerik",
+      "mergeCommit": {
+        "oid": "50708387bc2fe374c8490c55a3490725c2c1953a"
+      },
+      "comments": [],
       "reviews": []
     }
   ]
