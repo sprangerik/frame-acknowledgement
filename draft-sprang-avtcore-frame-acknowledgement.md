@@ -156,7 +156,7 @@ In order to request and receive information about decoded frames, we must be abl
 ## Frame Acknowledgment Request
 
 In order to get feedback on the state of the remote decoder, the sender actively requests such feedback using the same frame acknowledgement header extension that is also used for frame identification.
-The feedback request comprises a Start Frame ID and Length field. Specifying the range explicitly has several advantages, including enabling reliable delivery of the feedback since the sender can effectively make retransmission requests of the feedback.
+The feedback request comprises a Start Frame ID and Length field. Specifying the range explicitly has several advantages, including reliable delivery of the feedback and the ability to signal state relating to multiple independent streams interleaved within a single SSRC.
 
 If a new Frame Acknowledgement Request is sent with an incremented Feedback Start, all status values prior to that Frame ID are considered as acknowledged and can be culled by the receiver. A sender MUST NOT request feedback prior to either the last acknowledged Frame ID or the start of the stream.
 
@@ -302,6 +302,15 @@ This mechanism allows for efficient recovery from decoder desynchronization with
 ## Point-to-Multi-Point
 
 When considering a multi-way application with an SFU/SFM-type relay in the middle, the middlebox may need to do translations/rewriting of Frame IDs such that the outgoing FrameIDs from a middlebox to a receiver still fulfill the requirement that the FrameIDs are incremented by one for each new frame that is marked for feedback. This must be true even if independent video streams for different senders are multiplexed onto the same SSRC. Further the middlebox should typically not acknowledge a frame to a sender unless all active receivers have acknowledged that frame.
+
+## Using acknowledgement ranges
+
+The feedback request menchanism has the ability to respond with the status of a range of Frame IDs, not just the last decoded Frame ID. If video is encoded as a single dependency chain, the only the last decoded Frame ID would likely be sufficient. However, when spatial scalability such as "simulcast" is employed the situation gets more complex.
+
+For instance, imaging the following scenario where two independent layers are sent (with the numbers indicating frame timestamps and ID being the Frame IDs):
+S1: 100 -> 101 (ID = 1) -> 102 -> 103
+S0: 100 -> 101 -> 102 (ID = 2) -> 103
+Here, if the feedback for Frame ID 1 is lost, it is not enough to know that some receiver has been able to decode Frame ID 2. It is for this reason the sender can request feedback starting at Frame ID 1, with a length of two. The receiver should never remove state information about frames prior to the earliest Frame ID it has received a feedback request for. This guarantees that the sender is always able to acquire feedback for all frames it has sent.
 
 ## Out-of-order Message Handling
 
