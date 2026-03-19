@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-03-17T01:52:54.448347+00:00",
+  "timestamp": "2026-03-19T01:58:12.511436+00:00",
   "repo": "sprangerik/frame-acknowledgement",
   "labels": [
     {
@@ -223,15 +223,15 @@
       "id": "I_kwDOOIDm-M6yVrJC",
       "title": "SDP to negotiate RTP extension",
       "url": "https://github.com/sprangerik/frame-acknowledgement/issues/6",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "shrim27",
-      "authorAssociation": "CONTRIBUTOR",
+      "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Should RFC include SDP syntax for defining SDP extension header ID. Probably RFC URL can be used to define extension type.",
       "createdAt": "2025-04-14T06:30:30Z",
-      "updatedAt": "2026-03-03T06:26:25Z",
-      "closedAt": null,
+      "updatedAt": "2026-03-17T21:47:44Z",
+      "closedAt": "2026-03-17T21:47:44Z",
       "comments": [
         {
           "author": "sprangerik",
@@ -242,7 +242,7 @@
         },
         {
           "author": "shrim27",
-          "authorAssociation": "CONTRIBUTOR",
+          "authorAssociation": "COLLABORATOR",
           "body": "Added SDP format https://github.com/sprangerik/frame-acknowledgement/pull/29\n@sprangerik @gchandok please take a look",
           "createdAt": "2026-03-03T06:26:25Z",
           "updatedAt": "2026-03-03T06:26:25Z"
@@ -741,7 +741,7 @@
       "labels": [],
       "body": "The draft as it stands allows a misbehaving sender to keep tagging frames with IDs without ever sending a feedback request. As a result the receiver state will keep growing unbounded. I think we need to have something in the draft to protect the receiver. \n\nHere is a proposal:\n\nWe should have text which says that once the status vector stored on the receiver exceeds max length that the feedback can carry i.e. 256 (8 bits) the receiver can drop the older status. If the sender requests an older status once it has been discarded the receiver can respond with a different (newer) start frame ID than what was present in the request. \n\nIf we want to limit this max state to be less than 256 we can have the sender and receiver negotiate maxFeebackStatusVectorLength. Offerer can offer a value less than equal to 256 and answer must respond with that value or something smaller. That way the sender knows the max state receiver will maintain.",
       "createdAt": "2026-03-13T19:41:17Z",
-      "updatedAt": "2026-03-16T14:22:38Z",
+      "updatedAt": "2026-03-18T03:22:13Z",
       "closedAt": null,
       "comments": [
         {
@@ -757,6 +757,13 @@
           "body": "Good point. I think technically we can simply reply with multiple RTCP messages to support > 256 entries, but if so we need to clarify that in the text.\n\nRather than negotiating a value X such that \"if the frame id is X older than the last seen value, it can be silently forgotten\" I think it make sense to add stronger wording saying that the sender SHOULD regularly indicate which frame ids it is no longer interested in.\n\nI attempted to do so using e.g. \nhttps://github.com/sprangerik/frame-acknowledgement/blob/main/draft-sprang-avtcore-frame-acknowledgement.md?plain=1#L234\nand\nhttps://github.com/sprangerik/frame-acknowledgement/blob/main/draft-sprang-avtcore-frame-acknowledgement.md?plain=1#L289\nbut I think it could be further clarified.\n\nDo we think 2^16 long feedback sequences could be a vector for DOS-like attacks? If so then even if we negotiate a large value that will still be the case. Perhaps it should even be mentioned in the security considerations.\n",
           "createdAt": "2026-03-16T14:22:38Z",
           "updatedAt": "2026-03-16T14:22:38Z"
+        },
+        {
+          "author": "gchandok",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Just from an implementation perspective it would be best to know how much state I need to keep (i.e. what is the max size of the status vector) on the receive side at the start of the stream. Does not matter if it 2^8 or 2^16 as long as I know what the worst case is. Also as an implementor I need to know what to do if the vector does over flow. Having a SHOULD or even a MUST statement on the sender side is not enough IMO. We need guidance on the receiver side.\n\nIf we keep this open ended this will become complicated to validate. We will need to add some test to make sure the sender can never under any circumstance cause an overflow on the receiver. ",
+          "createdAt": "2026-03-18T03:22:13Z",
+          "updatedAt": "2026-03-18T03:22:13Z"
         }
       ]
     },
@@ -772,7 +779,61 @@
       "labels": [],
       "body": "The frame acknowledgement feedback messages are sent using RTCP.\n\nMy understanding is that this feedback should always be treated as immediate, and e.g. not delayed until the next RTCP sending interval. If so we should clarify better than this is the case and motivate well why it's beneficial to do it that way.\n\nSee https://datatracker.ietf.org/doc/html/rfc4585#section-3 for background on that topic.",
       "createdAt": "2026-03-16T14:26:30Z",
-      "updatedAt": "2026-03-16T14:26:30Z",
+      "updatedAt": "2026-03-18T02:33:15Z",
+      "closedAt": null,
+      "comments": [
+        {
+          "author": "gchandok",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Thanks I was going to open an issue for this. We should make sure this also talks about how this works with congestion control. The overhead from the feedback messages can be high and can compete with reverse media,",
+          "createdAt": "2026-03-17T02:38:30Z",
+          "updatedAt": "2026-03-17T02:38:30Z"
+        },
+        {
+          "author": "shrim27",
+          "authorAssociation": "COLLABORATOR",
+          "body": "My understanding is same as Erik, should be treated as immediate. Delaying might have worse effects on sender taking appropriate actions.",
+          "createdAt": "2026-03-17T21:56:39Z",
+          "updatedAt": "2026-03-17T21:56:39Z"
+        },
+        {
+          "author": "gchandok",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I am aligned on this being immediate as well. But we just need to call out the impact on congestion control from this choice ",
+          "createdAt": "2026-03-18T02:33:15Z",
+          "updatedAt": "2026-03-18T02:33:15Z"
+        }
+      ]
+    },
+    {
+      "number": 42,
+      "id": "I_kwDOOIDm-M7z7gf4",
+      "title": "Start frame ID and status vector in Resync Request feedback message should reflect all state receiver is maintaining instead of just the one since the last decoded frame",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/42",
+      "state": "OPEN",
+      "author": "gchandok",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "So in effect @sprangerik you are saying receiver should report back whatever frame decode status vector it is currently maintaining back to the sender. But it should not clear the state till the sender requests some feedback. \r\n\r\nAre we imagining a mode where there is no sender requested feedback and receiver just maintains the last decoded frameID and includes that in the resync request? This would be sufficient for non-SVC configurations; do you'll think it extends to SVC as well?\r\n\r\nIf we are able to negotiate ahead of time whether sender is going to request feedback and cares about multiple frameIDs we can maintain some history of status vectors on the receiver and report it all. If the sender does not request feedback we can just fallback to single frameID history mode on the receiver. I think there is value in keeping this simpler single frame mode.\r\n\r\n_Originally posted by @gchandok in https://github.com/sprangerik/frame-acknowledgement/pull/24#discussion_r2844194542_\r\n            ",
+      "createdAt": "2026-03-18T03:28:01Z",
+      "updatedAt": "2026-03-18T03:28:01Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 43,
+      "id": "I_kwDOOIDm-M70E3-4",
+      "title": "Add examples of how to identify a frame",
+      "url": "https://github.com/sprangerik/frame-acknowledgement/issues/43",
+      "state": "OPEN",
+      "author": "sprangerik",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "During the IETF125 conference, concerns were raised that we would need to have codec specific mappings between what this feedback format considers a frame and how a codec sees a frame when packetized into RTP.\n\nUnder the section \"Conventions and Definitions\" it says:\n> For the purposes of this document, a \"frame\" is defined as any decodable unit of bitstream data that results in the update to the codec state (e.g. reference buffers, entropy tables, etc) that can be used as a reference for any subsequent decodable unit of bitstream data. Typically that will be a full frame, but also include cases such as a \"no show\" frame intended for later reference or even a part of a frame such as a tile or a slice if it is independently decodable and makes updates to encoder state that other tiles/frames can later reference.\n\nThe desire there was to be codec agnostic, which the format is, but it may not fully convey to a reader or implementor how a frame is identified.\n\nE.g. In a simple case it may be enough to put the extension on a packet containing a marker bit. In other cases, such as when SVC is used and multiple frames for the same temporal unit (i.e. same RTP timestamp) are present, things get more complicated. It might be required to read for instance payload/codec specific data or a DependencyDescriptor header extension to understand which packets map to a particular frame.\n\nThe gist of it is that as long as the sender and receiver can agree on what the last packet of a \"decodable unit of bitstream data\" is (and that seems like it must be fundamentally true for the video transmission system to function), we can use that information to both tag and report on the decoded state for that data.\n\nIt seems prudent to both expand on the definition and to add some concrete examples for common codecs in the appendix.",
+      "createdAt": "2026-03-18T12:48:38Z",
+      "updatedAt": "2026-03-18T12:48:38Z",
       "closedAt": null,
       "comments": []
     }
